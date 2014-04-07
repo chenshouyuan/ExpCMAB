@@ -1,0 +1,432 @@
+\documentclass{article}
+\title{Pure Exploration of Combinatorial Bandits}
+\author{Shouyuan Chen}
+\date{\today}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Change "article" to "report" to get rid of page number on title page
+\usepackage{amsmath,amsfonts,amsthm,amssymb}
+\usepackage{setspace}
+\usepackage{Tabbing}
+\usepackage{fancyhdr}
+\usepackage{lastpage} 
+\usepackage{extramarks}
+\usepackage{chngpage}
+\usepackage{soul,color}
+\usepackage{graphicx,float,wrapfig}
+\usepackage{afterpage}
+\usepackage{abstract}
+\usepackage{hyperref}
+
+% In case you need to adjust margins:
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+% Setup the header and footer
+\pagestyle{fancy}
+%\lhead{\LatexerName}
+%\chead{\LectureClassName: \LectureTitle}
+%\rhead{\LectureDate}
+%\lfoot{\lastxmark}
+%\cfoot{}
+\rfoot{Page\ \thepage\ of\ \pageref{LastPage}}
+\renewcommand\headrulewidth{0.4pt}
+\renewcommand\footrulewidth{0.4pt}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Some tools
+
+\newtheorem{define}{Definition}
+\newtheorem{example}{Example}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+
+\newcommand{\M}{\mathcal M}
+\newcommand{\mmatch}{\mathcal M_{\mathsf{MATCH}}}
+\newcommand{\mtop}{\mathcal M_{\mathsf{TOP}m}}
+\newcommand{\mbandit}{\mathcal M_{\mathsf{BANDIT}m}}
+
+\newcommand{\diff}{\mathsf{diff}}
+\newcommand{\diffvalid}{\prec}
+\newcommand{\B}{\mathcal B}
+\newcommand{\C}{\mathcal C}
+\newcommand{\del}{\backslash}
+
+\newcommand{\RR}{\mathbb R}
+
+
+\newcommand{\Bopt}{\mathcal B_{\mathsf{opt}}}
+\newcommand{\Bmatch}{\mathcal B_{\mathsf{MATCH}}}
+\newcommand{\Btop}{\mathcal B_{\mathsf{TOP}m}}
+\newcommand{\Bbandit}{\mathcal B_{\mathsf{BANDIT}m}}
+
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\rad}{rad}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\begin{spacing}{1.1}
+\newpage
+
+\maketitle
+
+\section{Preliminaries}
+
+\subsection{Problems}
+
+Let $n$ be the number of base arms. 
+Let $\M \subseteq 2^{[n]}$ be the set of super arms. 
+
+
+In this note, we consider the following cases of $\M$.
+
+\begin{example}[Explore-$m$]
+$\mtop(n)=\{M \subseteq [n] \;|\; |M|=m\}$.
+This corresponds to finding the top $m$ arms from $[n]$.
+\end{example}
+
+\begin{example}[Explore-$m$-bandits]
+Suppose $n=mk$. Then $\mbandit(n)$ contains all subsets $M \subseteq [n]$ with size $m$, such that 
+$$ 
+M\cap \{ik+1,\ldots, (i+1)k\} = 1, \quad \text{for all } i \in \{0,\ldots, m-1\}.
+$$ 
+This corresponds to finding the top arms from $m$ bandits, where each bandit has $k$ arms.
+\end{example}
+
+\begin{example}[Perfect Matching]
+Let $G=(V,E)$ be a bipartite graph and $|E|=n$. 
+For simplicity, let each edge $e\in E$ corresponds to a unique integer $i\in [n]$, and vice versa. 
+Then $\mmatch(n,G)$ contains all subsets $M \subseteq [n]$ such that $M$ corresponds to a perfect matching in $G$.
+\end{example}
+
+
+\subsection{Diff-Sets}
+
+\begin{define}[Diff-set]
+An $n$-diff-set (or diff-set in short) is a pair of sets $c=(c_+,c_-)$, where $c_+\subseteq[n]$ and $c_-\subseteq [n]$.
+\end{define}
+
+
+\begin{define}[Difference of sets]
+Given any $M_1\subseteq[n],M_2\subseteq[n]$. We define $M_1\ominus M_2 \triangleq C$, where $C=(C_+,C_-)$ is a diff-set and
+$C_+ = M_1 \del M_2$ and $C_- = M_2\del M_1$.
+\end{define}
+
+\begin{define}
+Denote $\diff[n]$ be the set of all possible $n$-diff-sets.
+\end{define}
+
+\begin{define}[Set operations of diff-sets] 
+Let $C=(C_+,C_-), D=(D_+,D_-)$ be two diff-sets. 
+We define $C\cup D \triangleq (C_+\cup D_+, C_-\cup D_-)$,
+$C\cap D \triangleq (C_+\cap D_+, C_-\cap D_-)$
+and $C\del D \triangleq (C_+\del D_+, C_-\del D_-)$.
+\end{define}
+
+\begin{define}[Valid diff-set]
+Given a set $M \subseteq [n]$ and a diff-set $C=(C_+,C_-)$, we call $C$ a \emph{valid diff-set} for $M$, iff $C_+ \cap M = \emptyset$ and $C_- \subseteq M$.
+In this case, we denote $C\diffvalid M$.
+\end{define}
+
+\begin{define}[Application of diff-sets]
+Given any $M \subseteq [n]$ and $C \in \diff[n]$ such that $C \diffvalid M$.
+Then we define operators $\oplus$ and $\ominus$ such that $M \oplus C \triangleq M\cup C_+ \del C_-$ and $M \ominus C \triangleq M\cup C_- \del C_+$.
+\end{define}
+
+\begin{define}[diff-set class]
+\label{define:diff-class}
+Given $\M \subseteq 2^{[n]}$. $\B \subseteq \diff[n]$ is a diff-set class for $\M$, if the following hold.
+\begin{enumerate} 
+\item $(\emptyset,\emptyset)\not\in \B$.
+\item For all $M\in \M$ and for all $b\in \B$, if $b\diffvalid M$, then $M\oplus b \in \M$.
+\item For all $M_1 \in \M$ and $M_2\in \M$, where $M_1\not=M_2$. 
+	  There exists a sequence of diff-sets $b_1 \in \B,\ldots,b_k \in \B$, such that 
+	  $M_2 = M_1\oplus b_1 \ldots \oplus b_k$.
+\end{enumerate}
+\end{define}
+
+\begin{define}[Rank of diff-set class]
+Let $\B \subseteq [n]$ be a diff-set class for some $\M$. We define
+$$
+\rank(\B) \triangleq \max_{(b_+,b_-) \in \B} |b_+|+|b_-|.
+$$
+\end{define}
+
+\begin{example}[diff-set class for Explore-$m$]
+One diff-set class $\B$ for $\mtop(n)$ is given by
+$$
+\B=\{(\{b_1\},\{b_2\}) \;|\; b_1\not=b_2, b_1\in[n], b_2\in[n]\}.
+$$
+Proof omitted.
+Further, we see that $\rank(\B)=2$.
+\end{example}
+
+\begin{example}[diff-set class for Explore-$m$-badit]
+Let $n=mk$.
+One diff-set class $\B$ for $\mbandit(n)$ is given by
+$$
+\B=\{(\{b_1\},\{b_2\}) \;|\; b_1\not=b_2, \exists i\in\{0,\ldots,k-1\}, b_1\in \{ik+1,\ldots, (i+1)k\}, b_2\in\{ik+1,\ldots, (i+1)k\}\}.
+$$
+Proof omitted.
+Further, we see that $\rank(\B)=2$.
+\end{example}
+
+
+\begin{example}[diff-set class for Perfect Matching]
+One diff-set class $\B$ for $\mmatch(n, G)$ is the set of all augmenting cycles of $G$. 
+More specifically,
+$$
+\B=\{(b_+,b_-) | b_+\cup b_- \text{ is a cycle of } G\}.
+$$
+
+Note $\rank(\B)\le n$.
+\end{example}
+
+\subsection{Weights and confidence bounds}
+
+\begin{define}[Weight functions]
+Define function $w: [n] \rightarrow \RR^+$ which represents the weight of each base arm. 
+Further, we slight abuse the notations, and extend the definition of $w$ to diff-sets and sets as follows.
+\begin{enumerate}
+\item For all $M \subseteq [n]$, we denote $w(M) = \sum_{e\in M} w(e)$.
+\item For all $b=(b_+,b_-) \in \diff[n]$, we denote $w(b) = \sum_{e\in b_+} w(e)-\sum_{e\in b_-}w(e)$.
+\end{enumerate}
+\end{define}
+
+
+\begin{lemma}
+Let $c\in \diff[n],d\in \diff[n]$. Let $w$ be a weight function.
+Then,
+\begin{equation}
+w(c\cup d) = w(c)+w(d)-w(c\cap d).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Let $c=(c_+,c_-)$ and $d=(d_+,d_-)$.
+We have
+\begin{align}
+w(c\cup d) &= w(c_+\cup d_+)-w(c_-\cup d_-)\\
+           &= w(c_+)+w(d_+)-w(c_+\cap d_+)-w(c_-)-w(d_-)+w(c_- \cap d_-)\\
+           &= w(c)+w(d)-(w(c_+\cap d_+)-w(c_-\cap d_-))\\
+           &= w(c)+w(d)-w(c\cap d).
+\end{align}
+\end{proof}
+
+\begin{define}[Mean weight $\bar w_t$, sample size $n_t$]
+Given $t>0$. 
+Define $\bar w_t$ be a weight function such that, for all $e\in[n]$, $\bar w_t(e)$ equals to the empirical mean of $e$ up to round $t$.
+Let $n_t: [n] \rightarrow \mathbb N$, such that $n_t(e)$ equals to number of plays of base arm $e$ up to round $t$.
+\end{define}
+
+\begin{define}[Confidence radius $\rad_t$]
+Given $n$ and $t>0$.
+Define $\rad_t:[n]\rightarrow \RR^+$ satisfying, for all $e\in[n]$,
+$$
+\rad_t(e) = c_{\rad}\log\left(\frac{c_\delta nt^2}\delta\right)\frac{1}{\sqrt{n_t(e)}},
+$$
+where $c_{\rad} > 0$  and $c_\delta>0$ are some universal constants (specify later) and $\delta > 0$ is a parameter.
+
+We extend the notation of $\rad_t$ to diff-sets and sets as follows.
+\begin{enumerate}
+\item For all $M \subseteq [n]$, $\rad_t(M) \triangleq \sum_{e\in M} \rad_t(e)$.
+\item For all $b=(b_+,b_-)\in \diff[n]$, $\rad_t(b) \triangleq \rad_t(b_+)+\rad_t(b_-)$.
+\end{enumerate}
+
+\end{define}
+
+\begin{define}[UCB $w_t^+$]
+Define $w^+_t: [n] \rightarrow \RR^+$, s.t., for all $e\in[n]$,  
+$$ w^+_t(e)=\bar w_t(e)+\rad_t(e).$$
+
+We extend the notation of $w_t^+$ to diff-sets and sets as follows.
+\begin{enumerate}
+\item For all $M \subseteq [n]$, $w_t^+(M) \triangleq \bar w_t(M)+\rad_t(M)$.
+\item For all $b=(b_+,b_-)\in \diff[n]$, $w_t^+(b) \triangleq \bar w_t(b)+\rad_t(b)$.
+\end{enumerate}
+
+\end{define}
+
+\begin{lemma}
+\label{lemma:conf}
+Define random event 
+$$
+\xi = \left\{\forall e\in[n]\; \forall t>0, |\bar w_t(e)-w(e)|\le \rad_t(e) \right\}.
+$$
+Then, there exist constants $c_{\rad}$ and $c_\delta$,
+$$
+\Pr[\xi] \ge 1-\delta.
+$$
+\end{lemma}
+\begin{proof}
+Hoeffding inequality and union bound.
+\end{proof}
+
+\begin{corollary}
+\label{corr:conf}
+$$
+\xi \implies \forall t,\forall e\in[n] \; w_t^+(e) \ge w(e).
+$$
+$$
+\xi \implies \forall t,\forall M\subseteq[n],\; w_t^+(M) \ge w(M).
+$$
+$$
+\xi \implies \forall t,\forall b\in\diff[n]\; w_t^+(b) \ge w(b).
+$$
+\end{corollary}
+
+
+
+\section{Admissible diff-set classes}
+
+\begin{define}
+
+\begin{enumerate}
+\item For all $e\in[n]$ and $c \not\in \Bopt$. If $(e \in M_* \wedge e\in c_-)$ or $(e \not \in M_* \wedge e\in c_+)$,
+then there exists $b\in \Bopt$ such that $e\in b$ and $(c \oplus b) \in \B$.
+\end{enumerate}
+
+\end{define}
+
+\begin{lemma}
+Given a bipartite graph $G=(V,E)$, $\Bmatch(G)$ is an admissible diff-set class.
+\end{lemma}
+
+\begin{proof}
+If $(e \in M_* \wedge e\in c_-)$ or $(e \not \in M_* \wedge e\in c_+)$.
+Let $c \in \Bmatch(G) \del \Bopt$ be a diff-set.
+Since $c$ represents an augmenting cycle of $G$,
+we can write 
+$c=\{c_0,c_1,\ldots,c_{l-1}\}$, where, for all $i\in\{0,\ldots,l-1\}$,
+$c_i$ represents an edge of $G$, $(c_{i},c_{i+1})$ has a common vertex (with $c_l=c_0$), and $c_i \in c_+$ if $i \mod 2=0$.
+
+Let $M$ be an arbitrary set such that $c\diffvalid M$. 
+Let $M'=M\oplus c$.
+
+\textbf{Case (1).} Suppose that $e\in M_*$ and $e\in c_-$. 
+Since $e\not\in M'$, therefore $M'\not= M_*$.
+Consider the subgraph induced by $M'\cup M_*$.
+By the property of matching, $M'\cup M_*$ is a union of several disjoint cycles with even lengths.
+Let $t$ be such a cycle and $e\in t$.
+We write $t=\{t_0,\ldots, t_{m-1}\}$ and assume without generality that $t_0=e$.
+Then, we define $b_+=\{t_0,t_2,\ldots,t_{m-2}\}$ and $b_-=\{t_1,t_3,\ldots,t_{m-1}\}$.
+Clearly, $b_+\subseteq M_*$ and $b_-\cap M_* = \emptyset$. 
+Let $b=(b_+,b_-)$.
+We see that $b\in \Bopt$.
+
+We remain to show that $c\oplus b \in \Bmatch(G)$, i.e. $c\oplus b$ represents an augmenting cycle. 
+
+
+%By Property X, there exists $b\in \Bopt$ such that $b\diffvalid M'$ and $b$. 
+
+
+\end{proof}
+
+
+
+\section{Proof}
+
+Unless specified, we shall assume the random event $\xi$ (defined in Lemma~\ref{lemma:conf}) holds in all the following proofs.
+
+
+\begin{lemma}
+\label{lemma:correct}
+For any $t>0$, if the algorithm terminates on round $t$, then $M_t=M_*$.
+\end{lemma}
+
+\begin{proof}
+Suppose $M_t \not= M_*$. Then $w(M_*)>w(M_t)$. 
+Then, there exists $b \in \B$ such that $b \diffvalid M_t$ and $w(b)>0$.
+On the other hand, by Corollary~\ref{corr:conf}, we have $w_t^+(b) > w(b)$.
+Hence $w_t^+(b)>0$. This contradicts to the stopping condition of our algorithm.
+\end{proof}
+
+\begin{lemma}
+For any $t>0$.
+If $e\in E_t^2$, then $p_t\not= e$.
+\end{lemma}
+
+\begin{proof}
+Suppose that $p_t=e$. Consider the chosen diff-set $c_t=(c_+,c_-)$ of round $t$.
+Denote $K=\rank(\B)$. Note that $|c_t| \le K$.
+
+\textbf{Case (1).} 
+Suppose that $c_t\in\Bopt$. Then $w_t(c_t)>0$.
+Since $e\in E_t^2$, we have $\rad_t(e) \le \frac{1}{2}\Delta_e \le \frac{1}{2K}w(c_t)$.
+In addition, $\forall g\in c_t, g\not=e$, $\rad_t(g) \le \rad_t(e)\le \frac{1}{2K}w(c_t)$.
+Hence, $\rad_t(c_t) = \sum_{g\in c_t} \rad_t(g) \le \frac{|c_t|}{2K}w(c_t) \le \frac{1}{2}w(c_t)$.
+
+Hence, $\bar w_t(c_t) \ge w_t(c_t)-\rad_t(c_t) \ge \frac{1}{2}w(c_t) > 0$.
+This means that $\bar w_t(M_t \oplus c_t) = \bar w_t(M_t)+\bar w_t(c_t) > \bar w_t(M_t)$.
+Therefore, $M_t \not= \max_{M\in \M} \bar w_t(M)$.
+This contradicts to the definition of $M_t$.
+
+\textbf{Case (2).} 
+Suppose that $c_t\not\in \Bopt$. Then, one of the following mutually exclusive cases must hold.
+
+\textbf{Case (2.1).} 
+$(e \in M_* \wedge e\in c_+)$ or $(e \not \in M_* \wedge e\in c_-)$. 
+
+By Lemma~X, there exists $d\in \Bopt$ such that $d=(d_+,d_-)$ and $e\in (c_+\cap d_+)\cup(c_-\cap d_-)$.
+
+First, we show that $\rad_t(c_t) \le \frac12 w_t(d)$.
+Since $e\in E_t^2$, $e\in d_+\cup d_-$ and $d\in \Bopt$, we have $\rad_t(e) \le \frac{1}{2}\Delta_e \le \frac{1}{2K}w(d)$.
+In addition, $\forall g\in c_t, g\not=e$, $\rad_t(g) \le \rad_t(e)\le \frac{1}{2K}w(d)$.
+Hence, $\rad_t(c_t) = \sum_{g\in c_t} \rad_t(g) \le \frac{|c_t|}{2K}w(d) \le \frac{1}{2}w(d)$.
+
+Then, we show that $\bar w_t(c_t) > 0$.
+Since, $c_t$ is chosen on round $t$. 
+By definition, we know that $w^+_t(c_t) \ge w^+_t(d)$.
+This means that $\bar w_t(c_t)+\rad_t(c_t) \ge \bar w_t(d)+\rad_t(d)$.
+Therefore,
+\begin{align}
+	\bar w_t(c_t) & \ge \bar w_t(d_t)+\rad_t(d)-\rad_t(c_t)\\
+				  & \ge w(d)-\rad_t(c_t)\\
+				  & \ge \frac{1}{2} w(d) \\
+				  & > 0.
+\end{align}
+
+We have shown that $\bar w_t(c_t)>0$. And by definition, $c_t \diffvalid M_t$. Hence, $\bar w_t(M_t\oplus c_t) = \bar w_t(M_t)+\bar w_t(c_t) > \bar w_t(M_t)$. Contradiction.
+
+
+\textbf{Case (2.2).}
+$(e \in M_* \wedge e\in c_-)$ or $(e \not \in M_* \wedge e\in c_+)$.
+
+By Lemma~Y, there exists $b\in \Bopt$ such that $e\in b$ and $(c_t\oplus b) \in \B$. Define $d=c_t\oplus b$. Let $d=(d_+,d_-)$.
+
+First, we show that $\rad_t(c_t) \le \frac{1}{2}w(b)$. Since $e\in E_t^2$, $e\in b$ and $b\in \Bopt$, we have $\rad_t(e) \le \frac{1}{2}\Delta_e \le \frac{1}{2K}w(b)$.
+In addition, $\forall g\in c_t, g\not=e$, $\rad_t(g) \le \rad_t(e)\le \frac{1}{2K}w(b)$.
+Hence, $\rad_t(c_t) = \sum_{g\in c_t} \rad_t(g) \le \frac{|c_t|}{2K}w(b) \le \frac{1}{2}w(b)$.
+
+Then, we show that $w^+_t(d) > w^+_t(c_t)$.
+Note that
+\begin{align}
+w(d\del c_t)-w(c_t\del d) &= w(d\del c_t)+w(d\cap c_t)-w(d\cap c_t)-w(c_t\del d)\\
+						  &= w(d)-w(c_t) \\
+						  &= w(b).
+\end{align}
+We have
+\begin{align}
+w^+_t(d)-w^+_t(c_t) &= \bar w_t(d)-\bar w_t(c_t)+\rad_t(d)-\rad_t(c_t)\\
+					&= \bar w_t(d\del c_t)-\bar w_t(c_t\del d)+\rad_t(d)-\rad_t(c_t)\\
+					&= \bar w_t(d\del c_t)-\bar w_t(c_t\del d)+\rad_t(d \del c_t)-\rad_t(c_t \del d)\\
+					&\ge w(d\del c_t)-\bar w_t(c_t \del d)-\rad_t(c_t \del d)\\
+					&\ge w(d\del c_t)-w(c_t \del d)-2\rad_t(c_t \del d)\\
+					&\ge w(b)-2\rad_t(c_t) \\
+					&> w(b)-w(b)\\
+					&= 0.
+\end{align}
+
+This contradicts to the fact that $c_t$ is chosen on round $t$.
+\end{proof}
+
+
+%\bibliography{bandit}
+%\bibliographystyle{abbrv}
+\end{spacing}
+\end{document}

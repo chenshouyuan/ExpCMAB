@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<h1 id="adversarial-cmab">adversarial cmab</h1>
+<h1 id="definitions">definitions</h1>
+<ul>
+<li><span class="math">$\tilde c_t(k) = \tilde l_t^T v_k$</span></li>
+</ul>
+<h1 id="observations">observations</h1>
+<p>outcomes of all arms <span class="math"><em>o</em><sub><em>t</em></sub>(<em>i</em>), ∀<em>v</em>(<em>K</em><sub><em>t</em></sub>)<sub><em>i</em></sub> = 1</span>.</p>
+<h1 id="construction-of-tilde-l_t">construction of <span class="math">$\tilde l_t$</span></h1>
+<ul>
+<li>requirements
+<ul>
+<li><span class="math">$E[\tilde l_t] = l_t$</span></li>
+<li><span class="math">$E[\tilde c_t(k)] = c_t(k)$</span> for all <span class="math"><em>k</em> ∈ [<em>K</em>]</span></li>
+</ul></li>
+<li>let <span class="math">$\tilde l_{t,i} = \frac{}{p_{t-1}(k)}$</span></li>
+</ul>
+<h1 id="proof-key-steps">proof: key steps</h1>
+<ul>
+<li>cumulative pseudo-loss <span class="math">$\tilde L_n(k) = \sum_{t=1}^n \tilde c_t(k)$</span>.</li>
+<li>against the best (<span class="citation">@upper</span>) <br /><span class="math">$$
+    \log\left(\frac{W_n}{W_0} \right) \ge -\eta \tilde L_n - \log(K).
+    $$</span><br /></li>
+<li>lower bound (<span class="citation">@lower-single</span>) <br /><span class="math">$$
+    \begin{aligned}
+    \log\left(\frac{W_t}{W_{t-1}} \right) &amp; \le \frac{-\eta}{1-\gamma} \sum_{k=1}^K p_{t-1}(k) \tilde c_t(k)+\frac{\eta\gamma}{1-\gamma}\sum_{k=1}^K \tilde c_t(k)\mu(k) + \frac{\eta^2}{1-\gamma}\sum_{k=1}^K p_{t-1}(k) \tilde c_t(k)^2   
+    \end{aligned}
+    $$</span><br /> <strong>proof missing</strong></li>
+<li>cumulative lower bound (<span class="citation">@lower</span>) <br /><span class="math">$$
+    \log\left(\frac{W_n}{W_0}\right) \le 
+    \frac{-\eta}{1-\gamma} \sum_{t=1}^n \sum_{k=1}^K p_{t-1}(k) \tilde c_t(k)+\frac{\eta\gamma}{1-\gamma}\sum_{t=1}^n \sum_{k=1}^K \tilde c_t(k)\mu(k) + \frac{\eta^2}{1-\gamma}\sum_{t=1}^n\sum_{k=1}^K p_{t-1}(k) \tilde c_t(k)^2 
+    $$</span><br /></li>
+<li><p>combine (<span class="citation">@lower</span>) and (<span class="citation">@upper</span>) <br /><span class="math">$$
+    -\eta \tilde L_n - \log(K) \le 
+    \frac{-\eta}{1-\gamma} \sum_{t=1}^n \sum_{k=1}^K p_{t-1}(k) \tilde c_t(k)+\frac{\eta\gamma}{1-\gamma}\sum_{t=1}^n \sum_{k=1}^K \tilde c_t(k)\mu(k) + \frac{\eta^2}{1-\gamma}\sum_{t=1}^n\sum_{k=1}^K p_{t-1}(k) \tilde c_t(k)^2 
+    $$</span><br /></p>
+<p>rearrange, <br /><span class="math">$$
+\frac{\eta}{1-\gamma} \sum_{t=1}^n \sum_{k=1}^K p_{t-1}(k) \tilde c_t(k)
+\le 
+\eta \tilde L_n + \log(K)
++\frac{\eta\gamma}{1-\gamma}\sum_{t=1}^n \sum_{k=1}^K \tilde c_t(k)\mu(k) + \frac{\eta^2}{1-\gamma}\sum_{t=1}^n\sum_{k=1}^K p_{t-1}(k) \tilde c_t(k)^2  
+$$</span><br /></p>
+divide by <span class="math">$\frac{\eta}{1-\gamma}$</span>, <br /><span class="math">$$
+\sum_{t=1}^n \sum_{k=1}^K p_{t-1}(k) \tilde c_t(k)
+\le 
+(1-\gamma) \tilde L_n + \frac{1-\gamma}{\eta}\log(K)
++\gamma\sum_{t=1}^n \sum_{k=1}^K \tilde c_t(k)\mu(k) + \eta \sum_{t=1}^n\sum_{k=1}^K p_{t-1}(k) \tilde c_t(k)^2 
+$$</span><br /></li>
+<li><p>expectations <br /><span class="math">$$E[\sum_{t=1}^n \sum_{k=1}^K p_{t-1}(k) \tilde c_t(k)] = E[\sum_{t=1}^n c_t(K_t)]$$</span><br /> <strong>proof required</strong></p></li>
+<li>take expectation <br /><span class="math">$$
+    \begin{aligned}
+    E[\sum_{t=1}^n c_t(K_t)]
+    &amp;\le 
+    (1-\gamma) E[\tilde L_n] + \frac{1-\gamma}{\eta}\log(K)
+    +\gamma\sum_{t=1}^n \sum_{k=1}^K E[\tilde c_t(k)\mu(k)] + \eta \sum_{t=1}^n\sum_{k=1}^K p_{t-1}(k) E[\tilde c_t(k)^2]\\
+    &amp;=
+    (1-\gamma) L_n + \frac{1-\gamma}{\eta}\log(K)
+    +\gamma\sum_{t=1}^n \sum_{k=1}^K c_t(k)\mu(k) + \eta \sum_{t=1}^n\sum_{k=1}^K p_{t-1}(k) E[\tilde c_t(k)^2]\\   
+    \end{aligned}
+    $$</span><br /></li>
+<li><p>bound the term <span class="math">$\sum_{t=1}^n\sum_{k=1}^K p_{t-1}(k) E[\tilde c_t(k)^2]$</span></p></li>
+</ul>
+</body>
+</html>
