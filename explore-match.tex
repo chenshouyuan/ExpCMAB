@@ -37,6 +37,7 @@
 \renewcommand\headrulewidth{0.4pt}
 \renewcommand\footrulewidth{0.4pt}
 
+\allowdisplaybreaks
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Some tools
@@ -48,6 +49,8 @@
 \newtheorem{corollary}{Corollary}
 \newtheorem{theorem}{Theorem}
 
+
+\newcommand{\E}{\mathbb E}
 
 \newcommand{\M}{\mathcal M}
 \newcommand{\mmatch}{\mathcal M_{\mathsf{MATCH}}}
@@ -73,6 +76,9 @@
 \DeclareMathOperator{\decomp}{decomp}
 \DeclareMathOperator{\argmax}{arg\,max}
 \DeclareMathOperator{\argmin}{arg\,min}
+
+\let\Pr\undefined
+\DeclareMathOperator{\Pr}{Pr}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -516,7 +522,7 @@ Combine both equalities, we have
 \item Let $D=\argmax_{C \in \diff[n], C \diffvalid M_t} w_t^+(C)$. 
 \item If $w_t^+(D) \le 0$. Then stop and return $M_t$.
 \item Otherwise, find $p_t = \argmin_{e\in D} \rad_t(e)$.
-\item Play $p_t$.
+\item Play $p_t$ and observe outcome $x_t$.
 \item Go back to step 2.
 \end{enumerate}
 
@@ -725,7 +731,7 @@ Then, we move to bounding $|C_-|$
 		&= (D_- \cap (D_+\cup b_+)) \cup (D_- \del (D_-\cup b_-))\\
 		&= D_-\cap b_+.
 \end{align*}
-Thus $|C_-|\le |b_-|$ and we proved that $|D\del D'|\le |b|$.
+Thus $|C_-|\le |b_+|$ and we proved that $|D\del D'|\le |b|$.
 
 
 Next, we show that $\rad_t(D \del D') \le \frac13 w(b)$.
@@ -757,6 +763,206 @@ the fact that $\bar w_t(D'\del D)+\rad_t(D'\del D)\ge w(D'\del D)$ and that $\ba
 This contradicts to the fact that $D$ is chosen on round $t$.
 \end{proof}
 
+
+\section{Lower bounds}
+
+\begin{define}[Hardness of arm]
+Given $\M$, $M_*$ and $w$.
+For any $e\in[n]$, we define its hardness $\Delta_e$ as follows
+$$
+\Delta_e = \begin{cases}
+			   \min_{M: e\in M, M\in \M} w(M_*)-w(M) & \text{if } e\not \in M_*, \\
+			   \min_{M: e\not \in M, M\in \M} w(M_*)-w(M) & \text{if } e\in M_*.
+			\end{cases}
+$$
+\end{define}
+
+\begin{lemma}
+$$
+\Delta_e = \min_{b: e \in b, b \in \Bopt} w(b).
+$$
+\end{lemma}
+
+\begin{theorem}
+$$
+\E[T] \ge \Omega\left(\sum_e \Delta_e^{-2}\log(1/\delta)\right).
+$$
+\end{theorem}
+
+
+\begin{lemma}
+$$
+\E[T_e] \ge c_1 \Delta_e^{-2}\log(1/\delta).
+$$
+\end{lemma}
+
+\begin{proof}
+Given $\vec p \in [0,1]^{n}$.
+
+Consider two hypothesis $H_0$ and $H_1$. 
+Under hypothesis $H_0$, the true bias of each arm (coin) is 
+$$
+H_0: q_l = p_l, \quad \text{for all } l \in [n].
+$$
+And under hypothesis $H_1$, the true bias of each arm is 
+$$
+H_1: q_e = \begin{cases}
+	p_e-2\Delta_e & e\in M_*\\
+	p_e+2\Delta_e & e\not\in M_*
+\end{cases}, \quad q_l = p_l\quad\text{for all } l\not = e.
+$$
+
+Define $M_e$ be the ``next-to-optimal'' set as follows 
+$$
+M_e = \begin{cases}
+		 \argmax_{M\in \M: e \in M} w(M) & e\not \in M_*, \\
+	     \argmax_{M\in \M: e \not\in M} w(M) & e\in M_*.
+	  \end{cases}
+$$
+By definition, we know that $w(M_*)-w(M_e)=\Delta_e$.
+
+Let $w_0, w_1$ be the weighting functions under $H_0,H_1$ respectively.
+Notice that $w_0(M_*)-w_0(M_e)=\Delta_e > 0$.
+On the other hand, 
+$w_1(M_*)-w_1(M_e) = -\Delta < 0$.
+This means that under $H_1$, $M_*$ is not the optimal set.
+
+For $l\in \{0,1\}$, we use $\E_l$ and $\Pr_l$ to denote the expectation and probability, respectively, under the hypothesis $H_l$.
+
+Define $\theta=8\delta$. Let
+$$
+t_e^* = \frac{1}{c\Delta^2_e}\log\left(\frac{1}{\theta}\right),
+$$
+where $c$ is a constant whose value will be determined later.
+
+Recall that $T_e$ denotes the total number of samples of arm $e$.
+Define the event
+$\mathcal A = \{T_e \le 4t_e^* \}$.
+
+First, we show that $\Pr_0[\mathcal A] \ge 3/4$. 
+This can be proved by Markov inequality as follows.
+\begin{align*}
+\Pr_0[T_e > 4t_e^*] &\le \frac{\E_0[T_e]}{4t_e^*} \\
+					  &= \frac{t_e^*}{4t_e^*} = \frac14.
+\end{align*}
+
+We define $K_t(e)$ as the sum of outcomes of arm $e$ up to round $t$, i.e. 
+$$
+K_t(e) = \sum_{i\in [t]: p_i=e} x_i. 
+$$
+Next, we define the event 
+$$
+\mathcal C=\left\{\max_{1\le t \le 4t_e^*} \left|K_t(e)-p_e t\right|  < \sqrt{t_e^*\log(1/\theta)} \right\}.
+$$
+We now show that $\Pr_0[\mathcal C] \ge 3/4$.
+First, notice that $K_t(e)-p_e t$ is a martingale under $H_0$.
+Then, by Kolmogorov's inequality, we have
+\begin{align*}
+\Pr_0\left[\max_{1\le t \le 4t_e^*} \left|K_t(e)-p_e t\right| \ge \sqrt{t_e^*\log(1/\theta)} \right]
+&\le \frac{\E_0[ (K_{4t_e^*}(e)-4p_et_e^*)^2]}{t_e^*\log(1/\theta)}\\
+&= \frac{4p_e(1-p_e)t_e^*}{t_e^*\log(1/\theta)}\\
+&< \frac14,
+\end{align*}
+where the second inequality follows from the fact that $\E_0[(K_{4t_e^*}(e)-4p_et_e^*)^2] = 4p_e(1-p_e)t_e^*$; the last inequality follows 
+since $\theta < e^{-4}$ and $4p_e(1-p_e) \le 1$.
+
+Then, we define the event $\mathcal B$ as the event that the algorithm eventually returns $M_*$, i.e.
+$$
+\mathcal B=\{O=M_*\}.
+$$
+Since the probability of error of the algorithm is smaller than $\delta < 1/4$, we have $\Pr_0[\mathcal B] \ge 3/4$.
+Define $\mathcal S$ be $\mathcal S=\mathcal A\cap \mathcal B \cap \mathcal C$. 
+Then, by union bound, we have $\Pr_0[\mathcal S]\ge 1/4$.
+
+Now, we show that if $\E_0[T_e] \le t_e^*$, then $\Pr_1[\mathcal B] \ge \delta$.
+Let $W$ be the history of the sampling process until the algorithm stops (including the sequence of arms chosen at each time and the sequence of observed outcomes).
+Define the likelihood function $L_l$ as 
+$$
+L_l(w) = \Pr_l[W=w].
+$$
+Let $K$ be the shorthand of $K_e(T_e)$ and $T$ stands for $T_e$.
+Now consider the ratio $L_1(W)/L_0(W)$, we have
+\begin{align}
+  \frac{L_1(W)}{L_0(W)} &= \frac{(p_e+2\Delta_e)^{K} (1-p_e-2\Delta_e)^{T-K}}{p_e^K(1-p_e)^{T-K}} \nonumber \\
+  						&=\left(1+\frac{2\Delta_e}{p_e}\right)^K\left(1-\frac{2\Delta_e}{1-p_e}\right)^{T-K} \nonumber\\
+  						&=\left(1+\frac{2\Delta_e}{p_e}\right)^K
+                          \left(1-\frac{2\Delta_e}{p_e}\right)^K\left(1-\frac{2\Delta_e}{p_e}\right)^{-K}
+  						  \left(1-\frac{2\Delta_e}{1-p_e}\right)^{T-K} \nonumber\\
+  						&=\left(1-\left(\frac{2\Delta_e}{p_e}\right)^2\right)^K\left(1-\frac{2\Delta_e}{p_e}\right)^{-K}
+  						  \left(1-\frac{2\Delta_e}{1-p_e}\right)^{T-K} \nonumber \\
+  						&=\left(1-\left(\frac{2\Delta_e}{p_e}\right)^2\right)^K\left(1-\frac{2\Delta_e}{p_e}\right)^{-K}
+  						  \left(1-\frac{2\Delta_e}{1-p_e}\right)^{K(1-p_e)/p_e}
+  						  \left(1-\frac{2\Delta_e}{1-p_e}\right)^{(p_eT_e-K)/p_e} \label{eq:lower-likelihood-1}.
+\end{align}
+
+Now, we  assume that the event $\mathcal S$ occurred and bound each individual terms on the right-hand side of Eq.~\eqref{eq:lower-likelihood-1} under this assumption.
+First, we have
+\begin{align}
+\left(1-\left(\frac{2\Delta_e}{p_e}\right)^2\right)^K &\ge 
+\left(1-\left(\frac{2\Delta_e}{p_e}\right)^2\right)^{4t_e^*} \label{eq:ll-1-1}\\
+&= \left(1-\left(\frac{2\Delta_e}{p_e}\right)^2\right)^{(4/c\Delta_l^2)\log(1/\theta)} \label{eq:ll-1-2}\\
+&\ge \exp\left(-d\frac{4}{c}\left(\frac1{p_e}\right)^2\log(1/\theta) \right) \label{eq:ll-1-3} \\
+& = \theta^{4d/p_e^2c} \label{eq:ll-1-4},
+\end{align}
+where Eq.~\eqref{eq:ll-1-1} follows from the fact that $K \le T_e$ and the assumption that the event $\mathcal A$ occurred, i.e. $T_e \le 4t_e^*$; 
+Eq.~\eqref{eq:ll-1-2} uses the definition of $t_e$;
+Eq.~\eqref{eq:ll-1-3} follows from Lemma~X.
+
+Next, we bound the second and third term on the right-hand side of Eq.~\eqref{eq:lower-likelihood-1}.
+Notice that $(1-x)^b \ge 1-bx$ for any $b \ge 1$ and $x \in [0,1]$.
+Therefore, 
+$$
+\left(1-\frac{\Delta_e}{1-p_e}\right)^{(1-p_e)/p_e} \ge \left(1-\frac{\Delta_e}{p_e}\right).
+$$
+Plugging in the above inequality into the product of the second and third terms, we have
+\begin{align}
+\left(1-\frac{2\Delta_e}{p_e}\right)^{-K}\left(1-\frac{2\Delta_e}{1-p_e}\right)^{K(1-p_e)/p_e} &
+\ge \left(1-\frac{2\Delta_e}{p_e}\right)^{-K}\left(1-\frac{\Delta_e}{p_e}\right)^K \nonumber \\
+&= 1 \label{eq:ll-1.5}.
+\end{align}
+
+Finally, we bound the last term of Eq.~\eqref{eq:lower-likelihood-1}. 
+We have
+\begin{align}
+\left(1-\frac{\Delta_e}{1-p_e}\right)^{(p_eT_e-K)/p_e} 
+& \ge \left(1-\frac{\Delta_e}{1-p_e}\right)^{(1/p_e)\sqrt{t_e^*\log(1/\theta)}} \label{eq:ll-2-1} \\
+&  =  \left(1-\frac{\Delta_e}{1-p_e}\right)^{(1/p_e\sqrt{c}\Delta_e)\log(1/\theta)} \label{eq:ll-2-2} \\
+& \ge \exp\left(-\frac{d}{\sqrt c p_e \Delta_e}\frac{\Delta_e}{1-p_e}\log(1/\theta)\right) \label{eq:ll-2-3} \\
+& = \exp\left(-\frac{d}{\sqrt c p_e (1-p_e)}\log(1/\theta)\right) \nonumber \\
+& \ge \exp\left(-\frac{2d}{\sqrt c p_e}\log(1/\theta)\right) \label{eq:ll-2-4} \\
+& = \theta^{2d/(p_e\sqrt{c})} \label{eq:ll-2-5},
+\end{align}
+where Eq.~\eqref{eq:ll-2-1} follows from the assumption that the event $\mathcal C$ occurred;
+Eq.~\eqref{eq:ll-2-2} follows from the definition of $t_e^*$;
+Eq.~\eqref{eq:ll-2-3} follows from Lemma X;
+Eq.~\eqref{eq:ll-2-4} follows from the assumption that $p_e \le 1/2$.
+
+Combining Eq.~\eqref{eq:ll-1-4}, Eq.~\eqref{eq:ll-1.5} and Eq.~\eqref{eq:ll-2-5}, we can finally bound the right-hand side of Eq.~\eqref{eq:lower-likelihood-1} as follows
+\begin{align}
+\frac{L_1(W)}{L_0(W)} &\ge \theta^{4d/p_e^2c+2d/(p_e\sqrt{c})} \\
+					  &\ge \theta = 8\delta.
+\end{align}
+where $c$ is a sufficiently large constant such that $\theta^{4d/p_e^2c+2d/(p_e\sqrt{c})} > \theta$.
+
+Define $1_S$ as the indicator variable of event $\mathcal S$, i.e. $1_S = 1$ if and only if $\mathcal S$ occurs and otherwise $1_S = 0$.
+Then, we have
+\begin{align*}
+\frac{L_1(W)}{L_0(W)} 1_S \ge 8\delta 1_S.
+\end{align*}
+Then, we have
+\begin{align*}
+\Pr_1[\mathcal B] &\ge \Pr_1[\mathcal S] = \E_1[1_S] \\
+				  &= \E_0\left[\frac{L_1(W)}{L_0(W)} 1_S\right] \\
+				  &\ge 8\delta \E_0[1_S] \\
+				  &= 8\delta \Pr_0[\mathcal S] > \delta.
+\end{align*}
+
+Now we have proved that, if $\E_0[T_e] \le t_e^*$, then $\Pr_1[\mathcal B]>\delta$.
+This means that, if $\E_0[T_e] \le t_e^*$,  the algorithm will choose $M_*$ as the output with probability at least $\delta$, under hypothesis $H_1$.
+However, under $H_1$, we have shown that $M_*$ is not the optimal set since $w_1(M_e) > w_1(M_*)$.
+Therefore, the algorithm has a probability of error larger than $\delta$ under $H_1$. 
+Contradiction.
+\end{proof}
 
 %\bibliography{bandit}
 %\bibliographystyle{abbrv}
