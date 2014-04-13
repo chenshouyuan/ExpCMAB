@@ -784,57 +784,34 @@ $$
 $$
 \end{lemma}
 
-\begin{lemma}
-If $0\le a \le 1/\sqrt{2}$, then 
-$$
-\begin{cases}
-  (1-a)^b \ge \exp(-dab) & \text{if } b \ge 0,\\
-  (1+a)^b \ge \exp(dab) & \text{if } b < 0,
-\end{cases}
-$$
-where $d=1.78$ is a constant.
-\label{lemma:exp}
-\end{lemma}
-
-\begin{proof}
-Mannor and Tsitsiklis proved the case of $b \ge 0$ \citep[Lemma 3]{mannor2004sample}.
-We now prove the case of $b < 0$.
-Simple calculation shows that $\log(1+a)-da \le 0$ for all $a \in [0,\sqrt{2}]$.
-Hence we have $b\log(1+a)-bda \ge 0$ since $b < 0$.
-Therefore, $b\log(1+a)\ge bda$.
-The lemma follows by exponentiating both side of the previous inequality.
-\end{proof}
-
 \begin{theorem}
-Fix a real number $\tilde p > 0$.
-Assume that, for each arm $i\in [n]$, its reward distribution is a Bernoulli distribution (supported in $\{0,1\}$) with mean $p_i \in [\tilde p, 1/2]$.
-
-Then, for any $\delta > 0$
+Assume that, for each arm $i\in [n]$, its reward distribution is a Gaussian distribution with mean $p_i$ and variance 1.
+Then, for any $\delta \in (0,e^{-16}/4)$
 and any $\delta$-correct algorithm $\mathbb A$.
 Let $T$ denote the number of total samples used by algorithm $\mathbb A$.
 We have
 $$
-\E[T] \ge \sum_e \frac{1}{c\Delta_e^2}\log(1/\delta),
+\E[T] \ge \sum_e \frac{1}{16\Delta_e^2}\log(1/\delta).
 $$
-where $c$ is a constant that only depends on $\tilde p$.
 \end{theorem}
 
 
 \begin{proof}
-Fix $\tilde p>0$, $\delta >0$, $p_i \in [\tilde p,1/2]$ for all $i\in[n]$ and a $\delta$-correct policy $\mathbb A$.
-Assume that the reward distribution of an arm $i\in [n]$ is a Bernoulli distribution with mean $p_i$.
+Fix $\delta >0$, $p_i$ for all $i\in[n]$ and a $\delta$-correct policy $\mathbb A$.
+Assume that the reward distribution of an arm $i\in [n]$ is a Gaussian distribution with mean $p_i$ and variance 1.
 Then, for any $e\in [n]$, let $T_e$ denote the  number of trials of arm $e$ used by algorithm $\mathbb A$.
 In the rest of the proof, we will prove that for any $e\in [n]$, the number of trials of arm $e$ is lower-bounded by
 \begin{equation}
-\E[T_e] \ge \frac{1}{c\Delta_e^2}\log(1/\delta).
+\E[T_e] \ge \frac{1}{c\Delta_e^2}\log(1/\delta),
 \label{eq:lower-each}
 \end{equation}
+where $c$ is a constant whose value will be determined later.
 Notice that the theorem will follow immediately by summing up the above bounds for all $e\in[n]$.
 
 
 Fix an arm $e\in [n]$. We now focus on proving Eq.~\eqref{eq:lower-each}.
 Consider two hypothesis $H_0$ and $H_1$. 
-Under each hypothesis, the reward distributions of every arm are still Bernoulli distributions, but the mean rewards of some arms might be altered.
+Under each hypothesis, the reward distributions of every arm are still Gaussian distributions with unit variance, but the mean rewards of some arms might be altered.
 Under hypothesis $H_0$, the mean reward of each arm is 
 $$
 H_0: q_l = p_l, \quad \text{for all } l \in [n].
@@ -864,11 +841,11 @@ This means that under $H_1$, $M_*$ is not the optimal set.
 
 For $l\in \{0,1\}$, we use $\E_l$ and $\Pr_l$ to denote the expectation and probability, respectively, under the hypothesis $H_l$.
 
-Define $\theta=8\delta$. Let
-$$
-t_e^* = \frac{1}{c\Delta^2_e}\log\left(\frac{1}{\theta}\right),
-$$
-where $c$ is a constant whose value will be determined later.
+Define $\theta=4\delta$. Define
+\begin{equation}
+t_e^* = \frac{1}{c\Delta^2_e}\log\left(\frac{1}{\theta}\right).
+\label{eq:define-tstar}
+\end{equation}
 
 Recall that $T_e$ denotes the total number of samples of arm $e$.
 Define the event
@@ -881,10 +858,8 @@ This can be proved by Markov inequality as follows.
 					  &= \frac{t_e^*}{4t_e^*} = \frac14.
 \end{align*}
 
-We define $K_t(e)$ as the sum of outcomes of arm $e$ up to round $t$, i.e. 
-$$
-K_t(e) = \sum_{i\in [t]: p_i=e} x_i. 
-$$
+Let $X_1,\ldots,X_{T_e}$ denote the sequence of reward outcomes of arm $e$.
+We define $K_t(e)$ as the sum of outcomes of arm $e$ up to round $t$, i.e. $K_t(e) = \sum_{i\in [t]} X_i. $
 Next, we define the event 
 $$
 \mathcal C=\left\{\max_{1\le t \le 4t_e^*} \left|K_t(e)-p_e t\right|  < \sqrt{t_e^*\log(1/\theta)} \right\}.
@@ -895,11 +870,11 @@ Then, by Kolmogorov's inequality, we have
 \begin{align*}
 \Pr_0\left[\max_{1\le t \le 4t_e^*} \left|K_t(e)-p_e t\right| \ge \sqrt{t_e^*\log(1/\theta)} \right]
 &\le \frac{\E_0[ (K_{4t_e^*}(e)-4p_et_e^*)^2]}{t_e^*\log(1/\theta)}\\
-&= \frac{4p_e(1-p_e)t_e^*}{t_e^*\log(1/\theta)}\\
+&= \frac{4t_e^*}{t_e^*\log(1/\theta)}\\
 &< \frac14,
 \end{align*}
-where the second inequality follows from the fact that $\E_0[(K_{4t_e^*}(e)-4p_et_e^*)^2] = 4p_e(1-p_e)t_e^*$; the last inequality follows 
-since $\theta < e^{-4}$ and $4p_e(1-p_e) \le 1$.
+where the second inequality follows from the fact that $\E_0[(K_{4t_e^*}(e)-4p_et_e^*)^2] = 4t_e^*$; the last inequality follows 
+since $\theta < e^{-16}$.
 
 Then, we define the event $\mathcal B$ as the event that the algorithm eventually returns $M_*$, i.e.
 $$
@@ -917,74 +892,46 @@ L_l(w) = \Pr_l[W=w].
 $$
 Let $K$ be the shorthand of $K_e(T_e)$ and $T$ stands for $T_e$.
 
-
 Assume that the event $\mathcal S$ occurred.
 We will bound the likelihood ratio $L_1(W)/L_0(W)$ under this assumption. 
 To do this, we divide our analysis into two different cases.
 
 \textbf{Case (1): $e\not \in M_*$.}
-In this case, the reward distribution of arm $e$ under $H_1$ is a Bernoulli distribution with mean $p_e+2\Delta_e$. 
+In this case, the reward distribution of arm $e$ under $H_1$ is a Gaussian distribution with mean $p_e+2\Delta_e$ and variance 1. 
+Recall that the probability density function of a Gaussian distribution with mean $\mu$ and variance $\sigma^2$ is given by
+$f(x,\mu,\sigma^2)=\frac{1}{\sigma\sqrt{2\pi}}\exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)$.
 Hence, we have
 \begin{align}
-  \frac{L_1(W)}{L_0(W)} &= \frac{(p_e+2\Delta_e)^{K} (1-p_e-2\Delta_e)^{T-K}}{p_e^K(1-p_e)^{T-K}} \nonumber \\
-  						&=\left(1+\frac{2\Delta_e}{p_e}\right)^K\left(1-\frac{2\Delta_e}{1-p_e}\right)^{T-K} \nonumber\\
-  						&=\left(1+\frac{2\Delta_e}{p_e}\right)^K
-                          \left(1-\frac{2\Delta_e}{p_e}\right)^K\left(1-\frac{2\Delta_e}{p_e}\right)^{-K}
-  						  \left(1-\frac{2\Delta_e}{1-p_e}\right)^{T-K} \nonumber\\
-  						&=\left(1-\left(\frac{2\Delta_e}{p_e}\right)^2\right)^K\left(1-\frac{2\Delta_e}{p_e}\right)^{-K}
-  						  \left(1-\frac{2\Delta_e}{1-p_e}\right)^{T-K} \nonumber \\
-  						&=\left(1-\left(\frac{2\Delta_e}{p_e}\right)^2\right)^K\left(1-\frac{2\Delta_e}{p_e}\right)^{-K}
-  						  \left(1-\frac{2\Delta_e}{1-p_e}\right)^{K(1-p_e)/p_e}
-  						  \left(1-\frac{2\Delta_e}{1-p_e}\right)^{(p_eT_e-K)/p_e} \label{eq:lower-likelihood-1}.
+  \frac{L_1(W)}{L_0(W)} &= \prod_{i=1}^{T_e} \exp\left(\frac{-(X_i-p_e-2\Delta_e)^2+(X_i-p_e)^2}{2}\right) \nonumber \\
+  						&= \prod_{i=1}^{T_e} \exp\big(\Delta_e(2X_i-2p_e)-2\Delta_e^2\big) \nonumber \\
+  						&= \exp\big(\Delta_e(2K-2p_eT_e)-2\Delta_e^2T_e\big) \nonumber \\
+  						&= \exp\big(\Delta_e(2K-2p_eT_e)\big)\exp(-2\Delta_e^2T_e) \label{eq:lower-bound-case-1}.
 \end{align}
 
-Then, we bound each individual terms on the right-hand side of Eq.~\eqref{eq:lower-likelihood-1} under this assumption.
-First, we have
+Next, we bound each individual term on the right-hand side of Eq.~\eqref{eq:lower-bound-case-1}.
+We begin with bounding the second term of Eq.~\eqref{eq:lower-bound-case-1}.
 \begin{align}
-\left(1-\left(\frac{2\Delta_e}{p_e}\right)^2\right)^K &\ge 
-\left(1-\left(\frac{2\Delta_e}{p_e}\right)^2\right)^{4t_e^*} \label{eq:ll-1-1}\\
-&= \left(1-\left(\frac{2\Delta_e}{p_e}\right)^2\right)^{(4/c\Delta_e^2)\log(1/\theta)} \label{eq:ll-1-2}\\
-&\ge \exp\left(-d\frac{4}{c}\left(\frac1{p_e}\right)^2\log(1/\theta) \right) \label{eq:ll-1-3} \\
-& = \theta^{4d/p_e^2c} \label{eq:ll-1-4},
+	\exp(-2\Delta_e^2T_e) &\ge \exp(-8\Delta_e^2t_e^*) \label{eq:lower-bound-case-1-1.1} \\
+						  &=\exp\left(-\frac{8}{c}\log(1/\theta)\right) \label{eq:lower-bound-case-1-1.2}\\
+						  &= \theta^{8/c}\label{eq:lower-bound-case-1-1.3},
 \end{align}
-where Eq.~\eqref{eq:ll-1-1} follows from the fact that $K \le T_e$ and the assumption that the event $\mathcal A$ occurred, i.e. $T_e \le 4t_e^*$; 
-Eq.~\eqref{eq:ll-1-2} uses the definition of $t_e$;
-Eq.~\eqref{eq:ll-1-3} follows from Lemma~\ref{lemma:exp}.
+where Eq.~\eqref{eq:lower-bound-case-1-1.1} follows from the assumption that event $\mathcal S$ occurred, which implies that event $\mathcal A$ occurred and therefore $T_e \le 4t_e^*$; Eq.~\eqref{eq:lower-bound-case-1-1.2} follows from the definition of $t_e^*$.
 
-Next, we bound the second and third term on the right-hand side of Eq.~\eqref{eq:lower-likelihood-1}.
-Notice that $(1-x)^b \ge 1-bx$ for any $b \ge 1$ and $x \in [0,1]$.
-Therefore, 
-$$
-\left(1-\frac{\Delta_e}{1-p_e}\right)^{(1-p_e)/p_e} \ge \left(1-\frac{\Delta_e}{p_e}\right).
-$$
-Plugging in the above inequality into the product of the second and third terms, we have
+Then, we bound the first term on the right-hand side of Eq.~\eqref{eq:lower-bound-case-1} as follows
 \begin{align}
-\left(1-\frac{2\Delta_e}{p_e}\right)^{-K}\left(1-\frac{2\Delta_e}{1-p_e}\right)^{K(1-p_e)/p_e} &
-\ge \left(1-\frac{2\Delta_e}{p_e}\right)^{-K}\left(1-\frac{\Delta_e}{p_e}\right)^K \nonumber \\
-&= 1 \label{eq:ll-1.5}.
+	\exp\big(\Delta_e(2K-2p_eT_e)\big) & \ge \exp\left(-2\Delta_e\sqrt{t_e^*\log(1/\theta)}\right) \label{eq:lower-bound-case-1-2.1}\\
+								       & = \exp\left(-\frac{2}{\sqrt{c}}\log(1/\theta)\right) \label{eq:lower-bound-case-1-2.2}\\
+								       &=\theta^{2/\sqrt{c}},  \label{eq:lower-bound-case-1-2.3}
 \end{align}
+where Eq.~\eqref{eq:lower-bound-case-1-2.1} follows from the assumption that event $\mathcal S$ occurred, which implies that event $\mathcal C$ and therefore $|2K-2p_eT_e| \le \sqrt{t_e^*\log(1/\theta)}$; 
+Eq.~\eqref{eq:lower-bound-case-1-2.2} follows from the definition of $t_e^*$.
 
-Finally, we bound the last term of Eq.~\eqref{eq:lower-likelihood-1}. 
-We have
-\begin{align}
-\left(1-\frac{\Delta_e}{1-p_e}\right)^{(p_eT_e-K)/p_e} 
-& \ge \left(1-\frac{\Delta_e}{1-p_e}\right)^{(1/p_e)\sqrt{t_e^*\log(1/\theta)}} \label{eq:ll-2-1} \\
-&  =  \left(1-\frac{\Delta_e}{1-p_e}\right)^{(1/p_e\sqrt{c}\Delta_e)\log(1/\theta)} \label{eq:ll-2-2} \\
-& \ge \exp\left(-\frac{d}{\sqrt c p_e \Delta_e}\frac{\Delta_e}{1-p_e}\log(1/\theta)\right) \label{eq:ll-2-3} \\
-& = \exp\left(-\frac{d}{\sqrt c p_e (1-p_e)}\log(1/\theta)\right) \nonumber \\
-& \ge \exp\left(-\frac{2d}{\sqrt c p_e}\log(1/\theta)\right) \label{eq:ll-2-4} \\
-& = \theta^{2d/(p_e\sqrt{c})} \label{eq:ll-2-5},
-\end{align}
-where Eq.~\eqref{eq:ll-2-1} follows from the assumption that the event $\mathcal C$ occurred;
-Eq.~\eqref{eq:ll-2-2} follows from the definition of $t_e^*$;
-Eq.~\eqref{eq:ll-2-3} follows from Lemma~\ref{lemma:exp};
-Eq.~\eqref{eq:ll-2-4} follows from the assumption that $p_e \le 1/2$.
+Combining Eq.~\eqref{eq:lower-bound-case-1-1.3} and Eq.~\eqref{eq:lower-bound-case-1-2.3}, we can bound $L_1(W)/L_0(W)$ for this case as follows
+\begin{equation}
+\label{eq:ll-case1-final} 
+\frac{L_1(W)}{L_0(W)} \ge \theta^{8/c+2/\sqrt{c}}. 
+\end{equation}
 
-Combining Eq.~\eqref{eq:ll-1-4}, Eq.~\eqref{eq:ll-1.5} and Eq.~\eqref{eq:ll-2-5}, we can bound the right-hand side of Eq.~\eqref{eq:lower-likelihood-1} as follows
-\begin{align}
-\label{eq:ll-case1-final}
-\frac{L_1(W)}{L_0(W)} &\ge \theta^{4d/p_e^2c+2d/(p_e\sqrt{c})}.
-\end{align}
 
 \emph{(end of Case (1).)}
 
@@ -992,82 +939,57 @@ Combining Eq.~\eqref{eq:ll-1-4}, Eq.~\eqref{eq:ll-1.5} and Eq.~\eqref{eq:ll-2-5}
 In this case, we know that the mean reward of arm $e$ under $H_1$ is $p_e-2\Delta$.
 Therefore, the likelihood ratio $L_1(W)/L_0(W)$ is given by
 \begin{align}
-  \frac{L_1(W)}{L_0(W)} &= \frac{(p_e-2\Delta_e)^{K} (1-p_e+2\Delta_e)^{T-K}}{p_e^K(1-p_e)^{T-K}} \nonumber \\
-  						&=\left(1-\frac{2\Delta_e}{p_e}\right)^K\left(1+\frac{2\Delta_e}{1-p_e}\right)^{T-K} \nonumber\\
-  						&=\left(1-\frac{2\Delta_e}{p_e}\right)^K
-                          \left(1+\frac{2\Delta_e}{p_e}\right)^K\left(1+\frac{2\Delta_e}{p_e}\right)^{-K}
-  						  \left(1+\frac{2\Delta_e}{1-p_e}\right)^{T-K} \nonumber\\
-  						&=\left(1-\left(\frac{2\Delta_e}{p_e}\right)^2\right)^K\left(1+\frac{2\Delta_e}{p_e}\right)^{-K}
-  						  \left(1+\frac{2\Delta_e}{1-p_e}\right)^{T-K} \nonumber \\
-  						&=\left(1-\left(\frac{2\Delta_e}{p_e}\right)^2\right)^K\left(1+\frac{2\Delta_e}{p_e}\right)^{-K}
-  						  \left(1+\frac{2\Delta_e}{1-p_e}\right)^{K(1-p_e)/p_e}
-  						  \left(1+\frac{2\Delta_e}{1-p_e}\right)^{(p_eT_e-K)/p_e} \label{eq:lower-likelihood-case-2}.
+  \frac{L_1(W)}{L_0(W)} &= \prod_{i=1}^{T_e} \exp\left(\frac{-(X_i-p_e+2\Delta_e)^2+(X_i-p_e)^2}{2}\right) \nonumber \\
+  						&= \prod_{i=1}^{T_e} \exp\big(\Delta_e(2p_e-2X_i)-2\Delta_e^2\big) \nonumber \\
+  						&= \exp\big(\Delta_e(2p_eT_e-2K)\big)\exp(-2\Delta_e^2T_e) \label{eq:lower-bound-case-2}.
 \end{align}
-The first term on the right-hand side of Eq.~\eqref{eq:lower-likelihood-case-2} is identical to that of Eq.~\eqref{eq:lower-likelihood-1} and has already been bounded in Eq.~\eqref{eq:ll-1-4}.
 
-Similar to the arguments in Eq.~\eqref{eq:ll-1.5}, we use the fact that for any $x \ge 0$ and $b \ge 1$, we have $(1+x)^b \ge 1+bx$. 
-Therefore, the product of the second term and the third term on the right-hand side of Eq.~\eqref{eq:lower-likelihood-case-2} can be bounded as follows
+Notice that the right-hand side of Eq.~\eqref{eq:lower-bound-case-2} differs from Eq.~\eqref{eq:lower-bound-case-1} only in the first term.
+Now, we bound the first term as follows
 \begin{align}
-\left(1+\frac{2\Delta_e}{p_e}\right)^{-K}\left(1+\frac{2\Delta_e}{1-p_e}\right)^{K(1-p_e)/p_e} &
-\ge \left(1+\frac{2\Delta_e}{p_e}\right)^{-K}\left(1+\frac{2\Delta_e}{p_e}\right)^K \nonumber \\
-&= 1 \label{eq:ll-2-1.5}.
+	\exp\big(\Delta_e(2K-2p_eT_e)\big) & \ge \exp\left(-2\Delta_e\sqrt{t_e^*\log(1/\theta)}\right) \label{eq:lower-bound-case-2-2.1}\\
+								       & = \exp\left(-\frac{2}{\sqrt{c}}\log(1/\theta)\right) \label{eq:lower-bound-case-2-2.2}\\
+								       &=\theta^{2/\sqrt{c}},  \label{eq:lower-bound-case-2-2.3}
 \end{align}
+where the inequalities hold due to reasons similar to Case (1): Eq.~\eqref{eq:lower-bound-case-2-2.1} follows from the assumption that event $\mathcal S$ occurred, which implies that event $\mathcal C$ and therefore $|2K-2p_eT_e| \le \sqrt{t_e^*\log(1/\theta)}$; 
+Eq.~\eqref{eq:lower-bound-case-2-2.2} follows from the definition of $t_e^*$.
 
-Now we bound the last term on the right-hand side of Eq.~\eqref{eq:lower-likelihood-case-2}.
-%Suppose that $p_eT_e-K \ge 0$. 
-%Then it is clear that $\left(1+\frac{2\Delta_e}{1-p_e}\right)^{(p_eT_e-K)/p_e} \ge 1$.
-%On the other hand, if $p_eT_e-K < 0$, we have
-\begin{align}
-\left(1+\frac{2\Delta_e}{1-p_e}\right)^{(p_eT_e-K)/p_e} 
-&\ge \left(1+\frac{2\Delta_e}{1-p_e}\right)^{-(1/p_e)\sqrt{t_e^*\log(1/\theta)}} \label{eq:ll-2-2-1} \\
-&= \left(1+\frac{2\Delta_e}{1-p_e}\right)^{-(1/p_e\sqrt{c}\Delta_e)\log(1/\theta)} \label{eq:ll-2-2-2} \\
-& \ge \exp\left(-\frac{d}{\sqrt c p_e \Delta_e}\frac{\Delta_e}{1-p_e}\log(1/\theta)\right) \label{eq:ll-2-2-3} \\
-& = \exp\left(-\frac{d}{\sqrt c p_e (1-p_e)}\log(1/\theta)\right) \nonumber \\
-& \ge \exp\left(-\frac{2d}{\sqrt c p_e}\log(1/\theta)\right) \label{eq:ll-2-2-4} \\
-& = \theta^{2d/(p_e\sqrt{c})} \label{eq:ll-2-2-5},
-\end{align}
-where the derivation is similar to that of Eq.~\eqref{eq:ll-2-5}: 
-Eq.~\eqref{eq:ll-2-2-1} follows from the assumption that the event $\mathcal C$ occurred;
-Eq.~\eqref{eq:ll-2-2-2} follows from the definition of $t_e^*$;
-Eq.~\eqref{eq:ll-2-2-3} follows from Lemma~\ref{lemma:exp};
-Eq.~\eqref{eq:ll-2-2-4} follows from the assumption that $p_e \le 1/2$.
-
-Finally, combining Eq.~\eqref{eq:ll-1-4}, Eq.~\eqref{eq:ll-2-1.5} and Eq.~\eqref{eq:ll-2-2-5}, we can obtain the same bound of $L_1(W)/L_0(W)$ as in Eq.~\eqref{eq:ll-case1-final}.
+Combining Eq.~\eqref{eq:lower-bound-case-1-1.3} and Eq.~\eqref{eq:lower-bound-case-1-2.3}, we  can obtain the same bound of $L_1(W)/L_0(W)$ as in Eq.~\eqref{eq:ll-case1-final}, i.e. $L_1(W)/L_0(W) \ge \theta^{8/c+2/\sqrt{c}}$.
 
 \emph{(end of Case (2).)}
 
-At this point, we have proved that, if the event $\mathcal S$ occurred, then the bound of likelihood ratio Eq.~\eqref{eq:ll-case1-final} holds, i.e. $\frac{L_1(W)}{L_0(W)} \ge \theta^{4d/p_e^2c+2d/(p_e\sqrt{c})}$.
-Then, notice that $p_e \ge \tilde p$. 
-We can choose the constant $c$ to be sufficiently large such that $4d/\tilde p^2c+2d/(\tilde p\sqrt{c}) < 1$.
-Clearly, this makes $c$ a constant that only depends on $\tilde p$.
-Hence, by this choice of $c$, we have
+At this point, we have proved that, if the event $\mathcal S$ occurred, then the bound of likelihood ratio Eq.~\eqref{eq:ll-case1-final} holds, i.e. $\frac{L_1(W)}{L_0(W)} \ge \theta^{8/c+2/\sqrt{c}}$.
+We can choose the constant $c$ to be sufficiently large such that $8/c+2/\sqrt{c} < 1$.
+Simple calculation shows that $c\ge 16$ suffices.
+Hence, we have
 \begin{align}
 \frac{L_1(W)}{L_0(W)} &\ge \theta \nonumber \\
-					  &= 8\delta.	
+					  &= 4\delta.	
 \end{align}
 
 
 Define $1_S$ as the indicator variable of event $\mathcal S$, i.e. $1_S = 1$ if and only if $\mathcal S$ occurs and otherwise $1_S = 0$.
 Then, we have
 \begin{align*}
-\frac{L_1(W)}{L_0(W)} 1_S \ge 8\delta 1_S
+\frac{L_1(W)}{L_0(W)} 1_S \ge 4\delta 1_S
 \end{align*}
 holds regardless the occurrence of event $\mathcal S$.
 Therefore, we can obtain
 \begin{align*}
 \Pr_1[\mathcal B] &\ge \Pr_1[\mathcal S] = \E_1[1_S] \\
 				  &= \E_0\left[\frac{L_1(W)}{L_0(W)} 1_S\right] \\
-				  &\ge 8\delta \E_0[1_S] \\
-				  &= 8\delta \Pr_0[\mathcal S] > \delta.
+				  &\ge 4\delta \E_0[1_S] \\
+				  &= 4\delta \Pr_0[\mathcal S] > \delta.
 \end{align*}
-
 Now we have proved that, if $\E_0[T_e] \le t_e^*$, then $\Pr_1[\mathcal B]>\delta$.
 This means that, if $\E_0[T_e] \le t_e^*$, algorithm $\mathbb A$ will choose $M_*$ as the output with probability at least $\delta$, under hypothesis $H_1$.
 However, under $H_1$, we have shown that $M_*$ is not the optimal set since $w_1(M_e) > w_1(M_*)$.
 Therefore, algorithm $\mathbb A$ has a probability of error larger than $\delta$ under $H_1$. 
 This contradicts to the assumption that algorithm $\mathbb A$ is a $\delta$-correct algorithm.
-Hence, we must have $\E_0[T_e] > t_e^* = \frac{1}{c\Delta_e^2}\log(1/\delta)$.
+Hence, we must have $\E_0[T_e] > t_e^* = \frac{1}{16\Delta_e^2}\log(1/\delta)$.
+
 \end{proof}
+
 
 \bibliography{bandit}
 \bibliographystyle{plain}
