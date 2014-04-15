@@ -18,6 +18,8 @@
 \usepackage{abstract}
 \usepackage{hyperref}
 \usepackage{natbib}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
 
 % In case you need to adjust margins:
 \topmargin=-0.45in
@@ -77,6 +79,10 @@
 \DeclareMathOperator{\decomp}{decomp}
 \DeclareMathOperator{\argmax}{arg\,max}
 \DeclareMathOperator{\argmin}{arg\,min}
+\DeclareMathOperator{\Oracle}{Oracle}
+
+\newcommand{\out}{\mathsf{Out}}
+
 
 \let\Pr\undefined
 \DeclareMathOperator{\Pr}{Pr}
@@ -371,9 +377,10 @@ Let $n_t: [n] \rightarrow \mathbb N$, such that $n_t(e)$ equals to number of pla
 \begin{define}[Confidence radius $\rad_t$]
 Given $n$ and $t>0$.
 Define $\rad_t:[n]\rightarrow \RR^+$ satisfying, for all $e\in[n]$,
-$$
+\begin{equation}
+\label{eq:define-confidence-radius}
 \rad_t(e) = c_{\rad}\log\left(\frac{c_\delta nt^2}\delta\right)\frac{1}{\sqrt{n_t(e)}},
-$$
+\end{equation}
 where $c_{\rad} > 0$  and $c_\delta>0$ are some universal constants (specify later) and $\delta > 0$ is a parameter.
 
 We extend the notation of $\rad_t$ to diff-sets and sets as follows.
@@ -589,6 +596,7 @@ Hence $w_t^+(b)>0$. This contradicts to the stopping condition of our algorithm.
 \end{proof}
 
 \begin{lemma}
+\label{lemma:key-technical}
 For any $t>0$.
 If $e\in E_t^3$, then $p_t\not= e$.
 \end{lemma}
@@ -877,7 +885,7 @@ since $\theta < e^{-16}$.
 
 Then, we define the event $\mathcal B$ as the event that the algorithm eventually returns $M_*$, i.e.
 $$
-\mathcal B=\{O=M_*\}.
+\mathcal B=\{\out=M_*\}.
 $$
 Since the probability of error of the algorithm is smaller than $\delta < 1/4$, we have $\Pr_0[\mathcal B] \ge 3/4$.
 Define $\mathcal S$ be $\mathcal S=\mathcal A\cap \mathcal B \cap \mathcal C$. 
@@ -887,7 +895,7 @@ Now, we show that if $\E_0[T_e] \le t_e^*$, then $\Pr_1[\mathcal B] \ge \delta$.
 Let $W$ be the history of the sampling process until the algorithm stops (including the sequence of arms chosen at each time and the sequence of observed outcomes).
 Define the likelihood function $L_l$ as 
 $$
-L_l(w) = p_l[W=w],
+L_l(w) = p_l(W=w),
 $$
 where $p_l$ is the probability density function under hypothesis $H_l$.
 Let $K$ be the shorthand of $K_e(T_e)$.
@@ -1066,7 +1074,7 @@ $$
 Define event 
 \begin{equation}
 \label{eq:lower-sum-b-define}
-\mathcal B = \{O=M_*\}.
+\mathcal B = \{\out=M_*\}.
 \end{equation}
 Define event
 $\mathcal S_1 = \mathcal A_1 \cap \mathcal B \cap \mathcal C_1$.
@@ -1220,7 +1228,113 @@ We obtain
 
 \section{PAC Learning}
 
+\begin{algorithm}
+\begin{algorithmic}[1]
+\Require Confidence parameter: $\delta \in (0,1)$; Tolerance parameter: $\epsilon >0$; Maximization oracle: $\Oracle(w)$.
+\Statex \textbf{Initialize:} Play each arm $e \in [n]$ once. Initialize empirical means $\bar w_{n}(e)$ and set $T_{n}(e) \gets 1$ for all $e$.
+\For{$t=n,n+1,\ldots$}
+	\State $M_t \gets \Oracle(\bar w_t)$
+	\For{$e\in [n]$}
+		\If {$e\in M_t$}
+			\State $\tilde w_t(e) \gets \bar w_t(e)-\rad_t(e)$
+		\Else
+			\State $\tilde w_t(e) \gets \bar w_t(e)+\rad_t(e)$
+		\EndIf
+	\EndFor
+	\State $\tilde M_t \gets \Oracle(\tilde w_t)$
+	\If{$\tilde w_t(\tilde M_t)-\tilde w_t(M_t) \le \epsilon$}
+		\State $\out \gets M_t$
+		\State \textbf{return} $\out$
+	\EndIf
+	\State $D_t \gets \tilde M_t \ominus M_t$ \label{algo:step:D}
+	\State $p_t \gets \argmax_{e \in D_t} \rad_t(e)$
+	\State Play $p_t$ and observe the reward
+	\State Update $T_{t+1}(p_t)$ and $\bar w_{t+1}(p_t)$
+	\EndFor
+\end{algorithmic}
+\caption{CombPAC: Fixed confidence pure exploration algorithm}
+\label{algo:pac}
+\end{algorithm}
 
+\begin{theorem}
+Given confidence parameter $\delta \in (0,1)$, tolerance parameter $\epsilon \ge 0$, number of arms $n$ and a combinatorial problem instance $\mathcal M \subseteq 2^{[n]}$.
+Let oracle $\Oracle(w)$ be a maximization oracle associated with $\mathcal M$ such that
+$\Oracle(w) = \argmax_{M \in \mathcal M} w(M)$, where $w: 2^{[n]} \rightarrow R$ is a weight function.
+
+Then, with probability at least $1-\delta$, the output $\out$ of Algorithm~\ref{algo:pac} satisfies
+$
+w(M_*)-w(\out) \le \epsilon,
+$
+where $M_* = \argmax_{M\in \M} w(M)$ is the optimal set.
+In addition, the number of samples $T$ used by the algorithm satisfy
+$$
+T \le \mathbf H_\epsilon \log\left(\frac{n}{\delta}\mathbf H_\epsilon\right),
+$$
+where
+$$
+\mathbf H_\epsilon = \sum_{e\in[n]} \min\left\{\frac{\rank(\B)^2}{\Delta_e^2}, \frac{n^2}{\epsilon^2}\right\}.
+$$
+\end{theorem}
+
+\begin{lemma}
+For any arm $e \in [n]$ and any round $t > n$ after initialization, if $\rad_t(e) \le \max\left\{\frac{\Delta_e}{3\rank(\B)}, \frac{\epsilon}{n}\right\}$,
+then $p_t\not= e$.
+\end{lemma}
+\begin{proof}
+If $\rad_t(e) \le \frac{\Delta_e}{3\rank(\B)}$, then we can apply Lemma~\ref{lemma:key-technical} which immediately gives that $p_t\not= e$.
+Hence, we only need to prove the case that $\rad_t(e) \le \frac{\epsilon}{n}$.
+By the definition of $p_t$, we know that for each $i\in D_t$, we have $\rad_t(i) \le \rad_t(e) \le \frac{\epsilon}{n}$.
+Summing up all $i\in D_t$, we obtain
+\begin{equation}
+\rad_t(D_t) \le \epsilon.
+\label{eq:pac-key-0-1}
+\end{equation}
+Next, we notice that the definition of $M_t$ gives that $\bar w_t(M_t)=\max_{M\in \M} \bar w_t(M) \ge \bar w_t(M_t \oplus D_t)$.
+This means that
+\begin{equation}
+\bar w_t(D_t) = \bar w_t(M_t\oplus D_t)-\bar w_t(M_t) \le 0.
+\label{eq:pac-key-0-2}
+\end{equation}
+Using the above inequalities, we have.
+\begin{align}
+  w_t^+(D_t) &= \bar w_t(D_t)+\rad_t(D_t) \label{eq:pac-key-1}\\
+  			 &\le \bar w_t(D_t)+\epsilon \label{eq:pac-key-2}\\
+  			 &\le \epsilon, \label{eq:pac-key-3}
+\end{align}
+where Eq.~\eqref{eq:pac-key-1} follows from the definition of $w_t^+(\cdot)$; 
+Eq.~\eqref{eq:pac-key-2} follows from Eq.~\eqref{eq:pac-key-0-1};
+Eq.~\eqref{eq:pac-key-3} holds since Eq.~\eqref{eq:pac-key-0-2}.
+\end{proof}
+
+\begin{lemma}
+\label{lemma:pac-correct}
+If Algorithm~\ref{algo:pac} stops on round $T$, then $w(M_*)-w(\out) \le \epsilon$.
+\end{lemma}
+
+\begin{proof}
+Suppose that $\out \not= M_*$.
+Since the algorithm stops on round $T$, we know that $\out = M_T$.
+Consider the diff-set $D=M_* \ominus M_T$ and the diff-set $D_T$ defined in Step~\ref{algo:step:D} of Algorithm~\ref{algo:pac}.
+By Lemma~Z, we see that 
+\begin{equation}
+w_T^+(D_T) = \max_{C: C \diffvalid M_T} w_T^+(C) \ge w_T^+(D).
+\label{eq:pac-correct-0}
+\end{equation}
+On the other hand, the stopping condition of Algorithm~\ref{algo:pac} gives that
+\begin{align}
+\epsilon &\ge \tilde w_T(\tilde M_T)-\tilde w_T(M_T) \nonumber \\
+		 &= w_t^+(D_T) \ge w_t^+(D) \label{eq:pac-correct-1} \\
+		 &\ge w(D) = w(M_*)-w(M_T), \label{eq:pac-correct-2}
+\end{align}
+where Eq.~\eqref{eq:pac-correct-1} follows from Eq.~\eqref{eq:pac-correct-0}; Eq.~\eqref{eq:pac-correct-2} follows from the assumption that event $\xi$ occurred.
+
+
+\end{proof}
+
+\section{Fixed Budget}
+
+
+\section{Benchmark: uniform algorithm}
 
 \bibliography{bandit}
 \bibliographystyle{plain}
