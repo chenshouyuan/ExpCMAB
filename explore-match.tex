@@ -785,13 +785,13 @@ $$
 \end{lemma}
 
 \begin{theorem}
-Assume that, for each arm $i\in [n]$, its reward distribution is a Gaussian distribution with mean $p_i$ and variance 1.
+For each arm $i\in [n]$, assume that its reward distribution of arm $i$ is a Gaussian distribution with mean $p_i$ and variance 1.
 Then, for any $\delta \in (0,e^{-16}/4)$
 and any $\delta$-correct algorithm $\mathbb A$.
 Let $T$ denote the number of total samples used by algorithm $\mathbb A$.
 We have
 $$
-\E[T] \ge \sum_e \frac{1}{16\Delta_e^2}\log(4/\delta).
+\E[T] \ge \sum_e \frac{1}{16\Delta_e^2}\log(1/4\delta).
 $$
 \label{theorem:lower-bound}
 \end{theorem}
@@ -799,11 +799,11 @@ $$
 
 \begin{proof}
 Fix $\delta >0$, $p_i$ for all $i\in[n]$ and a $\delta$-correct policy $\mathbb A$.
-Assume that the reward distribution of an arm $i\in [n]$ is a Gaussian distribution with mean $p_i$ and variance 1.
+For each $i\in [n]$, assume that the reward distribution of arm $i$ a Gaussian distribution with mean $p_i$ and variance 1.
 Then, for any $e\in [n]$, let $T_e$ denote the  number of trials of arm $e$ used by algorithm $\mathbb A$.
 In the rest of the proof, we will prove that for any $e\in [n]$, the number of trials of arm $e$ is lower-bounded by
 \begin{equation}
-\E[T_e] \ge \frac{1}{16\Delta_e^2}\log(4/\delta).
+\E[T_e] \ge \frac{1}{16\Delta_e^2}\log(1/4\delta).
 \label{eq:lower-each}
 \end{equation}
 Notice that the theorem will follow immediately by summing up the above bounds for all $e\in[n]$ and setting $c=16$.
@@ -984,7 +984,7 @@ This means that, if $\E_0[T_e] \le t_e^*$, algorithm $\mathbb A$ will choose $M_
 However, under $H_1$, we have shown that $M_*$ is not the optimal set since $w_1(M_e) > w_1(M_*)$.
 Therefore, algorithm $\mathbb A$ has a probability of error larger than $\delta$ under $H_1$. 
 This contradicts to the assumption that algorithm $\mathbb A$ is a $\delta$-correct algorithm.
-Hence, we must have $\E_0[T_e] > t_e^* = \frac{1}{16\Delta_e^2}\log(1/\delta)$.
+Hence, we must have $\E_0[T_e] > t_e^* = \frac{1}{16\Delta_e^2}\log(1/4\delta)$.
 
 \end{proof}
 
@@ -997,7 +997,7 @@ and any $\delta$-correct algorithm $\mathbb A$.
 Then, for any $b \in \Bopt$, let $T_b$ denote the number of trials of arms belonging to $b$ by algorithm $\mathbb A$.
 Then,
 $$
-\E[T_b] \ge \frac{|b|^2}{32w(b)^2}\log(4/\delta).
+\E[T_b] \ge \frac{|b|^2}{32w(b)^2}\log(1/4\delta).
 $$
 \end{theorem}
 
@@ -1149,7 +1149,7 @@ But $M_*$ is not the optimal set under $H_1$. Hence this contradicts to the assu
 Hence we have proved that 
 \begin{equation}
 \label{eq:lower-sum-case-1-a}
-\E_0[T_{b_-}] \ge t_{b_-}^* = \frac{|b_-|^2}{16 w(b)^2}\log(4/\delta).
+\E_0[T_{b_-}] \ge t_{b_-}^* = \frac{|b_-|^2}{16 w(b)^2}\log(1/4\delta).
 \end{equation}
 
 \emph{(End of Part (1).)}
@@ -1203,7 +1203,7 @@ This contradicts to the assumption that algorithm $\mathbb A$ is a $\delta$-corr
 In sum, we have proved that 
 \begin{equation}
 \label{eq:lower-sum-case-2-a}
-\E_0[T_{b_+}] \ge t_{b_+}^* = \frac{|b_+|^2}{16 w(b)^2}\log(4/\delta).
+\E_0[T_{b_+}] \ge t_{b_+}^* = \frac{|b_+|^2}{16 w(b)^2}\log(1/4\delta).
 \end{equation}
 
 \emph{(End of Part (2))}
@@ -1212,11 +1212,14 @@ Finally, we combine the results from both parts, i.e. Eq.~\eqref{eq:lower-sum-ca
 We obtain
 \begin{align*}
   \E_0[T_b] &= \E_0[T_{b_-}]+\E_0[T_{b_+}] \\
-  		    &\ge \frac{|b_+|^2+|b_-|^2}{16 w(b)^2}\log(4/\delta) \\
-  		    &\ge \frac{|b|^2}{32 w(b)^2}\log(4/\delta).
+  		    &\ge \frac{|b_+|^2+|b_-|^2}{16 w(b)^2}\log(1/4\delta) \\
+  		    &\ge \frac{|b|^2}{32 w(b)^2}\log(1/4\delta).
 \end{align*}
 
 \end{proof}
+
+\section{PAC Learning}
+
 
 
 \bibliography{bandit}
