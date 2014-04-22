@@ -20,6 +20,7 @@
 \usepackage{natbib}
 \usepackage{algpseudocode}
 \usepackage{algorithm}
+\usepackage{xspace}
 
 % In case you need to adjust margins:
 \topmargin=-0.45in
@@ -28,6 +29,9 @@
 \textwidth=6.5in
 \textheight=9.0in
 \headsep=0.25in
+
+\setlength\parindent{0pt}
+
 
 % Setup the header and footer
 \pagestyle{fancy}
@@ -53,6 +57,8 @@
 \newtheorem{theorem}{Theorem}
 
 
+\newcommand{\Problem}{\texttt{ExpCMAB}\xspace}
+\newcommand{\Rew}{\varphi}
 \newcommand{\E}{\mathbb E}
 
 \newcommand{\M}{\mathcal M}
@@ -77,8 +83,8 @@
 \DeclareMathOperator{\rank}{rank}
 \DeclareMathOperator{\rad}{rad}
 \DeclareMathOperator{\decomp}{decomp}
-\DeclareMathOperator{\argmax}{arg\,max}
-\DeclareMathOperator{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator{\Oracle}{Oracle}
 
 \newcommand{\out}{\mathsf{Out}}
@@ -86,6 +92,11 @@
 
 \let\Pr\undefined
 \DeclareMathOperator{\Pr}{Pr}
+
+\newcommand{\MultiIdent}{\textbf{Multiple Identification}}
+\newcommand{\Match}{\textbf{Matching}}
+\newcommand{\Path}{\textbf{Shortest Path}}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -519,33 +530,138 @@ Combine both equalities, we have
 \end{proof}
 
 
-\section{Algorithm and Main Results}
+\section{Pure Exploration of Combinatorial Bandits}
 
-\subsection{Algorithm}
-\begin{enumerate}
-\item Input Parameter: $\delta \in (0,1)$.
-\item For $t=1,\ldots, $
-\item Maintain $\bar w_t$ and $\rad_t$.
-\item Let $M_t = \argmax_{M\in \M} \bar w_t(M)$. 
-\item Let $D=\argmax_{C \in \diff[n], C \diffvalid M_t} w_t^+(C)$. 
-\item If $w_t^+(D) \le 0$. Then stop and return $M_t$.
-\item Otherwise, find $p_t = \argmin_{e\in D} \rad_t(e)$.
-\item Play $p_t$ and observe outcome $x_t$.
-\item Go back to step 2.
-\end{enumerate}
 
-The step 5 of above procedure can be implemented by:
-\begin{enumerate}
-\item Let $M_t^+ = \argmax_{M\in \M} \tilde w_t(M)$, where $\tilde w_t$ is a weight function defined by:
-	\begin{enumerate}
-		\item $\forall e\in M_t$, $\tilde w_t(e) = \bar w_t(e)-\rad_t(e)$.
-		\item $\forall e\not \in M_t$, $\tilde w_t(e) = \bar w_t(e)+\rad_t(e)$.
-	\end{enumerate}
-\item $D = M_t^+\ominus M_t$
-\end{enumerate}
+\textbf{\Problem: problem formulation.}
+Suppose that the arms are numbered $1,2,\ldots,n$.
+Each arm $e\in[n]$ is associated with a reward distribution $\Rew_e$. 
+We assume that all reward distributions are $b$-subgaussian, i.e. ().
+Notice that all distributions that are supported on $[0,b]$ are $b$-subgaussian distributions [].
+Let $w(e)$ denote the expected reward of arm $e$, i.e. $w(e)=\E_{X\sim \Rew_e}[X]$.
+In addition, for any set of arms $M\subseteq [n]$, we define $w(M) = \sum_{e\in M} w(e)$ as the sum of expected rewards of arms that belong to $M$.
 
-\subsection{Main result}
+The learning problem of pure exploration combinatorial bandit can be formalized as a game between a learner and a stochastic environment.
+At the beginning of the game, the learner is given a collection of feasible sets $\M\subseteq 2^{[n]}$ which corresponds to some combinatorial problem. 
+And the reward distributions $\{\Rew_e\}_{e\in[n]}$ are unknown to the learner.
+Then, the game is played for multiple rounds;
+on each round $t$, the learner pulls an arm $p_t\in [n]$ and observes a reward sampled from the associated reward distribution $\Rew_{p_t}$.
+The game continues until certain stopping condition is satisfied (specify later).
+After the game stops, the learner is asked to output a set of arms $\out \in \M$ which approximately maximizes the sum of expected weight, i.e. $w(M_*) - w(\out) \le \epsilon$, where we denote $M_*=\argmax_{M\in \M} w(M)$ to be the optimal set of arms.
+For the sake of simplicity, we shall assume that the optimal set $M_*$ is unique throughout the paper.
+Notice that, if $\epsilon = 0$, then the learner is required to identify the optimal set, i.e. $\out = M_*$.
 
+
+
+\textbf{Fixed confidence and fixed budget.} We consider two different settings: \emph{fixed confidence} and \emph{fixed budget}. 
+In the fixed confidence setting, the learner aims to achieve a fixed confidence about the optimality of the returned set using a small number of samples (pulls).
+Specifically, given a confidence parameter $\delta$, the learner need to guarantee that $\Pr[w(M_*)-w(\out) \le \epsilon] \ge 1-\delta$ and the performance is evaluated by the number of pulls used by the learner.
+Notice that the learner can stop the game at any point in this setting.
+In the fixed budget setting, the learner tries to minimize the probability of error $\Pr[w(M_*)-w(\out) > \epsilon]$ by using a fixed number of samples, i.e. the game stops after a fixed number of rounds.
+In this case, the learner's performance is measured by the probability of error.
+
+
+\textbf{Applications.} 
+Our formulation of the \Problem problem covers many online learning tasks.
+We consider the following concrete tasks as the exemplar applications of our model and learning algorithm.
+
+\begin{itemize}
+\item \MultiIdent.
+\item \Match.
+\item \Path.
+\end{itemize}
+
+\textbf{Useful notations.}
+
+
+\section{Algorithm and Main Result}
+Our main contribution is an algorithm for solving the \Problem problem.
+Our algorithm 
+
+%In this section, we describe our algorithm for pure exploration combinatorial bandit problem.
+Then, we analyze the sample complexity and the probability of error of our algorithm.
+
+
+%Many common combinatorial problems admit computationally efficient oracles.
+
+\textbf{Maximization oracle.}
+For most non-trivial combinatorial problems, the size of the collection of feasible sets $\M$ is exponential in $n$.
+%Hence, the definition of $\M$ 
+Therefore, the learning algorithm needs a succinct representation of $\M$.
+In particular, we allow the learning algorithm to use a \emph{maximization oracle} which can find the optimal set $M\in \M$ when the expected reward of each arm is known.
+Specifically, we assume that there exists an oracle which takes expected rewards $\{w(1),\ldots,w(n)\}$ as input and returns a set $\Oracle(w) = \argmax_{M\in \M} w(M)$.
+It is clear that a large class of combinatorial problems admit efficient maximization oracles.
+
+
+\textbf{Algorithm.} 
+Our algorithm works for both fixed confidence and fixed budget settings.
+In either settings, the behaviors of our algorithm only differ in the construction of confidence radius and the stopping condition.
+In the following, we describe the procedure of our algorithm.
+Our algorithm maintains the empirical mean $\bar w_t(e)$ and a confidence radius $\rad_t(e)$ for each arm $e\in[n]$ and each round $t$.
+The construction of confidence radius ensures that $|w(e)-\bar w_t(e)| \le \rad_t(e)$ holds with high probability for each arm $e \in [n]$ and each round $t>0$.
+At each round $t$, our algorithm accesses the maximization oracle twice. 
+The first access to the oracle computes the set $M_t=\argmax_{M\in \M} \bar w_t(M)$.
+Notice that $M_t$ is the ``best'' set according to the empirical means $\bar w_t$.
+% which maximizes empirical means $\bar w_t$ up to  $t$.
+Then, in order to explore possible refinements of $M_t$, the algorithm uses the confidence radius to compute an adjusted expectation vector $\tilde w_t$ in the following way: for each arm $e \in M_t$, $\tilde w_t(e)$ equals to the lower confidence bound $\tilde w_t(e) = \bar w_t(e)-\rad_t(e)$; and for each arm $e\not\in M_t$, $\tilde w_t(e)$ equals to the upper confidence bound $\tilde w_t(e)=\bar w_t(e)+\rad_t(e)$.
+Intuitively, the adjusted expectation vector $\tilde w_t$ penalizes arms belonging to $M_t$ and encourages exploring arms out of $M_t$.
+The algorithm then calls the oracle using the adjusted expectation vector $\tilde w_t$ as input, which returns another set $\tilde M_t = \argmax_{M\in \M} \tilde w_t(M)$.
+The algorithm stops if $\tilde w_t(\tilde M_t)-\tilde w_t(M_t) \le \epsilon$ or the budget of samples is exhausted, i.e. $t=T$, in the fixed budget setting.
+In either cases, the algorithm outputs $\out=M_t$ as result.
+Otherwise, the algorithm plays the arm belonging to the symmetric difference $(\tilde M_t \del M_t) \cup (M_t \del \tilde M_t)$ with the largest confidence radius in the end of round $t$.
+The pseudo-code of the algorithm is shown in Algorithm~\ref{algo:pac}. 
+
+\begin{algorithm}[htbp]
+\begin{algorithmic}[1]
+\Require Confidence parameter: $\delta \in (0,1)$; Tolerance parameter: $\epsilon >0$; Maximization oracle: $\Oracle(w)$.
+\Statex \textbf{Initialize:} Play each arm $e \in [n]$ once. Initialize empirical means $\bar w_{n}(e)$ and set $T_{n}(e) \gets 1$ for all $e$.
+\For{$t=n,n+1,\ldots$}
+	\State $M_t \gets \Oracle(\bar w_t)$
+	\For{$e\in [n]$}
+		\If {$e\in M_t$}
+			\State $\tilde w_t(e) \gets \bar w_t(e)-\rad_t(e)$
+		\Else
+			\State $\tilde w_t(e) \gets \bar w_t(e)+\rad_t(e)$
+		\EndIf
+	\EndFor
+	\State $\tilde M_t \gets \Oracle(\tilde w_t)$
+	\If{$\tilde w_t(\tilde M_t)-\tilde w_t(M_t) \le \epsilon$}
+		\State $\out \gets M_t$
+		\State \textbf{return} $\out$
+	\EndIf
+	\State $p_t \gets \argmax_{(\tilde M_t \del M_t) \cup (M_t \del \tilde M_t)} \rad_t(e)$\label{algo:step:D}
+	\State Play $p_t$ and observe the reward
+	\State Update empirical mean $\bar w_{t+1}(p_t)$
+	\State Update $T_{t+1}(p_t)\gets T_{t}(p_t)+1$ and $T_{t+1}(e) \gets T_{t}(e)$ for every $e\not=p_t$
+	\EndFor
+\end{algorithmic}
+\caption{ExploreComb: Pure exploration algorithm for combinatorial bandits}
+\label{algo:pac}
+\end{algorithm}
+
+
+\subsection{Analysis}
+In this part, we analyze the performance of Algorithm~\ref{algo:pac} for both fixed confidence and fixed budget settings. 
+We begin with defining a natural complexity measure of the \Problem problem. 
+For each arm $e \in [n]$, we define gap $\Delta_e$ as
+\begin{equation}
+\label{eq:define-delta}
+\Delta_e = \begin{cases}
+			   w(M_*)-\max_{M\in \M: e\in M} w(M) & \text{if } e\not \in M_*, \\
+			   w(M_*)-\max_{M\in \M: e\not \in M} w(M) & \text{if } e\in M_*.
+			\end{cases}
+\end{equation}
+By this definition of gap $\Delta_e$, for each arm $e\not\in M_*$, $\Delta_e$ represents the gap between the optimal set $M_*$ and the best set that includes arm $e$; and for each arm $e\in M_*$, $\Delta_e$ is the sub-optimality of the best set that does not include arm $e$.
+We notice that, for many combinatorial problems, the definition Eq.~\eqref{eq:define-delta} naturally reflects the hardness of an arm.
+().
+Figure X illustrates these interpretations.
+
+
+
+
+
+
+\section{Proof of Main Results}
 \begin{define}[Optimal diff-sets]
 Given a diff-set class $\B$ and the optimal set $M_*$.
 We define $\Bopt$ as a subset of $\B$, and for all $b\in \B$, $b\in \Bopt$ if and only if,
@@ -579,7 +695,82 @@ $$
 \end{theorem}
 
 
-\section{Proof of Main Results}
+\begin{theorem}
+Given confidence parameter $\delta \in (0,1)$, tolerance parameter $\epsilon \ge 0$, number of arms $n$ and a combinatorial problem instance $\mathcal M \subseteq 2^{[n]}$.
+Let oracle $\Oracle(w)$ be a maximization oracle associated with $\mathcal M$ such that
+$\Oracle(w) = \argmax_{M \in \mathcal M} w(M)$, where $w: 2^{[n]} \rightarrow R$ is a weight function.
+
+Then, with probability at least $1-\delta$, the output $\out$ of Algorithm~\ref{algo:pac} satisfies
+$
+w(M_*)-w(\out) \le \epsilon,
+$
+where $M_* = \argmax_{M\in \M} w(M)$ is the optimal set.
+In addition, the number of samples $T$ used by the algorithm satisfies
+$$
+T \le \mathbf H_\epsilon \log\left(\frac{n}{\delta}\mathbf H_\epsilon\right),
+$$
+where
+$$
+\mathbf H_\epsilon = \sum_{e\in[n]} \min\left\{\frac{\rank(\B)^2}{\Delta_e^2}, \frac{n^2}{\epsilon^2}\right\}.
+$$
+\end{theorem}
+
+\begin{lemma}
+For any arm $e \in [n]$ and any round $t > n$ after initialization, if $\rad_t(e) \le \max\left\{\frac{\Delta_e}{3\rank(\B)}, \frac{\epsilon}{n}\right\}$,
+then arm $e$ will not be played on round $t$, i.e. $p_t\not= e$.
+\end{lemma}
+\begin{proof}
+If $\rad_t(e) \le \frac{\Delta_e}{3\rank(\B)}$, then we can apply Lemma~\ref{lemma:key-technical} which immediately gives that $p_t\not= e$.
+Hence, we only need to prove the case that $\rad_t(e) \le \frac{\epsilon}{n}$.
+By the definition of $p_t$, we know that for each $i\in D_t$, we have $\rad_t(i) \le \rad_t(e) \le \frac{\epsilon}{n}$.
+Summing up all $i\in D_t$, we obtain
+\begin{equation}
+\rad_t(D_t) \le \epsilon.
+\label{eq:pac-key-0-1}
+\end{equation}
+Next, we notice that the definition of $M_t$ gives that $\bar w_t(M_t)=\max_{M\in \M} \bar w_t(M) \ge \bar w_t(M_t \oplus D_t)$.
+This means that
+\begin{equation}
+\bar w_t(D_t) = \bar w_t(M_t\oplus D_t)-\bar w_t(M_t) \le 0.
+\label{eq:pac-key-0-2}
+\end{equation}
+Using the above inequalities, we have.
+\begin{align}
+  w_t^+(D_t) &= \bar w_t(D_t)+\rad_t(D_t) \label{eq:pac-key-1}\\
+  			 &\le \bar w_t(D_t)+\epsilon \label{eq:pac-key-2}\\
+  			 &\le \epsilon, \label{eq:pac-key-3}
+\end{align}
+where Eq.~\eqref{eq:pac-key-1} follows from the definition of $w_t^+(\cdot)$; 
+Eq.~\eqref{eq:pac-key-2} follows from Eq.~\eqref{eq:pac-key-0-1};
+Eq.~\eqref{eq:pac-key-3} holds since Eq.~\eqref{eq:pac-key-0-2}.
+\end{proof}
+
+\begin{lemma}
+\label{lemma:pac-correct}
+If Algorithm~\ref{algo:pac} stops, then $w(M_*)-w(\out) \le \epsilon$.
+\end{lemma}
+
+\begin{proof}
+Suppose that $\out \not= M_*$.
+Suppose that the algorithm stops on round $T$, we know that $\out = M_T$.
+Consider the diff-set $D=M_* \ominus M_T$ and the diff-set $D_T$ as defined in Step~\ref{algo:step:D} of Algorithm~\ref{algo:pac}.
+By Lemma~Z, we see that 
+\begin{equation}
+w_T^+(D_T) = \max_{C: C \diffvalid M_T} w_T^+(C) \ge w_T^+(D).
+\label{eq:pac-correct-0}
+\end{equation}
+On the other hand, the stopping condition of Algorithm~\ref{algo:pac} gives that
+\begin{align}
+\epsilon &\ge \tilde w_T(\tilde M_T)-\tilde w_T(M_T) \nonumber \\
+		 &= w_T^+(D_T) \ge w_T^+(D) \label{eq:pac-correct-1} \\
+		 &\ge w(D) = w(M_*)-w(M_T), \label{eq:pac-correct-2}
+\end{align}
+where Eq.~\eqref{eq:pac-correct-1} follows from Eq.~\eqref{eq:pac-correct-0}; Eq.~\eqref{eq:pac-correct-2} follows from the assumption that event $\xi$ occurred.
+
+
+\end{proof}
+
+
 Unless specified, we shall assume the random event $\xi$ (defined in Lemma~\ref{lemma:conf}) holds in all the following proofs.
 
 
@@ -998,7 +1189,7 @@ Hence, we must have $\E_0[T_e] > t_e^* = \frac{1}{16\Delta_e^2}\log(1/4\delta)$.
 
 
 \begin{theorem}
-Assume that, for each arm $i\in [n]$, its reward distribution is a Gaussian distribution with mean $p_i$ and variance 1.
+Assume that, for each arm $i\in [n]$, its reward distribution $\Rew_i$ is a Gaussian distribution with mean $p_i$ and variance 1.
 Fix any $\delta \in (0,e^{-16}/4)$
 and any $\delta$-correct algorithm $\mathbb A$.
 
@@ -1223,118 +1414,142 @@ We obtain
   		    &\ge \frac{|b_+|^2+|b_-|^2}{16 w(b)^2}\log(1/4\delta) \\
   		    &\ge \frac{|b|^2}{32 w(b)^2}\log(1/4\delta).
 \end{align*}
-
 \end{proof}
 
-\section{PAC Learning}
+Now we prove a lower bound on the probability of error in the fixed budget setting.
+In particular, we show that for any expected rewards $\{w(1),\ldots, w(n)\}$ and any fixed budget algorithm $\mathbb A$ for pure exploration combinatorial bandit problem with feasible sets $\M$. 
+We show that one can slightly modify the vector $\{w(e)\}_{e\in [n]}$ to construct another vector $\{\tilde w(1),\ldots,\tilde w(n)\}$ such that the probability of error of the fixed algorithm on a \Problem problem with expected rewards given by $\tilde w$ is at least $\Omega(\exp(n/\mathbf H(w)))$.
+%In addition, newthe modified vector $\{\tilde w(1)\}$
+%On the other hand, it is clear that one cannot prove any non-trivial lower bounds on the probability of error of algorithm $\mathbb A$: an algorithm which always outputs $M_*$ has zero probability of error for this particular problem instance.
+%We also notice that Theorem~\ref{theorem:lower-bound} does not imply 
 
-\begin{algorithm}
-\begin{algorithmic}[1]
-\Require Confidence parameter: $\delta \in (0,1)$; Tolerance parameter: $\epsilon >0$; Maximization oracle: $\Oracle(w)$.
-\Statex \textbf{Initialize:} Play each arm $e \in [n]$ once. Initialize empirical means $\bar w_{n}(e)$ and set $T_{n}(e) \gets 1$ for all $e$.
-\For{$t=n,n+1,\ldots$}
-	\State $M_t \gets \Oracle(\bar w_t)$
-	\For{$e\in [n]$}
-		\If {$e\in M_t$}
-			\State $\tilde w_t(e) \gets \bar w_t(e)-\rad_t(e)$
-		\Else
-			\State $\tilde w_t(e) \gets \bar w_t(e)+\rad_t(e)$
-		\EndIf
-	\EndFor
-	\State $\tilde M_t \gets \Oracle(\tilde w_t)$
-	\If{$\tilde w_t(\tilde M_t)-\tilde w_t(M_t) \le \epsilon$}
-		\State $\out \gets M_t$
-		\State \textbf{return} $\out$
-	\EndIf
-	\State $D_t \gets \tilde M_t \ominus M_t$ \label{algo:step:D}
-	\State $p_t \gets \argmax_{e \in D_t} \rad_t(e)$
-	\State Play $p_t$ and observe the reward
-	\State Update $T_{t+1}(p_t)$ and $\bar w_{t+1}(p_t)$
-	\EndFor
-\end{algorithmic}
-\caption{CombPAC: Fixed confidence pure exploration algorithm}
-\label{algo:pac}
-\end{algorithm}
 
 \begin{theorem}
-Given confidence parameter $\delta \in (0,1)$, tolerance parameter $\epsilon \ge 0$, number of arms $n$ and a combinatorial problem instance $\mathcal M \subseteq 2^{[n]}$.
-Let oracle $\Oracle(w)$ be a maximization oracle associated with $\mathcal M$ such that
-$\Oracle(w) = \argmax_{M \in \mathcal M} w(M)$, where $w: 2^{[n]} \rightarrow R$ is a weight function.
-
-Then, with probability at least $1-\delta$, the output $\out$ of Algorithm~\ref{algo:pac} satisfies
-$
-w(M_*)-w(\out) \le \epsilon,
-$
-where $M_* = \argmax_{M\in \M} w(M)$ is the optimal set.
-In addition, the number of samples $T$ used by the algorithm satisfy
+Given a vector $\{w(1),\ldots, w(n)\}$, a budget $T>0$ and a collection of feasible sets $\M \subseteq 2^{[n]}$.
+Let $\mathbb A$ be an arbitrary algorithm for $\M$-\Problem problem which uses at most $T$ samples.
+There exists a vector $\{\tilde w(1), \ldots, \tilde w(n)\}$ such that $\mathbf H(\tilde w) \le 2\mathbf H(w)$ and satisfies the following property.
+Consider the bandit problem with reward distributions  defined by $\Rew_e = \mathcal N(\tilde w(e), 1)$ for all $e\in[n]$, where $\mathcal N(\mu,\sigma^2)$ denotes Gaussian distribution with mean $\mu$ and variance $\sigma^2$.
+The probability of error of $\mathbb A$ on this bandit problem satisfies
 $$
-T \le \mathbf H_\epsilon \log\left(\frac{n}{\delta}\mathbf H_\epsilon\right),
+\Pr\left[\out\not=M_* \right] \ge \exp\left(-\frac{T}{\mathbf H(w)}\right),
 $$
-where
-$$
-\mathbf H_\epsilon = \sum_{e\in[n]} \min\left\{\frac{\rank(\B)^2}{\Delta_e^2}, \frac{n^2}{\epsilon^2}\right\}.
-$$
+where $\out$ is the output of $\mathbb A$ and $M_*=\argmax_{M\in \M} w(M)$ is the optimal set. 
+In addition, vector $\{\tilde w(1),\ldots, \tilde w(n)\}$ differs from vector $\{w(1),\ldots,w(n)\}$ on exactly one index.
 \end{theorem}
 
-\begin{lemma}
-For any arm $e \in [n]$ and any round $t > n$ after initialization, if $\rad_t(e) \le \max\left\{\frac{\Delta_e}{3\rank(\B)}, \frac{\epsilon}{n}\right\}$,
-then $p_t\not= e$.
-\end{lemma}
 \begin{proof}
-If $\rad_t(e) \le \frac{\Delta_e}{3\rank(\B)}$, then we can apply Lemma~\ref{lemma:key-technical} which immediately gives that $p_t\not= e$.
-Hence, we only need to prove the case that $\rad_t(e) \le \frac{\epsilon}{n}$.
-By the definition of $p_t$, we know that for each $i\in D_t$, we have $\rad_t(i) \le \rad_t(e) \le \frac{\epsilon}{n}$.
-Summing up all $i\in D_t$, we obtain
+Fix $\M \subseteq 2^{[n]}$, $w(e)$ for all $e\in[n]$ and a fixed budget algorithm $\mathbb A$ for $\M$-\Problem problem.
+Let $\sigma(1),\ldots,\sigma(n)$ be a permutation of $1,2,\ldots, n$ such that
+ $\Delta_{\sigma(1)} \le \Delta_{\sigma(2)} \ldots \le \Delta_{\sigma(n)}$.
+Define $L' = \argmax_{i\in [n]} i/\Delta_{\sigma(i)}^2$ and $L=\sigma(L')$.
+
+Then, we construct hypothesis $H_0$ as follows
+$$
+H_0: \Rew_e = \mathcal N(w(e), 1) \quad \text{for all } e \in [n].
+$$
+
+We define random event $\mathcal C$ as follows.
+
+We show that $\Pr_0[\mathcal C] \ge 1/2$.
+
+We define random variables $X,Y,Z$ as follows
+$$
+X=\argmin_{i\in [L]\del \out} T_i, \quad Y=\argmin_{i\in [L]\cap \out} T_i \quad\text{and }
+Z=\argmin_{i\in [L]} T_i, 
+$$
+where, for convenience, if $[L]\del \out=\emptyset$, we set $X=0$; and if $[L]\cap \out = \emptyset$, we set $Y=0$. 
+By definition, we see that $X\not=Y$, $Z\in \{X,Y\}$ and $Z\not = 0$.
+Now, by summing up all possible values of $X$, $Y$ and $Z$, we have
+\begin{align*}
+1/2 < \Pr_0[\mathcal C]
+    = \sum_{\substack{x\in \{0,\ldots,L\}\\y\in \{0,\ldots, L\}\\x\not=y, z\in \{x,y\}}}
+      \Pr_0[\mathcal C \cap \{X=x, Y=y, Z=z\}].
+\end{align*}
+Since a maximal is larger than an average, we see that there exists $x,y,z$ such that $x\not=y, z\in\{x,y\}$ and
 \begin{equation}
-\rad_t(D_t) \le \epsilon.
-\label{eq:pac-key-0-1}
+\label{eq:lower-budget-z-prob}
+\Pr_0[\mathcal C \cap \{X=x,Y=y,Z=z\}] \ge \frac{1}{4L(L+1)}.
 \end{equation}
-Next, we notice that the definition of $M_t$ gives that $\bar w_t(M_t)=\max_{M\in \M} \bar w_t(M) \ge \bar w_t(M_t \oplus D_t)$.
-This means that
+We point out that $x, y$ and $z$ are deterministic and only depends $\mathbb A$, $w$ and $\mathcal M$.
+Now, depending on the value of $x,y$ and $z$, we divide our analysis into two cases.
+
+\textbf{Case (1): $(z=x \wedge x\in M_*)$ or $(z=y \wedge y\not\in M_*)$.} 
+Eq.~\eqref{eq:lower-budget-z-prob} implies that 
+\begin{align*}
+\Pr_0[\{X=x,Y=y,Z=z\}] &\ge \Pr_0[\mathcal C \cap \{X=x,Y=y,Z=z\}] \\
+					   &\ge \frac{1}{4L(L+1)} \ge G. 
+\end{align*}
+
+
+First, let us assume that $z=x$ and $x\in M_*$.
+By definition, we have $X\not\in\out$.
+Notice that $x$ belong $M_*$. 
+Therefore the event that $X=x$ and the assumption that $x\in M_*$ imply that $\out\not=M_*$.
+This means that, if $z=x$ and $x\in M_*$, 
+then $\Pr_0[\out\not=M_*] \ge \Pr_0[X=x] \ge G$.
+
+Next, we assume that $z=y$ and $y\not \in M_*$.
+Notice that $Y\in\out$ and $y\not\in M_*$.
+Hence, the event $Y=y$ and the assumption that $y\not\in M_*$ imply that $\out\not=M_*$.
+Therefore, if $z=y$ and $y\not\in M_*$, then
+$\Pr_0[\out\not=M_*] \ge \Pr_0[Y=y] \ge  G$.
+
+Therefore, we proved that, in Case (1), the probability of error of algorithm $\mathbb A$ is larger than $G$ under $H_0$.
+
+\textbf{Case (2): $(z=x \wedge x\not \in M_*)$ or $(z=y \wedge y\in M_*)$.}
+By definition, $Z$ is the arm with smallest number of samples among arms in $[L]$ and algorithm $\mathbb A$ uses at most $T$ samples. 
+Therefore, we have
 \begin{equation}
-\bar w_t(D_t) = \bar w_t(M_t\oplus D_t)-\bar w_t(M_t) \le 0.
-\label{eq:pac-key-0-2}
+\label{eq:lower-budget-z-sample}
+T_Z \le \frac{T}{L}.
 \end{equation}
-Using the above inequalities, we have.
+
+Then, we consider two cases separately.
+
+\textbf{Case (2.1): $(z=x \wedge x\not \in M_*)$.}
+We construct hypothesis $H_1$ as follows
+$$
+H_1: \Rew_x = \mathcal N(w(x)+\Delta_L+\varepsilon, 1) \quad\text{and}\quad
+\Rew_e(e) = \mathcal N( w(e), 1) \quad \text{for all } e\not=y.
+$$
+Notice that, by the choice of $L$, we have $\Delta_x \ge \Delta_L$.
+Hence we see that $w_1(M_x) = w_0(M_x)+\Delta_L \ge w_0(M_x)+\Delta_x = w_0(M_*)  = w_1(M_*)$.
+Therefore, under $H_1$, $M_*$ is not the optimal set.
+Now we bound the likelihood ratio $L_1(W)/L_0(W)$ as follows
 \begin{align}
-  w_t^+(D_t) &= \bar w_t(D_t)+\rad_t(D_t) \label{eq:pac-key-1}\\
-  			 &\le \bar w_t(D_t)+\epsilon \label{eq:pac-key-2}\\
-  			 &\le \epsilon, \label{eq:pac-key-3}
+\frac{L_1(W)}{L_0(W)}
+&= \prod_{i=1}^{T_Z} \exp\left(\frac{-(X_i-w(x)-\Delta_L)^2+(X_i-w(x))^2}{2}\right) \nonumber \\
+&= \prod_{i=1}^{T_Z} \exp\big(\Delta_L(X_i-w(x))-\Delta_L^2\big) \nonumber \\
+&= \exp\big(\Delta_L(K-T_Zw(x))-\Delta_L^2T_Z\big) \nonumber \\
+&= \exp\big(\Delta_L(K-T_Zw(x))\big)\exp(-\Delta_L^2T_Z) \label{eq:lower-budget-case-1}.
 \end{align}
-where Eq.~\eqref{eq:pac-key-1} follows from the definition of $w_t^+(\cdot)$; 
-Eq.~\eqref{eq:pac-key-2} follows from Eq.~\eqref{eq:pac-key-0-1};
-Eq.~\eqref{eq:pac-key-3} holds since Eq.~\eqref{eq:pac-key-0-2}.
+
+Then we analyze the right-hand side of Eq.~\eqref{eq:lower-budget-case-1} as follows
+\begin{align}
+  \exp(-\Delta_Z^2T_Z) &\ge \exp(-\Delta_Z^2T/L) \label{eq:lower-bound-case-1-1.1} \\
+					   &=\exp\left(-\frac{8}{16}\log(1/\theta)\right) \label{eq:lower-bound-case-1-1.2}\\
+					   &= \theta^{1/2}\label{eq:lower-bound-case-1-1.3},
+\end{align}
+where Eq.~\eqref{eq:lower-bound-case-1-1.1} follows from the assumption that event $\mathcal S$ occurred, which implies that event $\mathcal A$ occurred and therefore $T_e \le 4t_e^*$; Eq.~\eqref{eq:lower-bound-case-1-1.2} follows from the definition of $t_e^*$.
+
+Then, we bound the first term on the right-hand side of Eq.~\eqref{eq:lower-bound-case-1} as follows
+\begin{align}
+	\exp\big(\Delta_e(2K-2p_eT_e)\big) & \ge \exp\left(-2\Delta_e\sqrt{t_e^*\log(1/\theta)}\right) \label{eq:lower-bound-case-1-2.1}\\
+								       & = \exp\left(-\frac{2}{\sqrt{4}}\log(1/\theta)\right) \label{eq:lower-bound-case-1-2.2}\\
+								       &=\theta^{1/2},  \label{eq:lower-bound-case-1-2.3}
+\end{align}
+where Eq.~\eqref{eq:lower-bound-case-1-2.1} follows from the assumption that event $\mathcal S$ occurred, which implies that event $\mathcal C$ and therefore $|2K-2p_eT_e| \le \sqrt{t_e^*\log(1/\theta)}$; 
+Eq.~\eqref{eq:lower-bound-case-1-2.2} follows from the definition of $t_e^*$.
+
+\textbf{Case (2.2): $y\not\in M_*$.}
+By definition of $y$, we see that the event $Y=y$ implies that $y\not\in\out$ and therefore $\out\not=M_*$.
+On the other hand, using Eq.~\eqref{eq:lower-budget-z-prob}, we have
+$$\Pr_0[Y=y] \ge \Pr_0[\mathcal C \cap \{Y=y, Z=0\} ] = \frac{1}{2(L+1)^2}.$$
+This gives that $\Pr_0[\out\not=M_*] \ge \frac{1}{2(L+1)^2} \ge A$.
+
+
 \end{proof}
 
-\begin{lemma}
-\label{lemma:pac-correct}
-If Algorithm~\ref{algo:pac} stops on round $T$, then $w(M_*)-w(\out) \le \epsilon$.
-\end{lemma}
-
-\begin{proof}
-Suppose that $\out \not= M_*$.
-Since the algorithm stops on round $T$, we know that $\out = M_T$.
-Consider the diff-set $D=M_* \ominus M_T$ and the diff-set $D_T$ defined in Step~\ref{algo:step:D} of Algorithm~\ref{algo:pac}.
-By Lemma~Z, we see that 
-\begin{equation}
-w_T^+(D_T) = \max_{C: C \diffvalid M_T} w_T^+(C) \ge w_T^+(D).
-\label{eq:pac-correct-0}
-\end{equation}
-On the other hand, the stopping condition of Algorithm~\ref{algo:pac} gives that
-\begin{align}
-\epsilon &\ge \tilde w_T(\tilde M_T)-\tilde w_T(M_T) \nonumber \\
-		 &= w_t^+(D_T) \ge w_t^+(D) \label{eq:pac-correct-1} \\
-		 &\ge w(D) = w(M_*)-w(M_T), \label{eq:pac-correct-2}
-\end{align}
-where Eq.~\eqref{eq:pac-correct-1} follows from Eq.~\eqref{eq:pac-correct-0}; Eq.~\eqref{eq:pac-correct-2} follows from the assumption that event $\xi$ occurred.
-
-
-\end{proof}
-
-\section{Fixed Budget}
-
-
-\section{Benchmark: uniform algorithm}
 
 \bibliography{bandit}
 \bibliographystyle{plain}
