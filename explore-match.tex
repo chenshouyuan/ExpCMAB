@@ -81,7 +81,7 @@
 \newcommand{\Btop}{\mathcal B_{\mathsf{TOP}m}}
 \newcommand{\Bbandit}{\mathcal B_{\mathsf{BANDIT}m}}
 
-\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\rank}{width}
 \DeclareMathOperator{\rad}{rad}
 \DeclareMathOperator{\decomp}{decomp}
 \DeclareMathOperator*{\argmax}{arg\,max}
@@ -599,7 +599,7 @@ It is clear that a large class of combinatorial problems admit efficient maximiz
 Our algorithm works for both fixed confidence and fixed budget settings.
 In either settings, the behaviors of our algorithm only differ in the construction of confidence radius and the stopping condition.
 In the following, we describe the procedure of our algorithm.
-Our algorithm maintains the empirical mean $\bar w_t(e)$ and a confidence radius $\rad_t(e)$ for each arm $e\in[n]$ and each round $t$.
+Our algorithm maintains empirical mean $\bar w_t(e)$ and confidence radius $\rad_t(e)$ for each arm $e\in[n]$ and each round $t$.
 The construction of confidence radius ensures that $|w(e)-\bar w_t(e)| \le \rad_t(e)$ holds with high probability for each arm $e \in [n]$ and each round $t>0$.
 At each round $t$, our algorithm accesses the maximization oracle twice. 
 The first access to the oracle computes the set $M_t=\argmax_{M\in \M} \bar w_t(M)$.
@@ -656,13 +656,96 @@ For each arm $e \in [n]$, we define gap $\Delta_e$ as
 			\end{cases}
 \end{equation}
 By this definition of gap $\Delta_e$, for each arm $e\not\in M_*$, $\Delta_e$ represents the gap between the optimal set $M_*$ and the best set that includes arm $e$; and, for each arm $e\in M_*$, $\Delta_e$ is the sub-optimality of the best set that does not include arm $e$.
-We notice that, for many combinatorial problems, the definition Eq.~\eqref{eq:define-delta} naturally reflects the hardness of an arm.
-().
-Figure X illustrates these interpretations.
+%We notice that, for many combinatorial problems, the definition Eq.~\eqref{eq:define-delta} naturally reflects the hardness of an arm.
+%().
+%Figure X illustrates these interpretations.
+We notice that this definition resembles the definition of gaps for \MultiIdent proposed by ().
 
 
 
-\textbf{Exchange sets.}
+\textbf{Exchange class.} 
+The analysis of our algorithm depends on certain exchange properties of combinatorial structures.
+To study these properties, we introduce notions of \emph{exchange set} and \emph{exchange class} as our tools for the analysis.
+In the following, we present their definitions.
+
+%An exchange set is defined as a pair of disjoint sets.
+
+We begin with the definition of exchange set. 
+We define an exchange set $b$ as an ordered pair of disjoint sets $b=(b_+,b_-)$.
+Then, we define operator $\oplus$ such that, for any set $M$ and any exchange set $b=(b_+,b_-)$, we have $M\oplus b \triangleq M\del b_- \cup b_+$.
+We call a set of exchange sets $\B$ an \emph{exchange class for $\M$} if $\B$ satisfies the following property.
+Let $M$ and $M'$ be two  elements of $\M$.
+Then, for any $e \in (M\del M')$, there exists an exchange set $(b_+,b_-)\in \B$ which satisfies $e\in b_-$, $b_+ \subseteq M'$, $b_- \subseteq M$ and $(M\oplus b) \in \M$.
+Finally, we define the \emph{width} of exchange class $\B$ as follows
+$$
+\rank(\B) = \max_{(b_+,b_-) \in \B} |b_+|+|b_-|.
+$$
+
+%An exchange class can be seen as a set operations that transform one feasible set to another.
+
+Intuitively, for any feasible sets $M$ and $M'$, there exists an ``operation'' $(b_+,b_-)\in \B$ which can transform $M$ one step towards $M'$; this operation generates a new feasible set $M\oplus b$ by removing elements (including $e$) from $M$ and adding elements which belongs to $M'$.
+%Therefore, for any two elements $M,M'$ of $\M$, one can sequentially apply a finite number of these operations of $\B$ to transform $M$ to $M'$.it
+One can chain these operations together such that, for any $M\not= M'$, there exists a sequence of exchange sets $b_1,\ldots, b_k$ of $\B$ such that $M'=M\oplus b_1 \ldots \oplus b_k$.
+
+
+\junk{
+Next, we investigate the exchange classes for our running examples.
+For \MultiIdent problem, we can construct the exchange class as $\B_{1}=\{(\{i\},\{j\})\;|\;\forall i\in [n], j\in [n]\}$.
+It is easy to verify $\B_{1}$ is an exchange class for $\M_{\MultiIdent}$: one can transform a set of $k$ elements to another by adding and removing an element for each time.
+In fact, a standard result from matroid theory, called basis exchange property (see Lemma~\ref{lemma:basis-exchange-matroid} in the appendix), shows that $\B_1$ is also an exchange class for the more general \Matroid problem.
+%From Lemma~\ref{lemma:basis-exchange-matroid}, we see that $\B_1$ is an exchange class for $\M_{\Matroid}$.
+Next, for \Match problem, an exchange class contains all cycles of the graph $G$.
+Given two matchings $M,M'$, the union $M\cup M'$ is a union of disjoint cycles [].
+These cycles are known to be augmenting cycles in combinatorial optimization literature [].
+Figure~Y illustrates these exchanges classes.
+}
+
+Next, we construct the exchange classes for our running examples. 
+Our constructions are summarized in Lemma~\ref{lemma:example-exchange-class}.
+\begin{lemma}
+There exist exchange classes $\B_{\MultiIdent}$, $\B_{\Matroid}$, $\B_{\Match}$ and $\B_{\Path}$ for $\M_{\MultiIdent}$, $\M_{\Matroid}$, $\M_{\Match}$ and $\M_{\Path}$, respectively. 
+These exchange classes can be constructed as follows
+\begin{enumerate}
+	\item $\B_{\MultiIdent}=\big\{(\{i\},\{j\})\;|\;\forall i\in [n], j\in [n]\big\}$.
+	\item $\B_{\Matroid}=\big\{(\{i\},\{j\})\;|\;\forall i\in [n], j\in [n]\big\}$.
+	\item $\B_{\Match}=\big\{(C_+,C_-)\;|\; C_+\cup C_- \text{ is a cycle of }G\big\}$.
+	\item $\B_{\Path}=\big\{ (P_1, P_2) \;|\;P_1,P_2\text{ are two disjoint paths of }G\text{ with same endpoints}\big\}$.
+\end{enumerate}
+In addition, we have $\rank(\B_{\MultiIdent})=2$, $\rank(\B_{\Matroid})=2$, $\rank(\B_{\Match})=|V|$ and $\rank(\B_{\Path})=|V|$.
+\label{lemma:example-exchange-class}
+\end{lemma}
+The  construction for \MultiIdent problem is straightforward. 
+For \Matroid problem, we leverage the basis exchange property of matroids (see Lemma~\ref{lemma:basis-exchange-matroid} in the appendix).
+And for \Match and \Path problems, we use the graph-theoretical properties of matchings and paths.
+Figure~Y illustrates these  exchanges classes.
+A detailed proof of Lemma~\ref{lemma:example-exchange-class} is deferred to the supplementary material.
+
+
+\textbf{Main results.} 
+We show that, in the fixed confidence setting, our algorithm returns the optimal set with high probability and uses at most $\tilde O(\rank(\B)^2/\Delta_e^2)$ samples.
+\begin{theorem}
+Given any $\delta \in (0,1)$, any combinatorial problem $\M \subseteq 2^{[n]}$ and any expected rewards $\vec w \in \RR^{d}$.
+Let $\B$ be an exchange class for $\M$ and $\{\Delta_e\}_{e\in [n]}$ be the gaps defined in Eq.~\eqref{eq:define-delta}.
+Then, with probability at least $1-\delta$, Algorithm~\ref{algo:pac} returns the optimal set and
+$$
+T \le O\left(\sum_{e\in [n]} \frac{\rank(\B)^2}{\Delta_e^2} \log\left(\frac{n}{\delta} \sum_{e\in[n]}\frac{\rank(B)^2}{\Delta_e^2} \right)\right),
+$$
+where $T$ denotes the number of samples used by Algorithm~\ref{algo:pac}.
+\label{theorem:main}
+\end{theorem}
+Theorem~\ref{theorem:main} is highly general in the sense that it provides a sample complexity for any combinatorial problem $\M$.
+In addition, notice that $\rank(\B_{\MultiIdent})=O(1)$.
+Therefore, our sample complexity bound for the \MultiIdent problem is $O(\sum_e \Delta_e^{-2}\log(n/\delta\sum_{e}\Delta_a^{-2}))$.
+This matches the previous best problem-dependent bounds for the \MultiIdent problem.
+%And Theorem~\ref{algo:pac} establishes the first sample complexity bound for the pure exploration of other combinatorial bandits.
+
+
+
+%Many combinatorial problem $\M$ is associated with an exchange class with small width.
+
+
+%From the definition, it is easy to see that if $\B$ is an exchange class, then, for any $M\not= M'$, there exists a sequence of exchange sets $b_1,\ldots, b_k$ belonging to $\B$ such that $M'=M\oplus b_1 \ldots \oplus b_k$.
+%Hence, intuitively, an exchange class for $\M$ characterizes the ``operations'' of transforming an element $M\in \M$ to another element $M'\in \M$.
 
 
 
@@ -690,8 +773,8 @@ $\Delta_e$ is defined in Eq.~\eqref{eq:define-delta}.
 Now, we compare the sample complexity of Algorithm~\ref{algo:pac} to the lower bound provided in Theorem~\ref{theorem:lower-bound} on our running examples \MultiIdent, \Matroid, \Match and \Path.
 For clarity, we consider the case that $\epsilon=0$ which corresponds to the learning problem of finding the optimal set.
 We see that Algorithm~\ref{algo:pac} uses at most $\tilde O(\sum_{e} \rank(\B)^2/\Delta_e^2)$ samples.
-Notice that, for \MultiIdent and \Matroid problems, Lemma~X shows that $\rank(\B)=2$.
-Hence, for these two problems, we see that Algorithm~\ref{algo:pac} achieves optimal sample complexity which is tight up to logarithmic factors.
+Recall that, for \MultiIdent and \Matroid problems, Lemma~X shows that $\rank(\B)=2$.
+Hence, for these two problems, Algorithm~\ref{algo:pac} achieves optimal sample complexity within logarithmic factors.
 
 On the other hand, for $\Match(V,E)$ and $\Path(V,E)$, Lemma~X indicates that $\rank(\B)=|V| \le n$.
 This means that the gap between our algorithm and this lower bound is a factor of $|V|^2$.
@@ -1577,6 +1660,16 @@ This gives that $\Pr_0[\out\not=M_*] \ge \frac{1}{2(L+1)^2} \ge A$.
 
 
 \end{proof}
+
+
+\section{Technical Lemmas}
+
+
+\begin{lemma}[Basis exchange property]
+AA
+\label{lemma:basis-exchange-matroid}
+\end{lemma}
+
 
 
 \bibliography{bandit}
