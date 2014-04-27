@@ -99,6 +99,9 @@
 \newcommand{\Match}{\textbf{Match}\xspace}
 \newcommand{\Path}{\textbf{Path}\xspace}
 
+\newcommand{\inn}[1]{\left\langle #1 \right\rangle}
+\newcommand{\nor}[1]{\left\|#1\right\|}
+\renewcommand{\vec}[1]{\boldsymbol{#1}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -108,429 +111,6 @@
 
 \maketitle
 
-\section{Preliminaries}
-
-\subsection{Problems}
-
-Let $n$ be the number of base arms. 
-Let $\M \subseteq 2^{[n]}$ be the set of super arms. 
-
-
-In this note, we consider the following cases of $\M$.
-
-\begin{example}[Explore-$m$]
-$\mtop(n)=\{M \subseteq [n] \;|\; |M|=m\}$.
-This corresponds to finding the top $m$ arms from $[n]$.
-\end{example}
-
-\begin{example}[Explore-$m$-bandits]
-Suppose $n=mk$. Then $\mbandit(n)$ contains all subsets $M \subseteq [n]$ with size $m$, such that 
-$$ 
-M\cap \{ik+1,\ldots, (i+1)k\} = 1, \quad \text{for all } i \in \{0,\ldots, m-1\}.
-$$ 
-This corresponds to finding the top arms from $m$ bandits, where each bandit has $k$ arms.
-\end{example}
-
-\begin{example}[Perfect Matching]
-Let $G=(V,E)$ be a bipartite graph and $|E|=n$. 
-For simplicity, let each edge $e\in E$ corresponds to a unique integer $i\in [n]$, and vice versa. 
-Then $\mmatch(n,G)$ contains all subsets $M \subseteq [n]$ such that $M$ corresponds to a perfect matching in $G$.
-\end{example}
-
-
-\subsection{Diff-Sets}
-
-\begin{define}[Diff-set]
-An $n$-diff-set (or diff-set in short) is a pair of sets $c=(c_+,c_-)$, where $c_+\subseteq[n]$, $c_-\subseteq [n]$ and $c_+\cap c_-=\emptyset$.
-\end{define}
-
-
-\begin{define}[Difference of sets]
-Given any $M_1\subseteq[n],M_2\subseteq[n]$. We define $M_1\ominus M_2 \triangleq C$, where $C=(C_+,C_-)$ is a diff-set and
-$C_+ = M_1 \del M_2$ and $C_- = M_2\del M_1$.
-\end{define}
-
-\begin{define}
-Denote $\diff[n]$ be the set of all possible $n$-diff-sets.
-\end{define}
-
-\begin{define}[Set operations of diff-sets] 
-Let $C=(C_+,C_-), D=(D_+,D_-)$ be two diff-sets. 
-We define 
-$C\cap D \triangleq (C_+\cap D_+, C_-\cap D_-)$
-and $C\del D \triangleq (C_+\del D_+, C_-\del D_-)$.
-
-Further, for all $e\in [n]$, $e \in C \Leftrightarrow (e\in C_+)\vee(e\in C_-)$.
-And $|C|\triangleq |C_+|+|C_-|$.
-\end{define}
-
-\begin{define}[Valid diff-set]
-Given a set $M \subseteq [n]$ and a diff-set $C=(C_+,C_-)$, we call $C$ a \emph{valid diff-set} for $M$, iff $C_+ \cap M = \emptyset$ and $C_- \subseteq M$.
-In this case, we denote $C\diffvalid M$.
-\end{define}
-
-\begin{define}[Negative diff-set]
-Given a diff-set $A=(A_+,A_-)$, we define $\neg A=(A_-,A_+)$.
-\end{define}
-
-
-\subsubsection{diff-set operations}
-
-\begin{define}[Operators $\oplus$ and $\ominus$]
-Given any $M \subseteq [n]$ and $C \in \diff[n]$.
-If $C\diffvalid M$, we define operator $\oplus$ such that $M \oplus C \triangleq M\del C_- \cup C_+ $.
-On the other hand if $\neg C\diffvalid M$, we define operator $\ominus$ such that $M \ominus C \triangleq M\oplus (\neg C) = 
-M\del C_+ \cup C_- $.
-\end{define}
-
-
-\begin{define}
-Given two diff-sets $A=(A_+,A_-)$ and $B=(B_+,B_-)$.
-We denote $B \diffvalid A$, if and only if $B_+\cap A_+ = \emptyset$ and $A_+\cap A_-=\emptyset$.
-\end{define}
-
-\begin{define}
-Given two diff-sets $A=(A_+,A_-)$ and $B=(B_+,B_-)$. 
-If $B\diffvalid A$, we define $A\oplus B = ( (A_+\cup B_+)\del(A_-\cup B_-), (A_-\cup B_-)\del(A_+\cup B_+))$.
-\end{define}
-
-\begin{lemma}
-Given two diff-sets $A=(A_+,A_-)$ and $B=(B_+,B_-)$. 
-If $B\diffvalid A$, then 
-$A\oplus B$ is a diff-set.
-\end{lemma}
-
-\begin{proof}
-Let $C=A\oplus B$.
-By definition, we have $C_+ = (A_+\cup B_+)\del(A_-\cup B_-)$ and $C_-=(A_-\cup B_-)\del(A_+\cup B_+)$.
-
-We only need to show that $C_+\cap C_-=\emptyset$.
-\begin{align*}
-	C_+ \cap C_- &= \big((A_+\cup B_+)\del(A_-\cup B_-)\big)\cap\big((A_-\cup B_-)\del(A_+\cup B_+)\big)\\
-			     &= (A_+\cup B_+)\cap\big((A_-\cup B_-)\del(A_+\cup B_+) \del (A_-\cup B_-)\big) \\
-			     &= \emptyset.
-\end{align*}
-\end{proof}
-
-\begin{lemma}
-\label{lemma:diff-set-algebra}
-Given two diff-sets $A=(A_+,A_-)$ and $B=(B_+,B_-)$. 
-If there exists $M\subseteq [n]$ such that $A \diffvalid M$, and $B \diffvalid (M\oplus A)$,
-then $B \diffvalid A$ and $(M\oplus A \oplus B)\ominus M = A\oplus B$.
-\end{lemma}
-
-\begin{proof}
-We first show that $B\diffvalid A$.
-Since $B \diffvalid (M\oplus A)$, we know that 
-$B_+\cap (M\del A_- \cup A_+) = \emptyset$.
-Therefore, we have
-\begin{align*}
-	\emptyset &= B_+\cap (M\del A_-\cup A_+) \\
-			  &= (B_+\cap (M\del A_-))\cup (B_+\cap A_+)
-\end{align*}
-We see that $B_+\cap A_+=\emptyset$.
-
-On the other hand, we have $B_-\subseteq (M\del A_-\cup A_+)$, therefore 
-\begin{align*}
-	B_-\cap A_- &\subseteq (M\del A_-\cup A_+)\cap A_- \\
-				&= (M\del A_- \cap A_-)\cup (A_+\cap A_-) \\
-				&= \emptyset.
-\end{align*}
-Hence we proved that $B\diffvalid A$.
-
-Define $D=(M\oplus A \oplus B)\ominus M$ and write $D=(D_+,D_-)$. Then,
-\begin{align*}
-D_+ &= (M\oplus A\oplus B) \del M\\ 
-    &= (M\del A_-\cup A_+\del B_-\cup B_+) \del M\\
-    &= (A_+\cup B_+)\del(A_-\cup B_-).
-\end{align*}
-Similarly, we have
-\begin{align*}
-D_- &= M\del (M\oplus A\oplus B)\\ 
-    &= M\del (M\del A_-\cup A_+\del B_-\cup B_+)\\
-    &= (A_-\cup B_-)\del (A_+\cup B_+).
-\end{align*}
-\end{proof}
-
-\subsubsection{Diff-set class}
-
-\begin{define}[Decomposition of diff-set]
-Given $\B\subseteq \diff[n]$ and $D\in \diff[n]$, 
-a decomposition of $D$ on $\B$ is a set $\{b_1,\ldots,b_k\} \subseteq \B$ satisfying the following
-\begin{enumerate}
-  \item For all $i\in[k]$ and $j\in [k]$, we write $b_i=(b_i^+,b_i^-)$ and $b_j=(b_j^+,b_j^-)$. Then, the following holds
-  $b_i^+\cap b_j^+=\emptyset$, $b_i^+\cap b_j^-=\emptyset$, $b_i^-\cap b_j^+ =\emptyset$ and $b_i^-\cap b_j^-=\emptyset$.
-  \item $D=b_1 \oplus b_2 \oplus \ldots b_k$.
-\end{enumerate}
-\end{define}
-
-\begin{lemma}
-Given $\B\subseteq \diff[n]$ and $D\in \diff[n]$.
-Let $\{b_1,\ldots,b_k\} \subseteq \B$ be a decomposition of $D$ on $\B$.
-Then,
-\begin{enumerate}
-\item Let $D=(D_+,D_-)$ and for all $i \in [k]$, we write $b_i = (b_i^+,b_i^-)$.
-	  Then $D_+=b_1^+ \cup \ldots \cup b_k^+$ and $D_-=b_1^-\cup\ldots\cup b_k^-$.
-\item For all $M\subseteq [n]$, if $D\diffvalid M$, then, for all $i\in [k]$, we have $b_i \diffvalid M$.
-\end{enumerate}
-\end{lemma}
-
-\begin{proof}
-We prove (1) by induction.
-Let $D_i = b_1 \oplus \ldots \oplus b_i$ and write $D_i=(D_i^+, D_i^-)$.
-We show that $D_i^+=\bigcup_{j=1}^i b_i^+$ and $D_{i-}=\bigcup_{j=1}^i b_i^-$ for all $i\in[k]$.
-For $i=1$, this is trivially true.
-Then, assume that this is true for some $i>1$.
-By definition $D_{i+1}=D_{i}\oplus b_{i+1}$, hence $D_{i+1}^+=(D_i^+ \cup b_{i+1}^+)\del(D_i^- \cup b_{i+1}^-)$.
-Note that 
-\begin{align*}
-(D_i^-\cup b_{i+1}^-)\cap(D_i^+ \cup b_{i+1}^+) &= (D_i^-\cap D_i^+)\cup(D_i^- \cap b_{i+1}^+)\cup(b_{i+1}^- \cap D_i^+)\cup(b_{i+1}^- \cap b_{i+1}^+)\\
-		&= (D_i^- \cap b_{i+1}^+) \cup (b_{i+1}^- \cap D_i^+) \\
-		&= \left(\left(\bigcup_{j=1}^i b_{j}^-\right) \cap b_{i+1}^+ \right) \cup \left(\left(\bigcup_{j=1}^i b_{j}^+\right) \cap b_{i+1}^- \right)\\
-		&= \emptyset.
-\end{align*}
-Hence $D_{i+1}^+=D_i^+ \cup b_{i+1}^+$. We can use the same method to show that $D_{i+1}^-=D_i^- \cup b_{i+1}^-$.
-
-Next, we prove (2) using (1).
-To show that $b_i\diffvalid M$, we only need to show that $b_i^+ \cap M = \emptyset$ and $b_i^- \subseteq M$.
-Since $D\diffvalid M$, we know that $D_+\cap M=\emptyset$ and $D_-\subseteq M$.
-By (1), we see that $b_i^+\subseteq D_+$ and $b_i^-\subseteq D_-$.
-Therefore, we have $(b_i^+\cap M) \subseteq (D_+\cap M) = \emptyset$ and $b_i^-\subseteq D_- \subseteq M$.
-
-\end{proof}
-
-
-\begin{define}[diff-set class]
-\label{define:diff-class}
-Given $\M \subseteq 2^{[n]}$. $\B \subseteq \diff[n]$ is a diff-set class for $\M$, if the following hold.
-\begin{enumerate} 
-\item $(\emptyset,\emptyset)\not\in \B$.
-\item For all $M\in \M$ and for all $b\in \B$, if $b\diffvalid M$, then $M\oplus b \in \M$.
-\item For all $M_1 \in \M$ and $M_2\in \M$, where $M_1\not=M_2$. 	
-	  Let $D=M_1\ominus M_2$.  
-	  Then, there exists a decomposition of $D$ on $\B$.
-\end{enumerate}
-\end{define}
-
-\begin{define}[Rank of diff-set class]
-Let $\B \subseteq [n]$ be a diff-set class for some $\M$. We define
-$$
-\rank(\B) \triangleq \max_{b \in \B} |b|.
-$$
-\end{define}
-
-\begin{example}[diff-set class for Explore-$m$]
-One diff-set class $\B$ for $\mtop(n)$ is given by
-$$
-\B=\{(\{b_1\},\{b_2\}) \;|\; b_1\not=b_2, b_1\in[n], b_2\in[n]\}.
-$$
-Proof omitted.
-Further, we see that $\rank(\B)=2$.
-\end{example}
-
-\begin{example}[diff-set class for Explore-$m$-badit]
-Let $n=mk$.
-One diff-set class $\B$ for $\mbandit(n)$ is given by
-$$
-\B=\{(\{b_1\},\{b_2\}) \;|\; b_1\not=b_2, \exists i\in\{0,\ldots,k-1\}, b_1\in \{ik+1,\ldots, (i+1)k\}, b_2\in\{ik+1,\ldots, (i+1)k\}\}.
-$$
-Proof omitted.
-Further, we see that $\rank(\B)=2$.
-\end{example}
-
-
-\begin{example}[diff-set class for Perfect Matching]
-One diff-set class $\B$ for $\mmatch(n, G)$ is the set of all augmenting cycles of $G$. 
-More specifically,
-$$
-\B=\{(b_+,b_-) | b_+\cup b_- \text{ is a cycle of } G\}.
-$$
-
-Note $\rank(\B)\le n$.
-\end{example}
-
-\subsection{Weights and confidence bounds}
-
-\begin{define}[Weight functions]
-Define function $w: [n] \rightarrow \RR^+$ which represents the weight of each base arm. 
-Further, we slight abuse the notations, and extend the definition of $w$ to diff-sets and sets as follows.
-\begin{enumerate}
-\item For all $M \subseteq [n]$, we denote $w(M) = \sum_{e\in M} w(e)$.
-\item For all $b=(b_+,b_-) \in \diff[n]$, we denote $w(b) = \sum_{e\in b_+} w(e)-\sum_{e\in b_-}w(e)$.
-\end{enumerate}
-\end{define}
-
-
-\begin{lemma}
-\label{lemma:weight-diff-simple}
-Let $c\in \diff[n],d\in \diff[n]$. Let $w$ be a weight function.
-Then,
-\begin{equation}
-w(c\cup d) = w(c)+w(d)-w(c\cap d).
-\end{equation}
-\end{lemma}
-
-\begin{proof}
-Let $c=(c_+,c_-)$ and $d=(d_+,d_-)$.
-We have
-\begin{align}
-w(c\cup d) &= w(c_+\cup d_+)-w(c_-\cup d_-)\\
-           &= w(c_+)+w(d_+)-w(c_+\cap d_+)-w(c_-)-w(d_-)+w(c_- \cap d_-)\\
-           &= w(c)+w(d)-(w(c_+\cap d_+)-w(c_-\cap d_-))\\
-           &= w(c)+w(d)-w(c\cap d).
-\end{align}
-\end{proof}
-
-\begin{define}[Mean weight $\bar w_t$, sample size $n_t$]
-Given $t>0$. 
-Define $\bar w_t$ be a weight function such that, for all $e\in[n]$, $\bar w_t(e)$ equals to the empirical mean of $e$ up to round $t$.
-Let $n_t: [n] \rightarrow \mathbb N$, such that $n_t(e)$ equals to number of plays of base arm $e$ up to round $t$.
-\end{define}
-
-\begin{define}[Confidence radius $\rad_t$]
-Given $n$ and $t>0$.
-Define $\rad_t:[n]\rightarrow \RR^+$ satisfying, for all $e\in[n]$,
-\begin{equation}
-\label{eq:define-confidence-radius}
-\rad_t(e) = c_{\rad}\log\left(\frac{c_\delta nt^2}\delta\right)\frac{1}{\sqrt{n_t(e)}},
-\end{equation}
-where $c_{\rad} > 0$  and $c_\delta>0$ are some universal constants (specify later) and $\delta > 0$ is a parameter.
-
-We extend the notation of $\rad_t$ to diff-sets and sets as follows.
-\begin{enumerate}
-\item For all $M \subseteq [n]$, $\rad_t(M) \triangleq \sum_{e\in M} \rad_t(e)$.
-\item For all $b=(b_+,b_-)\in \diff[n]$, $\rad_t(b) \triangleq \rad_t(b_+)+\rad_t(b_-)$.
-\end{enumerate}
-
-\end{define}
-
-\begin{define}[UCB $w_t^+$]
-Define $w^+_t: [n] \rightarrow \RR^+$, s.t., for all $e\in[n]$,  
-$$ w^+_t(e)=\bar w_t(e)+\rad_t(e).$$
-
-We extend the notation of $w_t^+$ to diff-sets and sets as follows.
-\begin{enumerate}
-\item For all $M \subseteq [n]$, $w_t^+(M) \triangleq \bar w_t(M)+\rad_t(M)$.
-\item For all $b=(b_+,b_-)\in \diff[n]$, $w_t^+(b) \triangleq \bar w_t(b)+\rad_t(b)$.
-\end{enumerate}
-
-\end{define}
-
-\begin{lemma}
-\label{lemma:conf}
-Define random event 
-$$
-\xi = \left\{\forall e\in[n]\; \forall t>0, |\bar w_t(e)-w(e)|\le \rad_t(e) \right\}.
-$$
-Then, there exist constants $c_{\rad}$ and $c_\delta$,
-$$
-\Pr[\xi] \ge 1-\delta.
-$$
-\end{lemma}
-\begin{proof}
-Hoeffding inequality and union bound.
-\end{proof}
-
-
-
-\begin{corollary}
-\label{corr:conf}
-$$
-\xi \implies \forall t,\forall e\in[n] \; w_t^+(e) \ge w(e).
-$$
-$$
-\xi \implies \forall t,\forall M\subseteq[n],\; w_t^+(M) \ge w(M).
-$$
-$$
-\xi \implies \forall t,\forall b\in\diff[n]\; w_t^+(b) \ge w(b).
-$$
-\end{corollary}
-
-\junk{
-\begin{lemma}
-Let $c\in \diff[n],d\in \diff[n]$. Let $\rad_t$ be a radius function.
-Then,
-\begin{equation}
-\rad_t(c\cup d) = \rad_t(c)+\rad_t(d)-\rad_t(c\cap d).
-\end{equation}
-\end{lemma}
-
-\begin{proof}
-Let $c=(c_+,c_-)$ and $d=(d_+,d_-)$.
-We have
-\begin{align}
-\rad_t(c\cup d) &= \rad_t(c_+\cup d_+) + \rad_t(c_-\cup d_-)\\
-			  &= \rad_t(c_+)+\rad_t(d_+)-\rad_t(c_+\cap d_+)
-			    +\rad_t(c_-)+\rad_t(d_-)-\rad_t(c_-\cap d_-)\\
-			  &= \rad_t(c)+\rad_t(d)-\rad_t(c\cap d).
-\end{align}
-\end{proof}
-}
-
-\subsection{Properties of $\rad_t$}
-
-\begin{lemma}
-\label{lemma:rad-diff-simple}
-Let $c\in \diff[n],d\in \diff[n]$.
-Then
-\begin{equation}
-\rad_t(c\del d) = \rad_t(c)-\rad_t(c\cap d).
-\end{equation}
-\end{lemma}
-
-\begin{proof}
-Let $c=(c_+,c_-)$ and $d=(d_+,d_-)$.
-We have
-\begin{align*}
-\rad_t(c\del d) &= \rad_t(c_+\del d_+)+\rad_t(c_-\del d_-)\\
-			    &= \rad_t(c_+)-\rad_t(c_+\cap d_+)+\rad_t(c_-)-\rad_t(c_-\cap d_-)\\
-			    &= \rad_t(c)-\rad_t(c\cap d).
-\end{align*}
-
-\end{proof}
-
-
-\begin{lemma}
-\label{lemma:diff-algebra-rad}
-
-Let $C=(C_+,C_-)$ and $D=(D_+,D_-)$ be two diff-sets.
-If $D \diffvalid C$, then
-$$
-\rad_t(C \oplus D) = \rad_t(C)+\rad_t(D)-2\rad_t(C_+ \cap D_-)-2\rad_t(C_- \cap D_+).
-$$
-
-In addition, if $\neg D \diffvalid C$, then
-$$
-\rad_t(C \ominus D) = \rad_t(C)+\rad_t(D)-2\rad_t(C_+ \cap D_+)-2\rad_t(C_- \cap D_-).
-$$
-\end{lemma}
-
-\begin{proof}
-We prove the first part of the lemma. The second part follows from the first part and the definition of $\neg D$.
-
-By definition, we have $C\oplus D = ( (C_+ \cup D_+) \del (C_-\cup D_-), (C_-\cup D_-) \del (C_+\cup D_+) )$.
-Hence, we have 
-\begin{align}
-\rad_t((C_+ \cup D_+) \del (C_-\cup D_-)) &= \rad_t(C_+ \cup D_+)-\rad_t( (C_+\cup D_+)\cap(C_-\cup D_-)) \\
-							              &= \rad_t(C_+)+\rad_t(D_+)-\rad_t( (C_+\cup D_+)\cap(C_-\cup D_-)),						
-\end{align}
-where the second equality holds due to $C_+\cap D_+=\emptyset$ by the definition of $D\diffvalid C$.
-
-Similarly, we have
-$$
-\rad_t((C_- \cup D_-) \del (C_+\cup D_+)) = \rad_t(C_-)+\rad_t(D_-)-\rad_t( (C_+\cup D_+) \cap(C_-\cup D_-)).
-$$
-
-Combine both equalities, we have
-\begin{align}
-  \rad_t(C \oplus D) &= \rad_t((C_+ \cup D_+) \del (C_-\cup D_))+\rad_t((C_- \cup D_-) \del (C_-\cap D_+))\\
-  				     &=	\rad_t(C_+)+\rad_t(D_+)+\rad_t(C_-)+\rad_t(D_-)-2\rad_t( (C_+\cup D_+) \cap(C_-\cup D_-))\\
-  				     &= \rad_t(C)+\rad_t(D)-2\rad_t( (C_+\cup D_+) \cap(C_-\cup D_-)).
-\end{align}
-
-
-\end{proof}
-
 
 \section{Pure Exploration of Combinatorial Bandits}
 
@@ -538,8 +118,8 @@ Combine both equalities, we have
 \textbf{\Problem: problem formulation.}
 Suppose that the arms are numbered $1,2,\ldots,n$.
 Each arm $e\in[n]$ is associated with a reward distribution $\Rew_e$. 
-We assume that all reward distributions are $b$-subgaussian, i.e. ().
-Notice that all distributions that are supported on $[0,b]$ are $b$-subgaussian distributions [].
+We assume that all reward distributions are $B$-sub-Gaussian, i.e. ().
+Notice that all distributions that are supported on $[0,B]$ are $B$-sub-Gaussian distributions [].
 Let $w(e)$ denote the expected reward of arm $e$, i.e. $w(e)=\E_{X\sim \Rew_e}[X]$.
 In addition, for any set of arms $M\subseteq [n]$, we define $w(M) = \sum_{e\in M} w(e)$ as the sum of expected rewards of arms that belong to $M$.
 
@@ -548,18 +128,20 @@ At the beginning of the game, the learner is given a collection of feasible sets
 And the reward distributions $\{\Rew_e\}_{e\in[n]}$ are unknown to the learner.
 Then, the game is played for multiple rounds;
 on each round $t$, the learner pulls an arm $p_t\in [n]$ and observes a reward sampled from the associated reward distribution $\Rew_{p_t}$.
-The game continues until certain stopping condition is satisfied (specify later).
+The game continues until certain stopping condition is satisfied, which will be specified later.
 After the game finishes, the learner is asked to output a set of arms $\out \in \M$ which approximately maximizes the sum of expected weight, i.e. $w(M_*) - w(\out) \le \epsilon$, where we denote $M_*=\argmax_{M\in \M} w(M)$ to be the optimal set of arms.
 For the sake of simplicity, we shall assume that the optimal set $M_*$ is unique throughout the paper.
 Notice that, if $\epsilon = 0$, then the learner is required to identify the optimal set, i.e. $\out = M_*$.
 
 
 
-\textbf{Fixed confidence and fixed budget.} We consider two different settings: \emph{fixed confidence} and \emph{fixed budget}. 
-In the fixed confidence setting, the learner aims to achieve a fixed confidence about the optimality of the returned set using a small number of samples (pulls).
-Specifically, given a confidence parameter $\delta$, the learner need to guarantee that $\Pr[w(M_*)-w(\out) \le \epsilon] \ge 1-\delta$ and the performance is evaluated by the number of pulls used by the learner.
+\textbf{Fixed confidence and fixed budget.} We consider two different stopping conditions of the game, which are known as \emph{fixed confidence} setting and \emph{fixed budget} setting. 
+In the fixed confidence setting, the learner can stop the game at any point and her goal is to achieve a fixed confidence about the optimality of the returned set using a small number of samples (pulls).
+Specifically, given a confidence parameter $\delta$, the learner need to guarantee that $\Pr[w(M_*)-w(\out) \le \epsilon] \ge 1-\delta$.
+The performance is evaluated by the number of pulls used by the learner.
 Notice that the learner can stop the game at any point in this setting.
-In the fixed budget setting, the learner tries to minimize the probability of error $\Pr[w(M_*)-w(\out) > \epsilon]$ by using a fixed number of samples, i.e. the game stops after a fixed number of rounds.
+In the fixed budget setting, the game stops after a fixed number rounds.
+The learner tries to minimize the probability of error $\Pr[w(M_*)-w(\out) > \epsilon]$ within these rounds.
 In this case, the learner's performance is measured by the probability of error.
 
 
@@ -591,7 +173,7 @@ For most non-trivial combinatorial problems, the size of the collection of feasi
 %Hence, the definition of $\M$ 
 Therefore, the learning algorithm needs a succinct representation of $\M$.
 In particular, we allow the learning algorithm to use a \emph{maximization oracle} which can find the optimal set $M\in \M$ when the expected reward of each arm is known.
-Specifically, we assume that there exists an oracle which takes expected rewards $\{w(1),\ldots,w(n)\}$ as input and returns a set $\Oracle(w) = \argmax_{M\in \M} w(M)$.
+Specifically, we assume that there exists an oracle which takes expected reward vector $\vec w = \big(w(1),\ldots,w(n)\big)^T$ as input and returns a set $\Oracle(\vec w) = \argmax_{M\in \M} w(M)$.
 It is clear that a large class of combinatorial problems admit efficient maximization oracles.
 
 
@@ -618,7 +200,7 @@ The pseudo-code of the algorithm is shown in Algorithm~\ref{algo:pac}.
 \Require Confidence parameter: $\delta \in (0,1)$; Tolerance parameter: $\epsilon >0$; Maximization oracle: $\Oracle(w)$.
 \Statex \textbf{Initialize:} Play each arm $e \in [n]$ once. Initialize empirical means $\bar w_{n}(e)$ and set $T_{n}(e) \gets 1$ for all $e$.
 \For{$t=n,n+1,\ldots$}
-	\State $M_t \gets \Oracle(\bar w_t)$
+	\State $M_t \gets \Oracle(\vec w_t)$
 	\For{$e\in [n]$}
 		\If {$e\in M_t$}
 			\State $\tilde w_t(e) \gets \bar w_t(e)-\rad_t(e)$
@@ -626,12 +208,12 @@ The pseudo-code of the algorithm is shown in Algorithm~\ref{algo:pac}.
 			\State $\tilde w_t(e) \gets \bar w_t(e)+\rad_t(e)$
 		\EndIf
 	\EndFor
-	\State $\tilde M_t \gets \Oracle(\tilde w_t)$
+	\State $\tilde M_t \gets \Oracle(\vec{\tilde w}_t)$
 	\If{$\tilde w_t(\tilde M_t)-\tilde w_t(M_t) \le \epsilon$}
 		\State $\out \gets M_t$
 		\State \textbf{return} $\out$
 	\EndIf
-	\State $p_t \gets \argmax_{(\tilde M_t \del M_t) \cup (M_t \del \tilde M_t)} \rad_t(e)$\label{algo:step:D}
+	\State $p_t \gets \argmax_{e\in (\tilde M_t \del M_t) \cup (M_t \del \tilde M_t)} \rad_t(e)$\label{algo:step:D}
 	\State Play $p_t$ and observe the reward
 	\State Update empirical mean $\bar w_{t+1}(p_t)$
 	\State Update $T_{t+1}(p_t)\gets T_{t}(p_t)+1$ and $T_{t+1}(e) \gets T_{t}(e)$ for every $e\not=p_t$
@@ -666,7 +248,7 @@ We notice that this definition resembles the definition of gaps for \MultiIdent 
 \textbf{Exchange class.} 
 The analysis of our algorithm depends on certain exchange properties of combinatorial structures.
 To study these properties, we introduce notions of \emph{exchange set} and \emph{exchange class} as our tools for the analysis.
-In the following, we present their definitions.
+We present their definitions in the following.
 
 %An exchange set is defined as a pair of disjoint sets.
 
@@ -675,7 +257,7 @@ We define an exchange set $b$ as an ordered pair of disjoint sets $b=(b_+,b_-)$.
 Then, we define operator $\oplus$ such that, for any set $M$ and any exchange set $b=(b_+,b_-)$, we have $M\oplus b \triangleq M\del b_- \cup b_+$.
 We call a set of exchange sets $\B$ an \emph{exchange class for $\M$} if $\B$ satisfies the following property.
 Let $M$ and $M'$ be two  elements of $\M$.
-Then, for any $e \in (M\del M')$, there exists an exchange set $(b_+,b_-)\in \B$ which satisfies $e\in b_-$, $b_+ \subseteq M'$, $b_- \subseteq M$ and $(M\oplus b) \in \M$.
+Then, for any $e \in (M\del M')$, there exists an exchange set $(b_+,b_-)\in \B$ which satisfies $e\in b_-$, $b_+ \subseteq M'\del M$, $b_- \subseteq M \del M'$, $(M\oplus b) \in \M$ and $(M'\ominus b) \in \M$.
 Finally, we define the \emph{width} of exchange class $\B$ as follows
 $$
 \rank(\B) = \max_{(b_+,b_-) \in \B} |b_+|+|b_-|.
@@ -683,7 +265,7 @@ $$
 
 %An exchange class can be seen as a set operations that transform one feasible set to another.
 
-Intuitively, for any feasible sets $M$ and $M'$, there exists an ``operation'' $(b_+,b_-)\in \B$ which can transform $M$ one step towards $M'$; this operation generates a new feasible set $M\oplus b$ by removing elements (including $e$) from $M$ and adding elements which belongs to $M'$.
+Intuitively, for any feasible sets $M$ and $M'$, there exists an exchange set $(b_+,b_-)\in \B$ which can be seen as an ``operation'' that transforms $M$ one step towards $M'$: this operation generates a new feasible set $M\oplus b$ by removing elements (including $e$) from $M$ and adding elements which belongs to $M'$.
 %Therefore, for any two elements $M,M'$ of $\M$, one can sequentially apply a finite number of these operations of $\B$ to transform $M$ to $M'$.it
 One can chain these operations together such that, for any $M\not= M'$, there exists a sequence of exchange sets $b_1,\ldots, b_k$ of $\B$ such that $M'=M\oplus b_1 \ldots \oplus b_k$.
 
@@ -716,27 +298,28 @@ In addition, we have $\rank(\B_{\MultiIdent})=2$, $\rank(\B_{\Matroid})=2$, $\ra
 \end{lemma}
 The  construction for \MultiIdent problem is straightforward. 
 For \Matroid problem, we leverage the basis exchange property of matroids (see Lemma~\ref{lemma:basis-exchange-matroid} in the appendix).
-And for \Match and \Path problems, we use the graph-theoretical properties of matchings and paths.
-Figure~Y illustrates these  exchanges classes.
+And for \Match and \Path problems, we appeal to the graph-theoretical properties of matchings and paths.
+We illustrate these  exchanges classes in Figure~Y.
 A detailed proof of Lemma~\ref{lemma:example-exchange-class} is deferred to the supplementary material.
 
 
 \textbf{Main results.} 
-We show that, in the fixed confidence setting, our algorithm returns the optimal set with high probability and uses at most $\tilde O(\rank(\B)^2/\Delta_e^2)$ samples.
+Our main results are problem-dependent bounds of our algorithm in both fixed confidence and fixed budget settings.
+First, we show that, in the fixed confidence setting, our algorithm returns the optimal set with high probability and uses at most $\tilde O\big(\sum_e \rank(\B)^2/\Delta_e^2\big)$ samples.
 \begin{theorem}
-Given any $\delta \in (0,1)$, any combinatorial problem $\M \subseteq 2^{[n]}$ and any expected rewards $\vec w \in \RR^{d}$.
-Let $\B$ be an exchange class for $\M$ and $\{\Delta_e\}_{e\in [n]}$ be the gaps defined in Eq.~\eqref{eq:define-delta}.
+Given any $\delta \in (0,1)$, any combinatorial problem $\M \subseteq 2^{[n]}$ and any expected rewards $\vec w \in \RR^{n}$.
+Let $\B$ be an exchange class for $\M$ and let $\{\Delta_e\}_{e\in [n]}$ be the gaps defined in Eq.~\eqref{eq:define-delta}.
 Then, with probability at least $1-\delta$, Algorithm~\ref{algo:pac} returns the optimal set and
 $$
-T \le O\left(\sum_{e\in [n]} \frac{\rank(\B)^2}{\Delta_e^2} \log\left(\frac{n}{\delta} \sum_{e\in[n]}\frac{\rank(B)^2}{\Delta_e^2} \right)\right),
+T \le O\left(\frac{1}{B^2}\cdot \sum_{e\in [n]} \frac{\rank(\B)^2}{\Delta_e^2} \log\left(\frac{1}{B^2}\cdot \frac{n}{\delta} \sum_{e\in[n]}\frac{\rank(\B)^2}{\Delta_e^2} \right)\right),
 $$
 where $T$ denotes the number of samples used by Algorithm~\ref{algo:pac}.
 \label{theorem:main}
 \end{theorem}
-Theorem~\ref{theorem:main} is highly general in the sense that it provides a sample complexity for any combinatorial problem $\M$.
+Theorem~\ref{theorem:main} is a general result which provides a sample complexity for any combinatorial problem $\M$.
 In addition, notice that $\rank(\B_{\MultiIdent})=O(1)$.
-Therefore, our sample complexity bound for the \MultiIdent problem is $O(\sum_e \Delta_e^{-2}\log(n/\delta\sum_{e}\Delta_a^{-2}))$.
-This matches the previous best problem-dependent bounds for the \MultiIdent problem.
+Therefore, the sample complexity bound of our algorithm for the \MultiIdent problem is $O\big(\sum_e \Delta_e^{-2}\log(n\delta^{-1}\sum_{a}\Delta_a^{-2})\big)$.
+This matches the best known problem-dependent bounds for the \MultiIdent problem due to XXX [], within logarithmic factors.
 %And Theorem~\ref{algo:pac} establishes the first sample complexity bound for the pure exploration of other combinatorial bandits.
 
 
@@ -751,7 +334,7 @@ This matches the previous best problem-dependent bounds for the \MultiIdent prob
 
 \subsection{Lower bounds}
 
-In this part, we establish a problem dependent lower bound on the sample complexity of the \Problem problem. 
+In this part, we establish a problem-dependent lower bound on the sample complexity of the \Problem problem. 
 To state our results, we first define the notion of \emph{$\delta$-correct algorithm} as follows.
 For any $\delta \in (0,1)$, we call an algorithm $\mathbb A$ a $\delta$-correct algorithm if, for any expected reward $\vec w$, the probability of error of $\mathbb A$ is at most $\delta$, i.e $\Pr[w(M_*)-w(\out) \ge \epsilon] \le \delta$, where $\out$ is the output of algorithm $\mathbb A$.
 
@@ -779,7 +362,7 @@ Hence, for these two problems, Algorithm~\ref{algo:pac} achieves optimal sample 
 On the other hand, for $\Match(V,E)$ and $\Path(V,E)$, Lemma~X indicates that $\rank(\B)=|V| \le n$.
 This means that the gap between our algorithm and this lower bound is a factor of $|V|^2$.
 Notice this gap only depends on the underlying combinatorial structure of $\M$ and is independent of expected rewards $\vec w$. 
-This means that  the sample complexity of Algorithm~\ref{algo:pac} has an optimal dependency on $\{\Delta_e\}_{e\in[n]}$.
+This means that  the sample complexity of Algorithm~\ref{algo:pac} has an optimal dependency on the gaps $\{\Delta_e\}_{e\in[n]}$.
 
 However, we still remain to investigate the necessity of the dependency on $\rank(\B)$ of Algorithm~\ref{algo:pac}.
 To this end, we provide evidence showing that the sample complexity of any $\delta$-correct algorithm should be related to size of exchange sets.
@@ -803,306 +386,545 @@ Notice that
 
 
 \section{Proof of Main Results}
-\begin{define}[Optimal diff-sets]
-Given a diff-set class $\B$ and the optimal set $M_*$.
-We define $\Bopt$ as a subset of $\B$, and for all $b\in \B$, $b\in \Bopt$ if and only if,
-there exists $M\not=M_*$ and $M_* \ominus M$ can be decomposed as $b,b_1,\ldots,b_k$ on $\B$.
-\end{define}
 
-\begin{define}[Hardness $\Delta_e$ of base arm $e$]
-For each $e\in [n]$, we define its hardness $\Delta_e$ as follows
+\subsection{Preliminaries}
+
+
+Let $\vec \chi_a \in \{0,1\}^n$ denote the incidence vector of set $a \subseteq [n]$, i.e. $\chi_a(e) = 1$ if and only if $e\in a$.
+For an exchange set $b=(b_+,b_-)$, we define $\vec \chi_b \triangleq \vec \chi_{b_+}- \vec \chi_{b_-}$ as the incidence vector of $b$.
+We notice that $\vec \chi_b \in \{-1,0,1\}^n$.
+
+For each round $t$, we define vector $\vec\rad_t = \big(\rad_t(1),\ldots,\rad_t(n)\big)^T$ and recall that $\vec w_t\in \RR^n$ is the empirical mean rewards of arms up to round $t$.
+We define $w_t(a) = \langle \vec w_t, \vec \chi_a \rangle$ and $\rad_t(a) = \langle \vec\rad_t, \left|\vec \chi_a \right| \rangle$, where $a$ is a set or an exchange set and $\vec \chi_a$ is the incidence vector of $a$. 
+
+
+\begin{lemma}
+Let $M_1 \subseteq [n]$ be a set.
+Let $b=(b_+,b_-)$ be an exchange set such that 
+$b_-\subseteq M_1$ and $b_+ \cap M_1 = \emptyset$.
+Define $M_2 = M_1 \oplus b$.
+Then, we have 
 $$
-\Delta_e = \min_{b\in \Bopt, e\in b} \frac{1}{\rank(\B)} w(b).
+\vec\chi_{M_1} +\vec\chi_{b} = \vec\chi_{M_2}.
 $$
-\end{define}
+\label{lemma:exchange-char}
+\end{lemma}
 
-\begin{define}[Sufficient exploration]
-For all $t>0$, we define $E_t^3 \subseteq [n]$, such that, for all $e\in[n]$
-$e\in E_t^3$ if and only if $\rad_t(e) < \frac{1}{3} \Delta_e$.
-\end{define}
+\begin{proof}
+Recall that $M_2 = M_1 \del b_- \oplus b_+$ and $b_+\cap b_-=\emptyset$.
+Therefore we see that $M_2 \del M_1 = b_+$ and $M_1 \del M_2 = b_-$.
+Then, we decompose $\vec\chi_{M_1}$ as $\vec\chi_{M_1}=\vec\chi_{M_1\del M_2}+\vec\chi_{M_1\cap M_2}$.
+Hence, we have
+\begin{align*}
+   \vec\chi_{M_1}+\vec\chi_{b} &= \vec\chi_{M_1\del M_2}+\vec\chi_{M_1\cap M_2} + \vec\chi_{b_+}-\vec\chi_{b_-}\\
+   							   &= \vec\chi_{M_1\cap M_2} + \vec\chi_{M_2\del M_1}\\
+   							   &= \vec\chi_{M_2}.
+\end{align*}
+\end{proof}
 
-\begin{corollary}
-For all $t>0$ and $e\in[n]$
-$$ n_t(e) \ge O(\frac{1}{\Delta_e^2}\log(\Delta_e n/\delta)) \implies e\in E_t^3.$$
-\end{corollary}
 
-\begin{theorem}
-With probability at least $1-\delta$,
-the algorithm returns $M_*$,
-and the number of samples used by the algorithm are at most
+\begin{lemma}
+\label{lemma:exchange}
+Let $\M\subseteq 2^{[n]}$ and $\B$ be an exchange class for $\M$.
+Then, for any two different elements $M,M'$ of $\M$ and any $e \in (M\del M')\cup(M'\del M)$, there exists an exchange set $b=(b_+,b_-) \in \B$ such that
+$e\in (b_+\cup b_-)$, $b_-\subseteq (M\del M')$, $b_+\subseteq (M'\del M)$, 
+$(M\oplus b) \in \M$ and  $(M'\ominus b) \in \M$.
+%In addition, the incidence vectors are related by $\vec \chi_M +\vec \chi_b = \vec \chi_{M \oplus b}$.
+Moreover, if $M' = M_*$, then we have $\inn{\vec w, \vec \chi_b} \ge \Delta_e > 0$,
+where $\Delta_e$ is the gap defined in Eq.~\eqref{eq:define-delta}.
+\end{lemma}
+
+\begin{proof}
+We decompose our proof into two cases.
+
+\textbf{Case (1): $e\in M\del M'$.}
+
+By the definition of exchange class, we know that 
+there exists $b=(b_+, b_-) \in \B$ which satisfies that
+$e\in b_-$, $b_- \subseteq (M\del M') $, $b_+\subseteq (M' \del M)$, $(M\oplus b) \in \M$ and $(M'\ominus b) \in \M$.
+
+Next, if $M'=M_*$, we see that $e\not \in M_*$.
+Let us consider the set $M_1 = \argmax_{M': M'\in \M \wedge e\in M'} w(M')$.
+Also define $M_0 = M_*\ominus b$. 
+We have already proved that $M_0\in \M$.  
+%Since $e\in M_1$, we see that $M_1\not= M_*$.
+Combining with the fact that $e\in M_0$, we see that $w(M_0) \le w(M_1)$. 
+Therefore, we obtain that
+$w(M_*)-w(M_0) \ge w(M_*)-w(M_1) = \Delta_e$.
+Notice that the left-hand side of the former inequality can be rewritten using Lemma~\ref{lemma:exchange-char} as follows
 $$
-\sum_{e\in [n]} \Delta_e^{-2}\log(\Delta_e n/\delta).
+w(M_*)-w(M_0) = \inn{\vec w, \vec \chi_{M_*}}-\inn{\vec w, \vec \chi_{M_0}} = \inn{\vec w, \vec \chi_{M_*}-\vec\chi_{M_0}}
+= \inn{\vec w,\vec \chi_b}.
 $$
-\end{theorem}
+Therefore, we obtain $\inn{\vec w,\vec \chi_b} \ge \Delta_e$.
+%We decompose $\vec \chi_M = \vec \chi_{M\del M'}+\vec\chi_{M \cap M'}$.
+%Recall that $\vec \chi_b = \vec \chi_{b_+}-\vec\chi_{b_-}$
+
+\textbf{Case (2): $e\in M'\del M$.}
+
+Using the definition of exchange class, we see that 
+there exists $c=(c_+,c_-)\in \B$ such that 
+$e\in c_-$, $c_-\subseteq (M'\del M)$, $c_+\subseteq (M\del M')$, $(M'\oplus c)\in \M$
+and $(M\ominus c)\in \M$.
+
+We construct $b=(b_+,b_-)$ by setting $b_+=c_-$ and $b_-=c_+$. 
+Notice that, by the construction of $b$, we have $M\oplus b = M\ominus c$ and $M'\ominus b = M'\oplus c$.
+Therefore, it is clear that $b$ satisfies the requirement of the lemma.
 
 
-\begin{theorem}
-Given confidence parameter $\delta \in (0,1)$, tolerance parameter $\epsilon \ge 0$, number of arms $n$ and a combinatorial problem instance $\mathcal M \subseteq 2^{[n]}$.
-Let oracle $\Oracle(w)$ be a maximization oracle associated with $\mathcal M$ such that
-$\Oracle(w) = \argmax_{M \in \mathcal M} w(M)$, where $w: 2^{[n]} \rightarrow R$ is a weight function.
+Now, suppose that $M'=M_*$. 
+In this case, we have $e\in M_*$.
+Consider the set $M_3 = \argmax_{M': M'\in \M \wedge e\not \in M'} w(M')$.
+We see that $w(M_*)-w(M_3)=\Delta_e$.
+Define $M_2 = M_* \ominus b$ and notice that  $M_2 \in \M$.
+Combining with the fact that $e\not \in M_2$, we obtain that $w(M_2) \le w(M_3)$.
+Hence, we have
+$w(M_*)-w(M_2) \ge w(M_*)-w(M_3)=\Delta_e$.
+Similar to Case (1), applying Lemma~\ref{lemma:exchange-char} again, we have
+$$
+\inn{\vec w,\vec \chi_b} = w(M_*)-w(M_2) \ge \Delta_e.
+$$
 
-Then, with probability at least $1-\delta$, the output $\out$ of Algorithm~\ref{algo:pac} satisfies
-$
-w(M_*)-w(\out) \le \epsilon,
-$
-where $M_* = \argmax_{M\in \M} w(M)$ is the optimal set.
-In addition, the number of samples $T$ used by the algorithm satisfies
+
+\end{proof}
+
+\begin{lemma}
+\label{lemma:max}
+Let $M$ and $M'$ be two sets. 
+Then, we have 
+$$ \max_{e \in (M\del M') \cup (M'\del M)} \rad_t(e) = \big\|\vec r_t \odot |\vec \chi_{M'} - \vec \chi_M| \big\|_\infty.$$
+\end{lemma}
+
+\begin{proof}
+Notice that $\vec\chi_{M'}-\vec\chi_{M} = \vec\chi_{M'\del M}-\vec\chi_{M\del M'}$.
+In addition, since $(M'\del M) \cap (M\del M') = \emptyset$, we have
+$\vec \chi_{M'\del M} \odot \vec\chi_{M\del M'} = \vec 0_n$. 
+Also notice that $ \vec\chi_{M'\del M}-\vec\chi_{M\del M'} \in \{-1,0,1\}^n$.
+Therefore, we have
+\begin{align*}
+|\vec\chi_{M'\del M}-\vec\chi_{M\del M'}| 
+&= (\vec\chi_{M'\del M}-\vec\chi_{M\del M'})^2\\
+&=\vec\chi_{M'\del M}^2+\vec\chi_{M\del M'}^2+2\vec \chi_{M'\del M} \odot \vec\chi_{M\del M'} \\
+&=\vec\chi_{M'\del M}+\vec\chi_{M\del M'}\\
+& = \vec\chi_{(M' \del M) \cup (M\del M')},
+\end{align*}
+where the third equation follows from the fact that $\vec\chi_{M\del M'}\in \{0,1\}^n$ and $\vec\chi_{M'\del M}\in\{0,1\}^n$.
+The lemma follows immediately from the fact that $\rad_t(e) \ge 0$ and  $\vec\chi_{(M\del M')\cup(M'\del M)}\in \{0,1\}^n$.
+\end{proof}
+
+\begin{lemma}
+\label{lemma:vector-technical}
+Let $\vec a,\vec b, \vec c \in \RR^n$ be three vectors.
+Then, we have $\inn{\vec a, \vec b\odot \vec c} = \inn{\vec a\odot \vec b,\vec c}$.
+\end{lemma}
+
+\begin{proof}
+We have
+\begin{align*}
+	\inn{\vec a,\vec b\odot \vec c} = \sum_{i=1}^n a(i) \big(b(i) c(i)\big) = \sum_{i=1}^n \big(a(i)b(i)\big)c(i) = \inn{\vec a\odot\vec b,\vec c}.
+\end{align*}
+\end{proof}
+
+\begin{lemma}
+Let $M_t$ and $\vec{\tilde w_t}$ be defined in Algorithm~1. 
+Let $M' \in \M$ be a feasible set.
+We have
 $$
-T \le \mathbf H_\epsilon \log\left(\frac{n}{\delta}\mathbf H_\epsilon\right),
+\tilde w_t(M')-\tilde w_t(M_t) = 
+\inn{\vec{\tilde w}_t, \vec \chi_{M'}-\vec \chi_{M_t}} = \inn{\vec w_t, \vec \chi_{M'}-\vec\chi_{M_t}}+\inn{\vec r_t, |\vec \chi_{M'}-\vec\chi_{M_t}|}.
 $$
+\label{lemma:tilde}
+\end{lemma}
+
+\begin{proof}
+We begin with proving the first part.
+It is easy to verify that $\vec {\tilde w_t} = \vec w_t+ \vec r_t \odot (\vec 1_n-2\vec\chi_{M_t})$.
+Then, we have
+\begin{align}
+\inn{\vec{\tilde w}_t, \vec \chi_{M'}-\vec \chi_{M_t}}
+&= \inn{\vec w_t+ \vec r_t \odot (1-2\vec\chi_{M_t}), \;\vec \chi_{M'}-\vec \chi_{M_t}} \nonumber \\
+&= \inn{\vec w_t,\vec \chi_{M'}-\vec \chi_{M_t}}+\inn{\vec r_t, (\vec 1_n-2\vec\chi_{M_t}) \odot (\vec \chi_{M'}-\vec \chi_{M_t})}
+\label{eq:l-d-1}\\
+&= \inn{\vec w_t,\vec \chi_{M'}-\vec \chi_{M_t}}+\inn{\vec r_t, \vec\chi_{M'}-\vec\chi_{M_t}-2\vec\chi_{M_t}\odot\vec\chi_{M'}+2\vec\chi_{M_t}^2 } \nonumber\\
+&= \inn{\vec w_t,\vec \chi_{M'}-\vec \chi_{M_t}}+\inn{\vec r_t, \vec\chi_{M'}^2-\vec\chi_{M_t}^2-2\vec\chi_{M_t}\odot\vec\chi_{M'}+2\vec\chi_{M_t}^2 }
+\label{eq:l-d-2}\\
+&= \inn{\vec w_t,\vec \chi_{M'}-\vec \chi_{M_t}}+\inn{\vec r_t, (\vec\chi_{M'}-\vec\chi_{M_t})^2}
+\nonumber \\ \
+&= \inn{\vec w_t,\vec \chi_{M'}-\vec \chi_{M_t}}+\inn{\vec r_t, \big|\vec\chi_{M'}-\vec\chi_{M_t}\big|},
+\label{eq:l-d-3}
+\end{align}
 where
-$$
-\mathbf H_\epsilon = \sum_{e\in[n]} \min\left\{\frac{\rank(\B)^2}{\Delta_e^2}, \frac{n^2}{\epsilon^2}\right\}.
-$$
-\end{theorem}
+Eq.~\eqref{eq:l-d-1} follows from Lemma~\ref{lemma:vector-technical};
+Eq.~\eqref{eq:l-d-2} holds since $\vec \chi_{M'}\in \{0,1\}^n$ and $\vec \chi_{M_t}\in \{0,1\}^n$
+and therefore $\vec\chi_{M'}=\vec\chi_{M'}^2$ and $\vec\chi_{M_t}=\vec\chi_{M_t}^2$;
+and Eq.~\eqref{eq:l-d-3} follows since $\vec\chi_{M'}-\vec\chi_{M_t}\in \{-1,0,1\}^2$.
 
-\begin{lemma}
-For any arm $e \in [n]$ and any round $t > n$ after initialization, if $\rad_t(e) \le \max\left\{\frac{\Delta_e}{3\rank(\B)}, \frac{\epsilon}{n}\right\}$,
-then arm $e$ will not be played on round $t$, i.e. $p_t\not= e$.
-\end{lemma}
-\begin{proof}
-If $\rad_t(e) \le \frac{\Delta_e}{3\rank(\B)}$, then we can apply Lemma~\ref{lemma:key-technical} which immediately gives that $p_t\not= e$.
-Hence, we only need to prove the case that $\rad_t(e) \le \frac{\epsilon}{n}$.
-By the definition of $p_t$, we know that for each $i\in D_t$, we have $\rad_t(i) \le \rad_t(e) \le \frac{\epsilon}{n}$.
-Summing up all $i\in D_t$, we obtain
+Next, recall that $\tilde M_t = \argmax_{M\in \M} \tilde w_t(M)$.
+Therefore, we have $\tilde w_t(\tilde M_t) \ge \tilde w_t(M')$.
+Subtracting $\tilde w_t(M_t)$ from both sides of the former inequality, we have
 \begin{equation}
-\rad_t(D_t) \le \epsilon.
-\label{eq:pac-key-0-1}
+\tilde w_t(\tilde M_t)-\tilde w_t(M_t) \ge \tilde w_t(M')-\tilde w_t(M_t).
+\label{eq:l-d-4}
 \end{equation}
-Next, we notice that the definition of $M_t$ gives that $\bar w_t(M_t)=\max_{M\in \M} \bar w_t(M) \ge \bar w_t(M_t \oplus D_t)$.
-This means that
-\begin{equation}
-\bar w_t(D_t) = \bar w_t(M_t\oplus D_t)-\bar w_t(M_t) \le 0.
-\label{eq:pac-key-0-2}
-\end{equation}
-Using the above inequalities, we have.
-\begin{align}
-  w_t^+(D_t) &= \bar w_t(D_t)+\rad_t(D_t) \label{eq:pac-key-1}\\
-  			 &\le \bar w_t(D_t)+\epsilon \label{eq:pac-key-2}\\
-  			 &\le \epsilon, \label{eq:pac-key-3}
-\end{align}
-where Eq.~\eqref{eq:pac-key-1} follows from the definition of $w_t^+(\cdot)$; 
-Eq.~\eqref{eq:pac-key-2} follows from Eq.~\eqref{eq:pac-key-0-1};
-Eq.~\eqref{eq:pac-key-3} holds since Eq.~\eqref{eq:pac-key-0-2}.
-\end{proof}
-
-\begin{lemma}
-\label{lemma:pac-correct}
-If Algorithm~\ref{algo:pac} stops, then $w(M_*)-w(\out) \le \epsilon$.
-\end{lemma}
-
-\begin{proof}
-Suppose that $\out \not= M_*$.
-Suppose that the algorithm stops on round $T$, we know that $\out = M_T$.
-Consider the diff-set $D=M_* \ominus M_T$ and the diff-set $D_T$ as defined in Step~\ref{algo:step:D} of Algorithm~\ref{algo:pac}.
-By Lemma~Z, we see that 
-\begin{equation}
-w_T^+(D_T) = \max_{C: C \diffvalid M_T} w_T^+(C) \ge w_T^+(D).
-\label{eq:pac-correct-0}
-\end{equation}
-On the other hand, the stopping condition of Algorithm~\ref{algo:pac} gives that
-\begin{align}
-\epsilon &\ge \tilde w_T(\tilde M_T)-\tilde w_T(M_T) \nonumber \\
-		 &= w_T^+(D_T) \ge w_T^+(D) \label{eq:pac-correct-1} \\
-		 &\ge w(D) = w(M_*)-w(M_T), \label{eq:pac-correct-2}
-\end{align}
-where Eq.~\eqref{eq:pac-correct-1} follows from Eq.~\eqref{eq:pac-correct-0}; Eq.~\eqref{eq:pac-correct-2} follows from the assumption that event $\xi$ occurred.
-
-
+The lemma follows by noticing that the left-hand side of Eq.~\eqref{eq:l-d-4} equals to 
+$\inn{\vec w_t,\vec \chi_{\tilde M_t}-\vec \chi_{M_t}}+\inn{\vec r_t, \big|\vec\chi_{\tilde M_t}-\vec\chi_{M_t}\big|}$
+and the right-hand side equals to
+$\inn{\vec w_t,\vec \chi_{M'}-\vec \chi_{M_t}}+\inn{\vec r_t, \big|\vec\chi_{M'}-\vec\chi_{M_t}\big|}$.
 \end{proof}
 
 
-Unless specified, we shall assume the random event $\xi$ (defined in Lemma~\ref{lemma:conf}) holds in all the following proofs.
+\subsection{Confidence Intervals}
 
+For all $t>0$, we define random event $\xi_t$ as follows
+\begin{equation}
+\xi_t = \Big\{
+\forall i\in[n],\quad 
+|w(i)-w_t(i)| \le \rad_t(i) 
+\Big\}.
+\label{eq:define-xi}
+\end{equation}
+We notice that random event $\xi_t$ characterizes the event that the confidence bounds of all arms are valid at round $t$.
+
+\begin{lemma}
+\label{lemma:ci}
+Suppose that the reward distribution $\Rew_e$ is a $B$-sub-Gaussian distribution for all $e\in [n]$.
+And if, for all $t>0$ and all $e\in [n]$, 
+the confidence interval $\rad_t(e)$ is given by
+$$
+\rad_t(e) = B\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_e(t)}},
+$$
+where $T_e(t)$ is the number of samples of arm $e$ up to round $t$.
+Then, we have
+$$
+\Pr\left[\bigcap_{t=1}^\infty \xi_t \right] \ge 1-\delta.
+$$
+\end{lemma}
+
+\begin{proof}
+%We claim that, for any $t>0$, one has $\Pr[\xi_t] \ge 1- \frac{\delta}{4t^2}$.
+For any $t>0$ and $e\in [n]$, notice $\Rew_e$ is a $B$-sub-Gaussian distribution with mean $w(e)$ and $w_t(e)$ is the empirical mean of $\Rew_e$ for $T_e(t)$ samples. 
+Using Hoeffding's inequality (see XXX), we obtain
+$$
+\Pr\left[ \big|w_t(e)-w(e) \big| \ge B\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_e(t)}} \right] \le \frac{\delta}{2nt^2}.
+$$
+
+By union bound over all $e\in [n]$, we see that $\Pr[\xi_t] \ge 1-\frac{\delta}{2t^2}$. 
+Using a union bound over all $t>0$ again, we have
+\begin{align*}
+\Pr\left[\bigcap_{t=1}^\infty \xi_t \right] &\ge 1-\sum_{t=1}^\infty \Pr[\neg \xi_t]\\
+&\ge 1-\sum_{t=1}^\infty \frac{\delta}{2t^2}\\
+&= 1-\frac{\pi^2}{12}\delta \ge 1-\delta.
+\end{align*}
+\end{proof}
+
+
+\begin{lemma}
+\label{lemma:ci-property}
+Given any $t>0$, assume that event $\xi_t$ as defined in Eq.~\eqref{eq:define-xi} occurs. 
+Then, for any vector $\vec a \in \RR^n$, we have
+$$
+\big|\inn{\vec w,\vec a} - \inn{\vec w_t, \vec a}\big| \le \inn{\vec r_t, |\vec a|}.
+$$
+\end{lemma}
+
+\begin{proof}
+Suppose that $\xi$ occurs. Then, we have
+\begin{align}
+\big|\inn{\vec w,\vec a} - \inn{\vec w_t, \vec a}\big| 
+&=\big|\inn{\vec w-\vec w_t,\vec a}\big| \nonumber \\
+&=\left|\sum_{i=1}^n \big(w(i)-w_t(i)\big) a(i)  \right| \nonumber \\
+&\le\sum_{i=1}^n \big| w(i)-w_t(i)\big| |a(i)| \nonumber \\
+&\le\sum_{i=1}^{n} \rad_t(i) \cdot |a(i)| \label{eq:ci-c-1}\\
+&= \inn{\vec r_t,  |\vec a|}, \nonumber
+\end{align}
+where Eq.~\eqref{eq:ci-c-1} follows the definition of event $\xi_t$ in Eq.~\eqref{eq:define-xi} and the assumption that it occurs.
+\end{proof}
+
+
+\subsection{Main Lemmas}
 
 \begin{lemma}
 \label{lemma:correct}
-For any $t>0$, if the algorithm terminates on round $t$, then $M_t=M_*$.
+Given any $t > 0$, assume that event $\xi_t$ (defined in Eq.~\eqref{eq:define-xi}) occurs.
+Then, if Algorithm~\ref{algo:pac} terminates at round $t$, we have $M_t=M_*$.
 \end{lemma}
 
 \begin{proof}
-Suppose $M_t \not= M_*$. Then $w(M_*)>w(M_t)$. 
-Then, there exists $b \in \B$ such that $b \diffvalid M_t$ and $w(b)>0$.
-On the other hand, by Corollary~\ref{corr:conf}, we have $w_t^+(b) > w(b)$.
-Hence $w_t^+(b)>0$. This contradicts to the stopping condition of our algorithm.
+Suppose that $M_t \not= M_*$. 
+By definition, we have $w(M_*)>w(M_t)$. 
+Rewriting the former inequality, we obtain that $\inn{\vec w, \vec\chi_{M_*}} > \inn{\vec w,\vec\chi_{M_t}}$.
+
+Applying Lemma~\ref{lemma:exchange} by setting $M=M_t$ and $M'=M_*$, we see that 
+there exists $b=(b_+,b_-)\in \B$ such that $(M_t \oplus b) \in \M$.
+%Then, using Lemma~\ref{lemma:exchange-char}, we see that 
+
+
+Now define $M_t' = M_t \oplus b$.
+Recall that $\tilde M_t =\argmax_{M\in \M} \tilde w_t(M)$ and therefore $\tilde w_t(\tilde M_t) \ge \tilde w_t(M_t')$.
+Hence, we have
+\begin{align}
+  \tilde w_t(\tilde M_t)-\tilde w_t(M_t) 
+  &\ge \tilde w_t(M_t')-\tilde w_t(M_t) \nonumber \\
+  &= \inn{\vec w_t, \vec \chi_{M_t'}-\vec\chi_{M_t}}+\inn{\vec r_t, |\vec \chi_{M'}-\vec\chi_{M_t}|} \label{eq:lc-1}\\
+  &\ge \inn{\vec w, \vec \chi_{M_t'}-\vec\chi_{M_t}} \label{eq:lc-2}\\
+  &= w(M_t')-w(M_t) > 0 \label{eq:lc-3},
+\end{align}
+where Eq.~\eqref{eq:lc-1} follows from Lemma~\ref{lemma:tilde};
+and Eq.~\eqref{eq:lc-2} follows the assumption that event $\xi$ occurs and Lemma~X;
+
+Therefore Eq.~\eqref{eq:lc-3} shows that $\tilde w_t(\tilde M_t) > \tilde w_t(M_t)$. 
+However, this contradicts to the stopping condition of Algorithm~\ref{algo:pac}: $\tilde w_t(\tilde M_t) \le \tilde w_t(M_t)$ and the assumption that the algorithm terminates on round $t$.
 \end{proof}
+
+
+
 
 \begin{lemma}
 \label{lemma:key-technical}
-For any $t>0$.
-If $e\in E_t^3$, then $p_t\not= e$.
+Given any $t>0$ and suppose that event $\xi_t$ (defined in Eq.~\eqref{eq:define-xi})  occurs.
+For any $e\in [n]$, if $\rad_t(e) < \frac{\Delta_e}{3\rank(\B)}$, then, arm $e$ will not be pulled on round $t$, i.e. $p_t\not= e$.
 \end{lemma}
 
 \begin{proof}
-Suppose that $p_t=e$. 
-Let $D = M_t^+ \ominus M_t$.
-Let $c,c_1,\ldots,c_k$ be decomposition of $D$ on $\B$. 
-And since $\B$ is a diff-set class, such decomposition exists.
-Assume, without loss of generality, that $e\in c$.
+Suppose, in the contrary, that $p_t = e$.
+By Lemma~\ref{lemma:exchange}, there exists an exchange set $c=(c_+,c_-) \in \B$
+such that $e\in (c_+\cup c_-)$, $c_- \subseteq (M_t \del \tilde M_t)$, $c_+ \subseteq (\tilde M_t \del M_t)$, $(M_t\oplus c) \in \M$ and $(\tilde M_t \ominus c) \in \M$.
 
-By Lemma~Y, we know that 
-\begin{equation}
-	\label{eq:lemma-key-1}
-	D_+ = c_+\cup c_1^+ \cup \ldots \cup c_k^+\quad \text{and}\quad D_- = c_-\cup c_1^-\cup \ldots c_k^-.
-\end{equation}
+%Define vector 
 
-We also denote $K=\rank(\B)$.
+Now, we decompose our proof into two cases.
 
+\textbf{Case (1): $(e \in M_* \wedge e\in c_+) \vee (e \not \in M_* \wedge e\in c_-)$.}
 
-\textbf{Case (1).} 
-Suppose that $c \in\Bopt$. Then $w(c)>0$.
-Since $e\in E_t^3$, we have $\rad_t(e) \le \frac{1}{3}\Delta_e \le \frac{1}{3K}w(c)$.
-In addition, $\forall g\in c_t, g\not=e$, $\rad_t(g) \le \rad_t(e)\le \frac{1}{3K}w(c)$.
-Hence, $\rad_t(c) = \sum_{g\in c_t} \rad_t(g) \le \frac{|c_t|}{3K}w(c) \le \frac{1}{3}w(c)$.
+Define $M_t' = \tilde M_t \ominus c$ and recall that $M_t' \in \M$ due to the definition of exchange class.
 
-Hence, $\bar w_t(c) \ge w(c)-\rad_t(c) \ge \frac{2}{3}w(c) > 0$.
-This means that $\bar w_t(M_t \oplus c) = \bar w_t(M_t)+\bar w_t(c) > \bar w_t(M_t)$.
-Therefore, $M_t \not= \max_{M\in \M} \bar w_t(M)$.
-This contradicts to the definition of $M_t$.
+First, we claim that $M_t'\not= M_*$.
+Suppose that $e\in M_*$ and $e\in c_+$.
+Then, we see that $e\not\in M_t'$ and hence $M_t'\not=M_*$.
+On the other hand, if $e\not \in M_*$ and $e\in c_-$, then $e\in M_t'$ which also means that $M_t'\not= M_*$.
+Therefore we have $M_t'\not=M_*$ in either cases.
 
-\textbf{Case (2).} 
-Suppose that $c_t\not\in \Bopt$. Then, one of the following mutually exclusive cases must hold.
+%There exists an exchange set $b=(b_+,b_-)\in \B$ such that $e\in b_+$, $b_+\subseteq (M_* \del M_t')$, $b_- \subseteq (M_t'\del M_*)$ and $M_t'\oplus b \in \M$.
 
-\textbf{Case (2.1).} 
-$(e \in M_* \wedge e\in c_+)$ or $(e \not \in M_* \wedge e\in c_-)$. 
+Next, we apply Lemma~\ref{lemma:exchange} by setting $M=M_t'$ and $M'=M_*$.
+We see that there exists an exchange set $b\in \B$ such that, $e\in (b_+\cup b_-)$, $(M_t' \oplus b) \in \M$ and
+ $\inn{\vec w, \vec \chi_b} \ge \Delta_e > 0$.
  
-Let the decomposition of $M_* \ominus (M_t \oplus D \ominus c)$ on $\B$ be $b,b_1,\ldots,b_l$, which exists due to $\B$ is a diff-set class. 
-Assume wlog that $e\in b$. 
-We write $b=(b_+,b_-)$.
-It is easy to see that $b \in \Bopt$. 
+Now, we define vectors $\vec d = \vec \chi_{\tilde M_t} - \vec \chi_{M_t}$, $\vec d_1 = \vec\chi_{M_t'}-\vec\chi_{M_t}$ and $\vec d_2 = \vec\chi_{M_t'\oplus b}-\vec\chi_{M_t}$.
+%It is clear that $d\in[0,1]^n$,$d_1\in[0,1]^n$ and $d_2\in[0,1]^n$.
+By the definition of $M_t'$ and Lemma~\ref{lemma:exchange}, we see that $\vec d_1 = \vec d - \vec \chi_{c}$ and $\vec d_2 = \vec d_1+\vec \chi_b = \vec d-\vec \chi_c+\vec \chi_b$.
 
-Define $\tilde D = (M_t \oplus D \ominus c)\ominus M_t$ and $D' = (M_t \oplus \tilde D \oplus b) \ominus M_t$.
-By Lemma~\ref{lemma:diff-set-algebra}, we know that $\tilde D = D\ominus c$ and $D'=\tilde D\oplus b$.
-We also write $\tilde D=(\tilde D_+, \tilde D_-)$ and $D'= (D'_+, D'_-)$.
-By definition, we have 
+
+Then, we claim that $\nor{\vec r_t \odot (\vec d-\vec \chi_c)}_\infty < \frac{\Delta_e}{3\rank(\B)}$.
+Since $c_-\subseteq M_t$ and $c_+\cap M_t = \emptyset$, using standard set theoretical manipulations, we can show that $M_t \del \tilde M_t= (M_t \del M_t') \cup c_-$. 
+Similarly, one can show that $\tilde M_t \del M_t = (M_t' \del M_t) \cup c_+$. 
+This means that $\big((M_t \del M_t') \cup (M_t'\del M_t)\big) \subseteq \big((M_t \del \tilde M_t ) \cup (\tilde M_t \del M_t)\big)$.
+Then, applying Lemma~Y, we obtain
+\begin{align}
+   \nor{\vec r_t \odot (\vec d-\vec\chi_c)}_\infty 
+   &= \nor{\vec r_t \odot (\vec \chi_{M_t'} - \vec\chi_{M_t})}_\infty \nonumber\\
+   &= \max_{i\in (M_t \del M_t') \cup (M_t'\del M_t) } \rad_t(i) \nonumber \\
+   &\le \max_{i\in (M_t \del \tilde M_t ) \cup (\tilde M_t \del M_t)}  \rad_t(i) \nonumber \\
+   & = \rad_t(e) < \frac{\Delta_e}{3\rank(\B)} \label{eq:u-c-1-0}.
+\end{align}
+
+We show that $\nor{\vec r_t \odot \vec \chi_c}_\infty < \frac{\Delta_e}{3\rank(\B)}$.
+Recall that, by the definition of $c$, we have
+$c_+\subseteq (\tilde M_t \del M_t)$ and $c_-\subseteq (M_t\del \tilde M_t)$. 
+Hence $c_+\cup c_- \subseteq  (\tilde M_t \del M_t)\cup (M_t\del \tilde M_t)$.
+Since $\vec \chi_c \in [-1,1]^n$, we see that 
+\begin{align}
+\nor{\vec r_t \odot |\vec \chi_c|}_\infty &= \max_{i\in  c_+\cup c_-} \rad_t(i) \nonumber \\
+									    &\le \max_{i\in  (\tilde M_t \del M_t)\cup (M_t\del \tilde M_t)} \rad_t(i)  \nonumber \\
+									    &= \rad_t(e) < \frac{\Delta_e}{3\rank(\B)} \label{eq:u-c-1-0-1}.
+\end{align}
+
+
+Next, we claim that $\vec d \odot \vec \chi_c = |\vec \chi_c|$.
+Recall that $\vec\chi_c = \vec\chi_{c_+}-\vec\chi_{c_-}$
+and $\vec d = \vec \chi_{\tilde M_t}-\vec \chi_{M_t} = \vec\chi_{\tilde M_t\del M_t} - \vec\chi_{M_t\del \tilde M_t}$.
+We also notice that $c_+ \subseteq (\tilde M_t \del M_t)$ and $c_- \subseteq (M_t \del \tilde M_t)$.
+This implies that $c_+ \cap (M_t \del \tilde M_t) = \emptyset$ and $c_-\cap (\tilde M_t \del M_t) = \emptyset$.
+Therefore, we have
 \begin{align*}
-	\tilde D_+ &= (D_+ \cup c_-)\del (D_- \cup c_+)\\
-	           &= (D_+\cup c_-\del D_-) \cap (D_+\cup c_-\del c_+)\\
-	           &= D_+ \cap (D_+\del c_-) \\
-	           &= D_+\del c_+.
+\vec d \odot \vec \chi_c &= (\vec\chi_{\tilde M_t\del M_t} - \vec\chi_{M_t\del \tilde M_t})\odot(\vec\chi_{c_+}-\vec\chi_{c_-})\\
+&= \vec\chi_{\tilde M_t\del M_t}\odot \vec\chi_{c_+}+
+   \vec\chi_{M_t \del \tilde M_t}\odot \vec\chi_{c_-}-
+   \vec\chi_{\tilde M_t\del M_t}\odot \vec\chi_{c_-}-
+   \vec\chi_{M_t\del \tilde M_t}\odot \vec\chi_{c_+}\\
+&= \vec\chi_{\tilde M_t\del M_t}\odot \vec\chi_{c_+}+
+   \vec\chi_{M_t \del \tilde M_t}\odot \vec\chi_{c_-} \\
+&= \vec\chi_{c_+}+\vec\chi_{c_-} =|\vec\chi_c|. 
 \end{align*}
-By the same method, we are able to show that $\tilde D_-=D_-\del c_-$.
-Therefore we have 
+where the last equality holds since $c_+\cap c_- =\emptyset$.
+
+Now, we bound  quantity $\langle \vec r_t, |\vec d_2| \rangle - \langle \vec r_t, |\vec d| \rangle$ as follows
+\begin{align}
+\langle \vec r_t, |\vec d_2| \rangle - \langle \vec r_t, |\vec d| \rangle &=
+\langle \vec r_t, |\vec d_2|-|\vec d| \rangle = \left\langle \vec r_t, \vec d_2^2- \vec d^2 \right\rangle
+\label{eq:u-c-1-1} \\
+&= \left\langle \vec r_t, (\vec d-\vec \chi_c+\vec \chi_b)^2- \vec d^2 \right\rangle 
+\nonumber \\
+&= \left\langle \vec r_t, \vec \chi_b^2+\vec \chi_c^2-2\vec \chi_b\odot \vec \chi_c -
+						  2\vec d \odot \vec \chi_c + 2\vec d\odot\vec \chi_b \right\rangle
+\nonumber \\
+&= \left\langle \vec r_t, \vec \chi_b^2 - \vec \chi_c^2+2\vec \chi_b\odot (\vec d-\vec \chi_c)\right\rangle
+\label{eq:u-c-1-2}\\
+&= \left\langle \vec r_t, |\vec\chi_b| \right\rangle
+  -\left\langle \vec r_t, |\vec\chi_c| \right\rangle
+  -2\left\langle \vec r_t, \vec \chi_b\odot (\vec d-\vec \chi_c) \right\rangle
+  \nonumber \\
+&= \left\langle \vec r_t, |\vec\chi_b| \right\rangle
+  -\left\langle \vec r_t, |\vec\chi_c| \right\rangle
+  -2\left\langle \vec r_t \odot (\vec d-\vec \chi_c), \vec \chi_b \right\rangle
+  \label{eq:u-c-1-3}\\  
+& \ge \left\langle \vec r_t, |\vec\chi_b| \right\rangle
+  -\left\langle \vec r_t, |\vec\chi_c| \right\rangle
+  -2\left\|\vec r_t \odot (\vec d-\vec \chi_c)\right\|_\infty \left\| \vec \chi_b\right\|_1
+  \label{eq:u-c-1-4} \\
+& > \left\langle \vec r_t, |\vec\chi_b| \right\rangle
+  -\left\langle \vec r_t, |\vec\chi_c| \right\rangle
+  -\frac{2\Delta_e}{3\rank(\B)} \|\vec\chi_b\|_1 
+  \label{eq:u-c-1-5}\\
+& \ge \left\langle \vec r_t, |\vec\chi_b| \right\rangle
+  -\left\langle \vec r_t, |\vec\chi_c| \right\rangle
+  -\frac{2\Delta_e}{3}
+  \label{eq:u-c-1-6},
+\end{align}
+where Eq.~\eqref{eq:u-c-1-1} holds since $\vec d\in \{-1,0,1\}^n$ and $\vec d_2\in \{-1,0,1\}^n$;
+Eq.~\eqref{eq:u-c-1-2} follows from the claim that $\vec d \odot \vec \chi_c = |\vec \chi_c|=\vec\chi_c^2$;
+Eq.~\eqref{eq:u-c-1-3} and Eq.~\eqref{eq:u-c-1-4} follow from Lemma~\ref{lemma:vector-technical} and H\"older's inequality;
+Eq.~\eqref{eq:u-c-1-5} follows from Eq.~\eqref{eq:u-c-1-0};
+and Eq.~\eqref{eq:u-c-1-6} holds since $b\in\B$ and $\nor{\vec\chi_b}_1 = |b_+|+|b_-| \le \rank(\B)$.
+
+Applying Lemma~\ref{lemma:tilde} by setting $M' = M_t' \oplus b$ and using the fact that $\tilde w_t(\tilde M_t) \ge \tilde w_t(M_t')$, we have 
+\begin{align*}
+\inn{\vec w_t, \vec d}+\inn{\vec r_t, |\vec d|}
+& = \inn{\vec w_t, \vec \chi_{\tilde M_t}-\vec\chi_{M_t}}+\inn{\vec r_t, |\vec \chi_{\tilde M_t}-\vec\chi_{M_t}|}\\
+& = \tilde w_t(\tilde M_t)- \tilde w_t(M_t)\\
+& \ge \tilde w_t(M_t') - \tilde w_t(M_t)\\
+&= \inn{\vec w_t, \vec \chi_{M_t'}-\vec\chi_{M_t}}+\inn{\vec r_t, |\vec \chi_{M_t'}-\vec\chi_{M_t}|}\\
+&= \inn{\vec w_t, \vec d_2}+\inn{\vec r_t, |\vec d_2|} \\
+									  &= \inn{\vec w_t, \vec d}-\inn{\vec w_t, \vec \chi_c}+\inn{\vec w_t,\vec\chi_b}+\inn{\vec r_t, |\vec d_2|},
+\end{align*}
+where the last equality follows from the fact that $\vec d_2 = \vec d-\vec \chi_{c}+\vec \chi_{b}$.
+Rearranging the above inequality, we obtain
+\begin{align}
+\inn{\vec w_t, \vec \chi_c} &\ge \inn{\vec w_t, \vec \chi_b}+\inn{\vec r_t, |\vec d_2|}-\inn{\vec r_t, |\vec d|}\nonumber \\
+&\ge  \inn{\vec w_t, \vec \chi_b}+
+\left\langle \vec r_t, |\vec\chi_b| \right\rangle
+  -\left\langle \vec r_t, |\vec\chi_c| \right\rangle
+  -\frac{2\Delta_e}{3} \label{eq:u-c-1-7}\\
+&> \inn{\vec w, \vec \chi_b}-\inn{\vec r_t, \vec \chi_c}-\frac{2\Delta_e}{3} \label{eq:u-c-1-8}\\
+&> \inn{\vec w, \vec \chi_b}-\frac{\Delta_e}{3}-\frac{2\Delta}{3} \label{eq:u-c-1-9}\\
+&= \inn{\vec w, \vec \chi_b}-\Delta_e \ge 0,
+\end{align}
+where Eq.~\eqref{eq:u-c-1-7} uses Eq.~\eqref{eq:u-c-1-6}; 
+Eq.~\eqref{eq:u-c-1-8} follows from the assumption that event $\xi$ occurs and Lemma~X;
+and Eq.~\eqref{eq:u-c-1-8} holds since Eq.~\eqref{eq:u-c-1-0-1}.
+
+We have shown that $\inn{\vec w_t,\vec \chi_c}>0$. Now we can bound $w_t(M_t')$ as follows
+\begin{align*}
+ w_t(M_t') &= \inn{\vec w_t, \vec \chi_{M_t'}} = \inn{\vec w_t, \vec \chi_{M_t}+\vec \chi_c} =
+ \inn{\vec w_t, \vec \chi_{M_t}}+\inn{\vec w_t, \vec \chi_c} > \inn{\vec w_t, \vec \chi_{M_t}} = w_t(M_t).
+\end{align*}
+However, the definition of $M_t$ ensures that $M_t = \argmax_{M\in\M} w_t(M)$, i.e. $w_t(M_t) \ge w_t(M_t')$. Contradiction.
+
+\textbf{Case (2): $(e \in M_* \wedge e\in c_-) \vee (e \not \in M_* \wedge e\in c_+)$.}
+
+First, we claim that $\tilde M_t \not= M_*$.
+Suppose that $e\in M_*$ and $e\in c_-$.
+Then, we see that $e\not\in \tilde M_t$, which implies that $\tilde M_t\not=M_*$.
+If $e\not \in M_*$ and $e\in c_+$, then $e\in \tilde M_t$, which also implies that $\tilde M_t\not= M_*$.
+Therefore we have $\tilde M_t\not=M_*$ in either cases.
+
+
+Hence, by Lemma~\ref{lemma:exchange}, there exists an exchange set $b=(b_+,b_-)\in \B$ such that 
+$e \in (b_+ \cup b_-)$, $b_-\subseteq  (\tilde M_t \del M_*)$, $b_+ \subseteq (M_* \del \tilde M_t)$ and
+$(\tilde M_t \oplus b) \in \M$.
+Lemma~\ref{lemma:exchange} also indicates that $\inn{\vec w, \vec \chi_b} \ge \Delta_e > 0$.
+
+Next, we define vectors $\vec d = \vec \chi_{\tilde M_t} - \vec \chi_{M_t}$ and $\vec d_1 = \vec\chi_{\tilde M_t\oplus b}-\vec\chi_{M_t}$.
+Notice that Lemma~\ref{lemma:exchange} gives that $\vec d_1= \vec d+\vec b$.
+
+Then, we apply Lemma~\ref{lemma:max} by setting $M = M_t$ and $M' = \tilde M_t$. 
+This shows that 
 \begin{equation}
-\label{eq:2.1.0.1}
-\tilde D_+\subseteq D_+\quad\text{and}\quad\tilde D_-\subseteq D_-.
+\nor{\vec r_t\odot \vec d}_\infty \le \max_{i: (\tilde M_t \del M_t)\cup (M_t\del \tilde M_t)} \rad_t(i) = \rad_t(e) < \frac{\Delta_e}{3}.
+\label{eq:u-c-2-0}
 \end{equation}
 
-First, we show that $\rad_t(c) \le \frac13 w(b)$.
-Since $e\in E_t^3$, $e\in b$ and $b\in \Bopt$, we have $\rad_t(e) \le \frac{1}{3}\Delta_e \le \frac{1}{3K}w(b)$.
-In addition, $\forall g\in c, g\not=e$, $\rad_t(g) \le \rad_t(e)\le \frac{1}{3K}w(b)$.
-Hence, 
+Now, we bound quantity $\inn{\vec w_t, \vec d_1}+\inn{\vec r_t, |\vec d_1|}
+-\inn{\vec w_t, \vec d}-\inn{\vec r_t,  |\vec d|}$ as follows
 \begin{align}
-\rad_t(c) &= \sum_{g\in c} \rad_t(g) \nonumber \\
-		  & \le \frac{|c|}{3K}w(b) \nonumber \\
-		  &\le \frac{1}{3}w(b).\label{eq:2.1.0.2}
+\inn{\vec w_t, \vec d_1}+\inn{\vec r_t, |\vec d_1|}
+-\inn{\vec w_t, \vec d}-\inn{\vec r_t,  |\vec d|}
+& = \inn{\vec w_t, \vec \chi_b} + \inn{\vec r_t, |\vec d_1|-|\vec d|} \nonumber\\
+& =	\inn{\vec w_t, \vec \chi_b} + \inn{\vec r_t, \vec d_1^2-\vec d^2} \label{eq:u-c-2-1} \\
+& =	\inn{\vec w_t, \vec \chi_b} + \inn{\vec r_t, 2\vec d\odot \vec \chi_b +\vec \chi_b^2} \label{eq:u-c-2-2} \\
+& =	\inn{\vec w_t, \vec \chi_b} + \inn{\vec r_t, \vec\chi_b^2} + 2\inn{\vec r_t\odot \vec d, \vec \chi_b} \nonumber \\
+& \ge \inn{\vec w, \vec \chi_b}- 2\inn{\vec r_t\odot \vec d, \vec \chi_b}  \label{eq:u-c-2-3} \\
+& \ge \inn{\vec w, \vec \chi_b}-2\nor{\vec r_t\odot \vec d}_\infty\nor{\vec\chi_b}_1 \label{eq:u-c-2-3.5} \\
+& > \inn{\vec w, \vec \chi_b}-\frac{2\Delta_e}{3} \label{eq:u-c-2-4} \\
+& \ge 0 \label{eq:u-c-2-5},
 \end{align}
+where Eq.~\eqref{eq:u-c-2-1} follows from the fact that $\vec d_1\in \{-1,0,1\}^n$ and $\vec d \in \{-1,0,1\}^n$;
+Eq.~\eqref{eq:u-c-2-2} holds since $\vec d_1=\vec d+\vec \chi_b$;
+Eq.~\eqref{eq:u-c-2-3} follows from the assumption that $\xi$ occurs and Lemma~X;
+Eq.~\eqref{eq:u-c-2-3.5} follows from Lemma~\ref{lemma:vector-technical}  and H\"older's inequality;
+and Eq.~\eqref{eq:u-c-2-4} is due to Eq.~\eqref{eq:u-c-2-0}.
 
-%Consider the diff-set $D'=D\ominus c \oplus b$.
-Now, we show that $\rad_t(\tilde D_+ \cap b_-)+\rad_t(\tilde D_- \cap b_+)+ \le \frac13 w(b)$.
-Since Eq.~\eqref{eq:2.1.0.1}, we have $\forall g\in (\tilde D_+\cap b_-)\cup(\tilde D_-\cap b_+), g\not=e$, 
-$\rad_t(g) \le \rad_t(e)\le \frac{1}{3K}w(b)$.
-Note that $|\tilde D_+\cap b_-|+|\tilde D_-\cap b_+|\le |b_+|+|b_-| \le K$. 
-Hence, 
-\begin{align}
-\rad_t(\tilde D_+ \cap b_-)+\rad_t(\tilde D_- \cap b_+) &= \sum_{g\in (\tilde D_+\cap b_-)\cup(\tilde D_-\cap b_+)} \rad_t(g) \nonumber\\
-	& \le \frac{K}{3K}w(b) \nonumber \\
-	& \le \frac{1}{3}w(b). \label{eq:2.1.0.3}
-\end{align}
-
-Then, we have
-\begin{align}
-\rad_t(D')-\rad_t(D) &= \rad_t(\tilde D \oplus b)-\rad_t(D) \\
-					 &= \rad_t(\tilde D)+\rad_t(b)-2\rad_t(\tilde D_+\cap b_-)-2\rad_t(\tilde D_-\cap b_+)-\rad_t(D)
-					 \label{eq:2.1.1}\\
-					 &= \rad_t(D\ominus c)+\rad_t(b)-2\rad_t(\tilde D_+\cap b_-)-2\rad_t(\tilde D_-\cap b_+)-\rad_t(D)\\
-					 &= \rad_t(D)+\rad_t(c)+\rad_t(b)-2\rad_t(D_+\cap c_+)-2\rad_t(D_-\cap c_-) \nonumber \\
-					 &\quad -2\rad_t(\tilde D_+\cap b_-)-2\rad_t(\tilde D_-\cap b_+)-\rad_t(D)
-					 \label{eq:2.1.2}\\
-					 &= \rad_t(D)+\rad_t(c)+\rad_t(b)-2\rad_t(c_+)-2\rad_t(c_-) \nonumber \\
-					 &\quad -2\rad_t(\tilde D_+\cap b_-)-2\rad_t(\tilde D_-\cap b_+)-\rad_t(D)
-					 \label{eq:2.1.3}\\
-					 &= \rad_t(b)-\rad_t(c)-2\rad_t(\tilde D_+\cap b_-)-2\rad_t(\tilde D_-\cap b_+),
-\end{align}
-where Eq.~\eqref{eq:2.1.1} and Eq.~\eqref{eq:2.1.2} follow from Lemma~\ref{lemma:diff-algebra-rad}, and 
-Eq.~\eqref{eq:2.1.3} follows from Eq.~\eqref{eq:lemma-key-1}.
-
-By the definition of $D$, we have that $w^+_t(D) \ge w^+_t(D')$. 
-This means that 
-\begin{align}
-	\bar w_t(D)+\rad_t(D) &\ge \bar w_t(D')+\rad_t(D')\\
-						  &= \bar w_t(D)-\bar w_t(c)+\bar w_t(b)+\rad_t(D').
-\end{align}
-By regrouping the above inequality, we have
-\begin{align}
-   \bar w_t(c) &\ge \bar w_t(b) + \rad_t(D')-\rad_t(D) \\
-   			   &= \bar w_t(b)+\rad_t(b)-\rad_t(c)-2\rad_t(\tilde D_+\cap b_-)-2\rad_t(\tilde D_-\cap b_+)\\
-   			   &\ge w(b)-\rad_t(c)-2\rad_t(\tilde D_+\cap b_-)-2\rad_t(\tilde D_-\cap b_+) \\
-   			   &> w(b)-\frac13 w(b)-\frac23 w(b) \label{eq:2.1.4}\\
-   			   &= 0,
-\end{align}
-where Eq.~\eqref{eq:2.1.4} follows from Eq.~\eqref{eq:2.1.0.2} and Eq.~\eqref{eq:2.1.0.3}.
-
-This contradicts to the definition of $M_t$.
-
-\textbf{Case (2.2).}
-$(e \in M_* \wedge e\in c_-)$ or $(e \not \in M_* \wedge e\in c_+)$.
-
-Let the decomposition of $M_* \ominus (M_t\oplus D)$ on $\B$ be $b,b_1,\ldots, b_l$.
-Assume wlog that $e\in b$.
-We write that $b=(b_+,b_-)$.
-Note that $b\in \Bopt$ and hence $w(b)>0$.
-
-Define $D'=(M_t\oplus D\oplus b)\ominus M_t$. By Lemma~\ref{lemma:diff-set-algebra}, we know that $D' = D\oplus b$.
-
-First, we show that $|D\del D'| \le |b|$.
-Let $C=D\del D'$ and write $C=(C_+,C_-)$.
-We can bound $|C_+|$ as follows.
+Therefore, we have proved that $\inn{\vec w_t, \vec d}+\inn{\vec r_t,  |\vec d|} < \inn{\vec w_t, \vec d_1}+\inn{\vec r_t, |\vec d_1|}.
+$
+However, Lemma~\ref{lemma:tilde} shows that 
 \begin{align*}
-	C_+ &= D_+\del D'_+\\
-		&= D_+\del \left((D_+\cup b_+) \del (D_-\cup b_-)\right)\\
-		&= (D_+ \cap (D_-\cup b_-)) \cup (D_+ \del (D_+\cup b_+))\\
-		&= D_+\cap b_-.
+\inn{\vec w_t, \vec d}+\inn{\vec r_t,  |\vec d|} 
+&= \inn{\vec w_t, \vec \chi_{\tilde M_t} - \vec \chi_{M_t}}+\inn{\vec r_t,  |\vec \chi_{\tilde M_t} - \vec \chi_{M_t}|} \\
+&= \tilde w_t(\tilde M_t) - \tilde w_t(M_t)\\
+& \ge \tilde w_t(\tilde M_t \oplus b)-\tilde w_t(M_t)\\
+&= \inn{\vec w_t, \vec \chi_{\tilde M_t \oplus b} - \vec \chi_{M_t}}+\inn{\vec r_t,  |\vec \chi_{\tilde M_t \oplus b} - \vec \chi_{M_t}|} \\
+&= \inn{\vec w_t, \vec d_1}+\inn{\vec r_t,  |\vec d_1|}. 
 \end{align*}
-Hence, we have $|C_+| \le |b_-|$.
-Then, we move to bounding $|C_-|$
-\begin{align*}
-	C_- &= D_-\del D'_-\\
-		&= D_-\del \left((D_-\cup b_-) \del (D_+\cup b_+)\right)\\
-		&= (D_- \cap (D_+\cup b_+)) \cup (D_- \del (D_-\cup b_-))\\
-		&= D_-\cap b_+.
-\end{align*}
-Thus $|C_-|\le |b_+|$ and we proved that $|D\del D'|\le |b|$.
+This is a contradiction and therefore $p_t\not= e$.
 
-
-Next, we show that $\rad_t(D \del D') \le \frac13 w(b)$.
-Since $e\in E_t^3$, $e\in b$ and $b\in \Bopt$, we have $\rad_t(e) \le \frac{1}{3}\Delta_e \le \frac{1}{3K}w(b)$.
-In addition, $\forall g\in (D \del D'), g\not=e$, $\rad_t(g) \le \rad_t(e)\le \frac{1}{3K}w(b)$.
-Note that $|D\del D'| \le |b| \le K$.
-Hence, $\rad_t(D\del D') = \sum_{g\in (D\del D')} \rad_t(g) \le \frac{K}{3K}w(b) \le \frac{1}{3}w(b)$.
-
-We also note that
-\begin{align}
-w(D'\del D)-w(D\del D') &= w(D' \del D)+w(D'\cap D)-w(D\cap D')-w(D\del D')\\
-						&= w(D')-w(D) \\
-						&= w(b),
-\end{align}
-where we have repeatedly applied Lemma~\ref{lemma:weight-diff-simple}.
-
-Then, we show that $w^+_t(D') > w^+_t(D)$.
-\begin{align}
-	w_t^+(D')-w_t^+(D) &= \bar w_t(D')-\bar w_t(D)+\rad_t(D')-\rad_t(D)\\
-					   &= \bar w_t(D'\del D)-\bar w_t(D\del D')+\rad_t(D'\del D)-\rad_t(D\del D') \label{eq:2.2.x.1} \\
-					   &\ge w(D'\del D)-w(D\del D')-2\rad_t(D\del D') \label{eq:2.2.x.2} \\
-					   &= w(b)-2\rad_t(D\del D')\\
-					   &> w(b)-\frac23 w(b) \\
-					   &= \frac13 w(b) > 0,
-\end{align}
-where Eq.~\eqref{eq:2.2.x.1} follows from Lemma~\ref{lemma:rad-diff-simple} and Eq.~\eqref{eq:2.2.x.2} follows from
-the fact that $\bar w_t(D'\del D)+\rad_t(D'\del D)\ge w(D'\del D)$ and that $\bar w_t(D\del D')+\rad_t(D\del D')\ge w(D\del D')$, under the random event $\xi$.
-
-This contradicts to the fact that $D$ is chosen on round $t$.
 \end{proof}
+
+
+\subsection{Proof of Theorem~\ref{theorem:main}}
+
+Theorem~\ref{theorem:main} is now a straightforward corollary of Lemma~\ref{lemma:correct} and Lemma~\ref{lemma:key-technical}.
+\begin{proof}
+Lemma~\ref{lemma:ci} indicates that the event $\xi \triangleq \bigcap_{t=1}^\infty \xi_t$ occurs with probability at least $1-\delta$.
+In the rest of the proof, we shall assume that this event holds.
+
+By Lemma~\ref{lemma:correct} and the assumption on $\xi$, we see that $\out=M_*$.
+Next, we focus on bounding $T$.
+
+
+Let $T_e$ denote the total number of pull of arm $e\in [n]$.
+Define 
+$$
+t_e^* = \left\lceil\frac{275}{B^2}\cdot\frac{\rank(\B)^2}{\Delta_e^2}\log\left(\frac{1}{B^2}\cdot\frac{4n}{\delta}\sum_{i\in[n]}\frac{\rank(\B)^2}{\Delta_i^2}\right)\right\rceil.
+$$
+We claim that, for any $e \in [n]$, we have $T_e \le \lceil t_e^* \rceil$.
+Suppose that $T_e \ge \lceil t_e^* \rceil+1$.
+Then, consider the round $t$ that such that $p_t=e$ and $T_e(t) =  \lceil t_e^* \rceil+1$.
+Notice that $t \le T_e(t)$.
+Then, by straightforward computations, we obtain
+\begin{align*}
+\rad_t(e) &=   B\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_e(t)}} \le
+ B\sqrt{\frac{2\log\left(\frac{4n (t_e^*)^2}\delta\right)}{t_e^*}} <  \frac{\Delta_e}{3\rank(\B)}. 	
+\end{align*}
+However, by Lemma~\ref{lemma:key-technical}, we see that $p_t\not=e$. This is a contradiction, and therefore the claim that $T_e \le \lceil t_e^* \rceil$ is true.
+
+Then, the total number of samples $T$ can be bounded by
+\begin{align*}
+T = \sum_{e\in [n]} T_e \le \sum_{e\in [n]} \lceil t_e^* \rceil \le 
+O\left(\frac{1}{B^2}\sum_{e\in [n]} \frac{\rank(\B)^2}{\Delta_e^2} \log\left(\frac{1}{B^2}\cdot \frac{n}{\delta} \sum_{e\in[n]}\frac{\rank(\B)^2}{\Delta_e^2} \right)\right).
+\end{align*}
+
+\end{proof}
+
 
 
 \section{Proof of Lower Bounds}
@@ -1535,6 +1357,691 @@ We show that one can slightly modify the vector $\{w(e)\}_{e\in [n]}$ to constru
 %We also notice that Theorem~\ref{theorem:lower-bound} does not imply 
 
 
+
+\section{Technical Lemmas}
+
+
+\begin{lemma}[Basis exchange property]
+AA
+\label{lemma:basis-exchange-matroid}
+\end{lemma}
+
+
+\section{Trash}
+
+
+
+
+\begin{define}[Optimal diff-sets]
+Given a diff-set class $\B$ and the optimal set $M_*$.
+We define $\Bopt$ as a subset of $\B$, and for all $b\in \B$, $b\in \Bopt$ if and only if,
+there exists $M\not=M_*$ and $M_* \ominus M$ can be decomposed as $b,b_1,\ldots,b_k$ on $\B$.
+\end{define}
+
+\begin{define}[Hardness $\Delta_e$ of base arm $e$]
+For each $e\in [n]$, we define its hardness $\Delta_e$ as follows
+$$
+\Delta_e = \min_{b\in \Bopt, e\in b} \frac{1}{\rank(\B)} w(b).
+$$
+\end{define}
+
+\begin{define}[Sufficient exploration]
+For all $t>0$, we define $E_t^3 \subseteq [n]$, such that, for all $e\in[n]$
+$e\in E_t^3$ if and only if $\rad_t(e) < \frac{1}{3} \Delta_e$.
+\end{define}
+
+\begin{corollary}
+For all $t>0$ and $e\in[n]$
+$$ n_t(e) \ge O(\frac{1}{\Delta_e^2}\log(\Delta_e n/\delta)) \implies e\in E_t^3.$$
+\end{corollary}
+
+\begin{theorem}
+With probability at least $1-\delta$,
+the algorithm returns $M_*$,
+and the number of samples used by the algorithm are at most
+$$
+\sum_{e\in [n]} \Delta_e^{-2}\log(\Delta_e n/\delta).
+$$
+\end{theorem}
+
+
+\begin{theorem}
+Given confidence parameter $\delta \in (0,1)$, tolerance parameter $\epsilon \ge 0$, number of arms $n$ and a combinatorial problem instance $\mathcal M \subseteq 2^{[n]}$.
+Let oracle $\Oracle(w)$ be a maximization oracle associated with $\mathcal M$ such that
+$\Oracle(w) = \argmax_{M \in \mathcal M} w(M)$, where $w: 2^{[n]} \rightarrow R$ is a weight function.
+
+Then, with probability at least $1-\delta$, the output $\out$ of Algorithm~\ref{algo:pac} satisfies
+$
+w(M_*)-w(\out) \le \epsilon,
+$
+where $M_* = \argmax_{M\in \M} w(M)$ is the optimal set.
+In addition, the number of samples $T$ used by the algorithm satisfies
+$$
+T \le \mathbf H_\epsilon \log\left(\frac{n}{\delta}\mathbf H_\epsilon\right),
+$$
+where
+$$
+\mathbf H_\epsilon = \sum_{e\in[n]} \min\left\{\frac{\rank(\B)^2}{\Delta_e^2}, \frac{n^2}{\epsilon^2}\right\}.
+$$
+\end{theorem}
+
+\begin{lemma}
+For any arm $e \in [n]$ and any round $t > n$ after initialization, if $\rad_t(e) \le \max\left\{\frac{\Delta_e}{3\rank(\B)}, \frac{\epsilon}{n}\right\}$,
+then arm $e$ will not be played on round $t$, i.e. $p_t\not= e$.
+\end{lemma}
+\begin{proof}
+If $\rad_t(e) \le \frac{\Delta_e}{3\rank(\B)}$, then we can apply Lemma~\ref{lemma:key-technical} which immediately gives that $p_t\not= e$.
+Hence, we only need to prove the case that $\rad_t(e) \le \frac{\epsilon}{n}$.
+By the definition of $p_t$, we know that for each $i\in D_t$, we have $\rad_t(i) \le \rad_t(e) \le \frac{\epsilon}{n}$.
+Summing up all $i\in D_t$, we obtain
+\begin{equation}
+\rad_t(D_t) \le \epsilon.
+\label{eq:pac-key-0-1}
+\end{equation}
+Next, we notice that the definition of $M_t$ gives that $\bar w_t(M_t)=\max_{M\in \M} \bar w_t(M) \ge \bar w_t(M_t \oplus D_t)$.
+This means that
+\begin{equation}
+\bar w_t(D_t) = \bar w_t(M_t\oplus D_t)-\bar w_t(M_t) \le 0.
+\label{eq:pac-key-0-2}
+\end{equation}
+Using the above inequalities, we have.
+\begin{align}
+  w_t^+(D_t) &= \bar w_t(D_t)+\rad_t(D_t) \label{eq:pac-key-1}\\
+  			 &\le \bar w_t(D_t)+\epsilon \label{eq:pac-key-2}\\
+  			 &\le \epsilon, \label{eq:pac-key-3}
+\end{align}
+where Eq.~\eqref{eq:pac-key-1} follows from the definition of $w_t^+(\cdot)$; 
+Eq.~\eqref{eq:pac-key-2} follows from Eq.~\eqref{eq:pac-key-0-1};
+Eq.~\eqref{eq:pac-key-3} holds since Eq.~\eqref{eq:pac-key-0-2}.
+\end{proof}
+
+\section{Preliminaries}
+
+\subsection{Problems}
+
+Let $n$ be the number of base arms. 
+Let $\M \subseteq 2^{[n]}$ be the set of super arms. 
+
+
+In this note, we consider the following cases of $\M$.
+
+\begin{example}[Explore-$m$]
+$\mtop(n)=\{M \subseteq [n] \;|\; |M|=m\}$.
+This corresponds to finding the top $m$ arms from $[n]$.
+\end{example}
+
+\begin{example}[Explore-$m$-bandits]
+Suppose $n=mk$. Then $\mbandit(n)$ contains all subsets $M \subseteq [n]$ with size $m$, such that 
+$$ 
+M\cap \{ik+1,\ldots, (i+1)k\} = 1, \quad \text{for all } i \in \{0,\ldots, m-1\}.
+$$ 
+This corresponds to finding the top arms from $m$ bandits, where each bandit has $k$ arms.
+\end{example}
+
+\begin{example}[Perfect Matching]
+Let $G=(V,E)$ be a bipartite graph and $|E|=n$. 
+For simplicity, let each edge $e\in E$ corresponds to a unique integer $i\in [n]$, and vice versa. 
+Then $\mmatch(n,G)$ contains all subsets $M \subseteq [n]$ such that $M$ corresponds to a perfect matching in $G$.
+\end{example}
+
+
+\subsection{Diff-Sets}
+
+\begin{define}[Diff-set]
+An $n$-diff-set (or diff-set in short) is a pair of sets $c=(c_+,c_-)$, where $c_+\subseteq[n]$, $c_-\subseteq [n]$ and $c_+\cap c_-=\emptyset$.
+\end{define}
+
+
+\begin{define}[Difference of sets]
+Given any $M_1\subseteq[n],M_2\subseteq[n]$. We define $M_1\ominus M_2 \triangleq C$, where $C=(C_+,C_-)$ is a diff-set and
+$C_+ = M_1 \del M_2$ and $C_- = M_2\del M_1$.
+\end{define}
+
+\begin{define}
+Denote $\diff[n]$ be the set of all possible $n$-diff-sets.
+\end{define}
+
+\begin{define}[Set operations of diff-sets] 
+Let $C=(C_+,C_-), D=(D_+,D_-)$ be two diff-sets. 
+We define 
+$C\cap D \triangleq (C_+\cap D_+, C_-\cap D_-)$
+and $C\del D \triangleq (C_+\del D_+, C_-\del D_-)$.
+
+Further, for all $e\in [n]$, $e \in C \Leftrightarrow (e\in C_+)\vee(e\in C_-)$.
+And $|C|\triangleq |C_+|+|C_-|$.
+\end{define}
+
+\begin{define}[Valid diff-set]
+Given a set $M \subseteq [n]$ and a diff-set $C=(C_+,C_-)$, we call $C$ a \emph{valid diff-set} for $M$, iff $C_+ \cap M = \emptyset$ and $C_- \subseteq M$.
+In this case, we denote $C\diffvalid M$.
+\end{define}
+
+\begin{define}[Negative diff-set]
+Given a diff-set $A=(A_+,A_-)$, we define $\neg A=(A_-,A_+)$.
+\end{define}
+
+
+\subsubsection{diff-set operations}
+
+\begin{define}[Operators $\oplus$ and $\ominus$]
+Given any $M \subseteq [n]$ and $C \in \diff[n]$.
+If $C\diffvalid M$, we define operator $\oplus$ such that $M \oplus C \triangleq M\del C_- \cup C_+ $.
+On the other hand if $\neg C\diffvalid M$, we define operator $\ominus$ such that $M \ominus C \triangleq M\oplus (\neg C) = 
+M\del C_+ \cup C_- $.
+\end{define}
+
+
+\begin{define}
+Given two diff-sets $A=(A_+,A_-)$ and $B=(B_+,B_-)$.
+We denote $B \diffvalid A$, if and only if $B_+\cap A_+ = \emptyset$ and $A_+\cap A_-=\emptyset$.
+\end{define}
+
+\begin{define}
+Given two diff-sets $A=(A_+,A_-)$ and $B=(B_+,B_-)$. 
+If $B\diffvalid A$, we define $A\oplus B = ( (A_+\cup B_+)\del(A_-\cup B_-), (A_-\cup B_-)\del(A_+\cup B_+))$.
+\end{define}
+
+\begin{lemma}
+Given two diff-sets $A=(A_+,A_-)$ and $B=(B_+,B_-)$. 
+If $B\diffvalid A$, then 
+$A\oplus B$ is a diff-set.
+\end{lemma}
+
+\begin{proof}
+Let $C=A\oplus B$.
+By definition, we have $C_+ = (A_+\cup B_+)\del(A_-\cup B_-)$ and $C_-=(A_-\cup B_-)\del(A_+\cup B_+)$.
+
+We only need to show that $C_+\cap C_-=\emptyset$.
+\begin{align*}
+	C_+ \cap C_- &= \big((A_+\cup B_+)\del(A_-\cup B_-)\big)\cap\big((A_-\cup B_-)\del(A_+\cup B_+)\big)\\
+			     &= (A_+\cup B_+)\cap\big((A_-\cup B_-)\del(A_+\cup B_+) \del (A_-\cup B_-)\big) \\
+			     &= \emptyset.
+\end{align*}
+\end{proof}
+
+\begin{lemma}
+\label{lemma:diff-set-algebra}
+Given two diff-sets $A=(A_+,A_-)$ and $B=(B_+,B_-)$. 
+If there exists $M\subseteq [n]$ such that $A \diffvalid M$, and $B \diffvalid (M\oplus A)$,
+then $B \diffvalid A$ and $(M\oplus A \oplus B)\ominus M = A\oplus B$.
+\end{lemma}
+
+\begin{proof}
+We first show that $B\diffvalid A$.
+Since $B \diffvalid (M\oplus A)$, we know that 
+$B_+\cap (M\del A_- \cup A_+) = \emptyset$.
+Therefore, we have
+\begin{align*}
+	\emptyset &= B_+\cap (M\del A_-\cup A_+) \\
+			  &= (B_+\cap (M\del A_-))\cup (B_+\cap A_+)
+\end{align*}
+We see that $B_+\cap A_+=\emptyset$.
+
+On the other hand, we have $B_-\subseteq (M\del A_-\cup A_+)$, therefore 
+\begin{align*}
+	B_-\cap A_- &\subseteq (M\del A_-\cup A_+)\cap A_- \\
+				&= (M\del A_- \cap A_-)\cup (A_+\cap A_-) \\
+				&= \emptyset.
+\end{align*}
+Hence we proved that $B\diffvalid A$.
+
+Define $D=(M\oplus A \oplus B)\ominus M$ and write $D=(D_+,D_-)$. Then,
+\begin{align*}
+D_+ &= (M\oplus A\oplus B) \del M\\ 
+    &= (M\del A_-\cup A_+\del B_-\cup B_+) \del M\\
+    &= (A_+\cup B_+)\del(A_-\cup B_-).
+\end{align*}
+Similarly, we have
+\begin{align*}
+D_- &= M\del (M\oplus A\oplus B)\\ 
+    &= M\del (M\del A_-\cup A_+\del B_-\cup B_+)\\
+    &= (A_-\cup B_-)\del (A_+\cup B_+).
+\end{align*}
+\end{proof}
+
+\subsubsection{Diff-set class}
+
+\begin{define}[Decomposition of diff-set]
+Given $\B\subseteq \diff[n]$ and $D\in \diff[n]$, 
+a decomposition of $D$ on $\B$ is a set $\{b_1,\ldots,b_k\} \subseteq \B$ satisfying the following
+\begin{enumerate}
+  \item For all $i\in[k]$ and $j\in [k]$, we write $b_i=(b_i^+,b_i^-)$ and $b_j=(b_j^+,b_j^-)$. Then, the following holds
+  $b_i^+\cap b_j^+=\emptyset$, $b_i^+\cap b_j^-=\emptyset$, $b_i^-\cap b_j^+ =\emptyset$ and $b_i^-\cap b_j^-=\emptyset$.
+  \item $D=b_1 \oplus b_2 \oplus \ldots b_k$.
+\end{enumerate}
+\end{define}
+
+\begin{lemma}
+Given $\B\subseteq \diff[n]$ and $D\in \diff[n]$.
+Let $\{b_1,\ldots,b_k\} \subseteq \B$ be a decomposition of $D$ on $\B$.
+Then,
+\begin{enumerate}
+\item Let $D=(D_+,D_-)$ and for all $i \in [k]$, we write $b_i = (b_i^+,b_i^-)$.
+	  Then $D_+=b_1^+ \cup \ldots \cup b_k^+$ and $D_-=b_1^-\cup\ldots\cup b_k^-$.
+\item For all $M\subseteq [n]$, if $D\diffvalid M$, then, for all $i\in [k]$, we have $b_i \diffvalid M$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+We prove (1) by induction.
+Let $D_i = b_1 \oplus \ldots \oplus b_i$ and write $D_i=(D_i^+, D_i^-)$.
+We show that $D_i^+=\bigcup_{j=1}^i b_i^+$ and $D_{i-}=\bigcup_{j=1}^i b_i^-$ for all $i\in[k]$.
+For $i=1$, this is trivially true.
+Then, assume that this is true for some $i>1$.
+By definition $D_{i+1}=D_{i}\oplus b_{i+1}$, hence $D_{i+1}^+=(D_i^+ \cup b_{i+1}^+)\del(D_i^- \cup b_{i+1}^-)$.
+Note that 
+\begin{align*}
+(D_i^-\cup b_{i+1}^-)\cap(D_i^+ \cup b_{i+1}^+) &= (D_i^-\cap D_i^+)\cup(D_i^- \cap b_{i+1}^+)\cup(b_{i+1}^- \cap D_i^+)\cup(b_{i+1}^- \cap b_{i+1}^+)\\
+		&= (D_i^- \cap b_{i+1}^+) \cup (b_{i+1}^- \cap D_i^+) \\
+		&= \left(\left(\bigcup_{j=1}^i b_{j}^-\right) \cap b_{i+1}^+ \right) \cup \left(\left(\bigcup_{j=1}^i b_{j}^+\right) \cap b_{i+1}^- \right)\\
+		&= \emptyset.
+\end{align*}
+Hence $D_{i+1}^+=D_i^+ \cup b_{i+1}^+$. We can use the same method to show that $D_{i+1}^-=D_i^- \cup b_{i+1}^-$.
+
+Next, we prove (2) using (1).
+To show that $b_i\diffvalid M$, we only need to show that $b_i^+ \cap M = \emptyset$ and $b_i^- \subseteq M$.
+Since $D\diffvalid M$, we know that $D_+\cap M=\emptyset$ and $D_-\subseteq M$.
+By (1), we see that $b_i^+\subseteq D_+$ and $b_i^-\subseteq D_-$.
+Therefore, we have $(b_i^+\cap M) \subseteq (D_+\cap M) = \emptyset$ and $b_i^-\subseteq D_- \subseteq M$.
+
+\end{proof}
+
+
+\begin{define}[diff-set class]
+\label{define:diff-class}
+Given $\M \subseteq 2^{[n]}$. $\B \subseteq \diff[n]$ is a diff-set class for $\M$, if the following hold.
+\begin{enumerate} 
+\item $(\emptyset,\emptyset)\not\in \B$.
+\item For all $M\in \M$ and for all $b\in \B$, if $b\diffvalid M$, then $M\oplus b \in \M$.
+\item For all $M_1 \in \M$ and $M_2\in \M$, where $M_1\not=M_2$. 	
+	  Let $D=M_1\ominus M_2$.  
+	  Then, there exists a decomposition of $D$ on $\B$.
+\end{enumerate}
+\end{define}
+
+\begin{define}[Rank of diff-set class]
+Let $\B \subseteq [n]$ be a diff-set class for some $\M$. We define
+$$
+\rank(\B) \triangleq \max_{b \in \B} |b|.
+$$
+\end{define}
+
+\begin{example}[diff-set class for Explore-$m$]
+One diff-set class $\B$ for $\mtop(n)$ is given by
+$$
+\B=\{(\{b_1\},\{b_2\}) \;|\; b_1\not=b_2, b_1\in[n], b_2\in[n]\}.
+$$
+Proof omitted.
+Further, we see that $\rank(\B)=2$.
+\end{example}
+
+\begin{example}[diff-set class for Explore-$m$-badit]
+Let $n=mk$.
+One diff-set class $\B$ for $\mbandit(n)$ is given by
+$$
+\B=\{(\{b_1\},\{b_2\}) \;|\; b_1\not=b_2, \exists i\in\{0,\ldots,k-1\}, b_1\in \{ik+1,\ldots, (i+1)k\}, b_2\in\{ik+1,\ldots, (i+1)k\}\}.
+$$
+Proof omitted.
+Further, we see that $\rank(\B)=2$.
+\end{example}
+
+
+\begin{example}[diff-set class for Perfect Matching]
+One diff-set class $\B$ for $\mmatch(n, G)$ is the set of all augmenting cycles of $G$. 
+More specifically,
+$$
+\B=\{(b_+,b_-) | b_+\cup b_- \text{ is a cycle of } G\}.
+$$
+
+Note $\rank(\B)\le n$.
+\end{example}
+
+\subsection{Weights and confidence bounds}
+
+\begin{define}[Weight functions]
+Define function $w: [n] \rightarrow \RR^+$ which represents the weight of each base arm. 
+Further, we slight abuse the notations, and extend the definition of $w$ to diff-sets and sets as follows.
+\begin{enumerate}
+\item For all $M \subseteq [n]$, we denote $w(M) = \sum_{e\in M} w(e)$.
+\item For all $b=(b_+,b_-) \in \diff[n]$, we denote $w(b) = \sum_{e\in b_+} w(e)-\sum_{e\in b_-}w(e)$.
+\end{enumerate}
+\end{define}
+
+
+\begin{lemma}
+\label{lemma:weight-diff-simple}
+Let $c\in \diff[n],d\in \diff[n]$. Let $w$ be a weight function.
+Then,
+\begin{equation}
+w(c\cup d) = w(c)+w(d)-w(c\cap d).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Let $c=(c_+,c_-)$ and $d=(d_+,d_-)$.
+We have
+\begin{align}
+w(c\cup d) &= w(c_+\cup d_+)-w(c_-\cup d_-)\\
+           &= w(c_+)+w(d_+)-w(c_+\cap d_+)-w(c_-)-w(d_-)+w(c_- \cap d_-)\\
+           &= w(c)+w(d)-(w(c_+\cap d_+)-w(c_-\cap d_-))\\
+           &= w(c)+w(d)-w(c\cap d).
+\end{align}
+\end{proof}
+
+\begin{define}[Mean weight $\bar w_t$, sample size $n_t$]
+Given $t>0$. 
+Define $\bar w_t$ be a weight function such that, for all $e\in[n]$, $\bar w_t(e)$ equals to the empirical mean of $e$ up to round $t$.
+Let $n_t: [n] \rightarrow \mathbb N$, such that $n_t(e)$ equals to number of plays of base arm $e$ up to round $t$.
+\end{define}
+
+\begin{define}[Confidence radius $\rad_t$]
+Given $n$ and $t>0$.
+Define $\rad_t:[n]\rightarrow \RR^+$ satisfying, for all $e\in[n]$,
+\begin{equation}
+\label{eq:define-confidence-radius}
+\rad_t(e) = c_{\rad}\log\left(\frac{c_\delta nt^2}\delta\right)\frac{1}{\sqrt{n_t(e)}},
+\end{equation}
+where $c_{\rad} > 0$  and $c_\delta>0$ are some universal constants (specify later) and $\delta > 0$ is a parameter.
+
+We extend the notation of $\rad_t$ to diff-sets and sets as follows.
+\begin{enumerate}
+\item For all $M \subseteq [n]$, $\rad_t(M) \triangleq \sum_{e\in M} \rad_t(e)$.
+\item For all $b=(b_+,b_-)\in \diff[n]$, $\rad_t(b) \triangleq \rad_t(b_+)+\rad_t(b_-)$.
+\end{enumerate}
+
+\end{define}
+
+\begin{define}[UCB $w_t^+$]
+Define $w^+_t: [n] \rightarrow \RR^+$, s.t., for all $e\in[n]$,  
+$$ w^+_t(e)=\bar w_t(e)+\rad_t(e).$$
+
+We extend the notation of $w_t^+$ to diff-sets and sets as follows.
+\begin{enumerate}
+\item For all $M \subseteq [n]$, $w_t^+(M) \triangleq \bar w_t(M)+\rad_t(M)$.
+\item For all $b=(b_+,b_-)\in \diff[n]$, $w_t^+(b) \triangleq \bar w_t(b)+\rad_t(b)$.
+\end{enumerate}
+
+\end{define}
+
+\begin{lemma}
+\label{lemma:conf}
+Define random event 
+$$
+\xi = \left\{\forall e\in[n]\; \forall t>0, |\bar w_t(e)-w(e)|\le \rad_t(e) \right\}.
+$$
+Then, there exist constants $c_{\rad}$ and $c_\delta$,
+$$
+\Pr[\xi] \ge 1-\delta.
+$$
+\end{lemma}
+\begin{proof}
+Hoeffding inequality and union bound.
+\end{proof}
+
+
+
+\begin{corollary}
+\label{corr:conf}
+$$
+\xi \implies \forall t,\forall e\in[n] \; w_t^+(e) \ge w(e).
+$$
+$$
+\xi \implies \forall t,\forall M\subseteq[n],\; w_t^+(M) \ge w(M).
+$$
+$$
+\xi \implies \forall t,\forall b\in\diff[n]\; w_t^+(b) \ge w(b).
+$$
+\end{corollary}
+
+\junk{
+\begin{lemma}
+Let $c\in \diff[n],d\in \diff[n]$. Let $\rad_t$ be a radius function.
+Then,
+\begin{equation}
+\rad_t(c\cup d) = \rad_t(c)+\rad_t(d)-\rad_t(c\cap d).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Let $c=(c_+,c_-)$ and $d=(d_+,d_-)$.
+We have
+\begin{align}
+\rad_t(c\cup d) &= \rad_t(c_+\cup d_+) + \rad_t(c_-\cup d_-)\\
+			  &= \rad_t(c_+)+\rad_t(d_+)-\rad_t(c_+\cap d_+)
+			    +\rad_t(c_-)+\rad_t(d_-)-\rad_t(c_-\cap d_-)\\
+			  &= \rad_t(c)+\rad_t(d)-\rad_t(c\cap d).
+\end{align}
+\end{proof}
+}
+
+\subsection{Properties of $\rad_t$}
+
+\begin{lemma}
+\label{lemma:rad-diff-simple}
+Let $c\in \diff[n],d\in \diff[n]$.
+Then
+\begin{equation}
+\rad_t(c\del d) = \rad_t(c)-\rad_t(c\cap d).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Let $c=(c_+,c_-)$ and $d=(d_+,d_-)$.
+We have
+\begin{align*}
+\rad_t(c\del d) &= \rad_t(c_+\del d_+)+\rad_t(c_-\del d_-)\\
+			    &= \rad_t(c_+)-\rad_t(c_+\cap d_+)+\rad_t(c_-)-\rad_t(c_-\cap d_-)\\
+			    &= \rad_t(c)-\rad_t(c\cap d).
+\end{align*}
+
+\end{proof}
+
+
+\begin{lemma}
+\label{lemma:diff-algebra-rad}
+
+Let $C=(C_+,C_-)$ and $D=(D_+,D_-)$ be two diff-sets.
+If $D \diffvalid C$, then
+$$
+\rad_t(C \oplus D) = \rad_t(C)+\rad_t(D)-2\rad_t(C_+ \cap D_-)-2\rad_t(C_- \cap D_+).
+$$
+
+In addition, if $\neg D \diffvalid C$, then
+$$
+\rad_t(C \ominus D) = \rad_t(C)+\rad_t(D)-2\rad_t(C_+ \cap D_+)-2\rad_t(C_- \cap D_-).
+$$
+\end{lemma}
+
+\begin{proof}
+We prove the first part of the lemma. The second part follows from the first part and the definition of $\neg D$.
+
+By definition, we have $C\oplus D = ( (C_+ \cup D_+) \del (C_-\cup D_-), (C_-\cup D_-) \del (C_+\cup D_+) )$.
+Hence, we have 
+\begin{align}
+\rad_t((C_+ \cup D_+) \del (C_-\cup D_-)) &= \rad_t(C_+ \cup D_+)-\rad_t( (C_+\cup D_+)\cap(C_-\cup D_-)) \\
+							              &= \rad_t(C_+)+\rad_t(D_+)-\rad_t( (C_+\cup D_+)\cap(C_-\cup D_-)),						
+\end{align}
+where the second equality holds due to $C_+\cap D_+=\emptyset$ by the definition of $D\diffvalid C$.
+
+Similarly, we have
+$$
+\rad_t((C_- \cup D_-) \del (C_+\cup D_+)) = \rad_t(C_-)+\rad_t(D_-)-\rad_t( (C_+\cup D_+) \cap(C_-\cup D_-)).
+$$
+
+Combine both equalities, we have
+\begin{align}
+  \rad_t(C \oplus D) &= \rad_t((C_+ \cup D_+) \del (C_-\cup D_))+\rad_t((C_- \cup D_-) \del (C_-\cap D_+))\\
+  				     &=	\rad_t(C_+)+\rad_t(D_+)+\rad_t(C_-)+\rad_t(D_-)-2\rad_t( (C_+\cup D_+) \cap(C_-\cup D_-))\\
+  				     &= \rad_t(C)+\rad_t(D)-2\rad_t( (C_+\cup D_+) \cap(C_-\cup D_-)).
+\end{align}
+
+
+\end{proof}
+
+
+\begin{proof}
+Suppose that $p_t=e$. 
+Since $\B$ is an exchange class for $\M$, there exists an exchange set $c=(c_+,c_-)$ of $\B$
+such that $e\in c_-$, $c_- \subseteq M_t$ and $c_+ \subseteq \tilde M_t$.
+
+We decompose the proof into three cases.
+
+\textbf{Case (1).} 
+Suppose that $c \in\Bopt$. Then $w(c)>0$.
+We have $\rad_t(e) \le \frac{1}{3}\Delta_e \le \frac{1}{3K}w(c)$.
+
+In addition, by the choice of $p_t$,  we have $\forall g\in c_t, g\not=e$, $\rad_t(g) \le \rad_t(e)\le \frac{1}{3K}w(c)$.
+Hence, $\rad_t(c) = \sum_{g\in c_t} \rad_t(g) \le \frac{|c_t|}{3K}w(c) \le \frac{1}{3}w(c)$.
+
+Hence, $w_t(c) \ge w(c)-\rad_t(c) \ge \frac{2}{3}w(c) > 0$.
+This means that $w_t(M_t \oplus c) = w_t(M_t)+w_t(c) > w_t(M_t)$.
+Therefore, $M_t \not= \max_{M\in \M} \bar w_t(M)$.
+This contradicts to the definition of $M_t$.
+
+\textbf{Case (2).} 
+Suppose that $c_t\not\in \Bopt$. Then, one of the following mutually exclusive cases must hold.
+
+\textbf{Case (2.1).} 
+$(e \in M_* \wedge e\in c_+)$ or $(e \not \in M_* \wedge e\in c_-)$. 
+ 
+Let the decomposition of $M_* \ominus (M_t \oplus D \ominus c)$ on $\B$ be $b,b_1,\ldots,b_l$, which exists due to $\B$ is a diff-set class. 
+Assume wlog that $e\in b$. 
+We write $b=(b_+,b_-)$.
+It is easy to see that $b \in \Bopt$. 
+
+Define $\tilde D = (M_t \oplus D \ominus c)\ominus M_t$ and $D' = (M_t \oplus \tilde D \oplus b) \ominus M_t$.
+By Lemma~\ref{lemma:diff-set-algebra}, we know that $\tilde D = D\ominus c$ and $D'=\tilde D\oplus b$.
+We also write $\tilde D=(\tilde D_+, \tilde D_-)$ and $D'= (D'_+, D'_-)$.
+By definition, we have 
+\begin{align*}
+	\tilde D_+ &= (D_+ \cup c_-)\del (D_- \cup c_+)\\
+	           &= (D_+\cup c_-\del D_-) \cap (D_+\cup c_-\del c_+)\\
+	           &= D_+ \cap (D_+\del c_-) \\
+	           &= D_+\del c_+.
+\end{align*}
+By the same method, we are able to show that $\tilde D_-=D_-\del c_-$.
+Therefore we have 
+\begin{equation}
+\label{eq:2.1.0.1}
+\tilde D_+\subseteq D_+\quad\text{and}\quad\tilde D_-\subseteq D_-.
+\end{equation}
+
+First, we show that $\rad_t(c) \le \frac13 w(b)$.
+Since $e\in E_t^3$, $e\in b$ and $b\in \Bopt$, we have $\rad_t(e) \le \frac{1}{3}\Delta_e \le \frac{1}{3K}w(b)$.
+In addition, $\forall g\in c, g\not=e$, $\rad_t(g) \le \rad_t(e)\le \frac{1}{3K}w(b)$.
+Hence, 
+\begin{align}
+\rad_t(c) &= \sum_{g\in c} \rad_t(g) \nonumber \\
+		  & \le \frac{|c|}{3K}w(b) \nonumber \\
+		  &\le \frac{1}{3}w(b).\label{eq:2.1.0.2}
+\end{align}
+
+%Consider the diff-set $D'=D\ominus c \oplus b$.
+Now, we show that $\rad_t(\tilde D_+ \cap b_-)+\rad_t(\tilde D_- \cap b_+)+ \le \frac13 w(b)$.
+Since Eq.~\eqref{eq:2.1.0.1}, we have $\forall g\in (\tilde D_+\cap b_-)\cup(\tilde D_-\cap b_+), g\not=e$, 
+$\rad_t(g) \le \rad_t(e)\le \frac{1}{3K}w(b)$.
+Note that $|\tilde D_+\cap b_-|+|\tilde D_-\cap b_+|\le |b_+|+|b_-| \le K$. 
+Hence, 
+\begin{align}
+\rad_t(\tilde D_+ \cap b_-)+\rad_t(\tilde D_- \cap b_+) &= \sum_{g\in (\tilde D_+\cap b_-)\cup(\tilde D_-\cap b_+)} \rad_t(g) \nonumber\\
+	& \le \frac{K}{3K}w(b) \nonumber \\
+	& \le \frac{1}{3}w(b). \label{eq:2.1.0.3}
+\end{align}
+
+Then, we have
+\begin{align}
+\rad_t(D')-\rad_t(D) &= \rad_t(\tilde D \oplus b)-\rad_t(D) \\
+					 &= \rad_t(\tilde D)+\rad_t(b)-2\rad_t(\tilde D_+\cap b_-)-2\rad_t(\tilde D_-\cap b_+)-\rad_t(D)
+					 \label{eq:2.1.1}\\
+					 &= \rad_t(D\ominus c)+\rad_t(b)-2\rad_t(\tilde D_+\cap b_-)-2\rad_t(\tilde D_-\cap b_+)-\rad_t(D)\\
+					 &= \rad_t(D)+\rad_t(c)+\rad_t(b)-2\rad_t(D_+\cap c_+)-2\rad_t(D_-\cap c_-) \nonumber \\
+					 &\quad -2\rad_t(\tilde D_+\cap b_-)-2\rad_t(\tilde D_-\cap b_+)-\rad_t(D)
+					 \label{eq:2.1.2}\\
+					 &= \rad_t(D)+\rad_t(c)+\rad_t(b)-2\rad_t(c_+)-2\rad_t(c_-) \nonumber \\
+					 &\quad -2\rad_t(\tilde D_+\cap b_-)-2\rad_t(\tilde D_-\cap b_+)-\rad_t(D)
+					 \label{eq:2.1.3}\\
+					 &= \rad_t(b)-\rad_t(c)-2\rad_t(\tilde D_+\cap b_-)-2\rad_t(\tilde D_-\cap b_+),
+\end{align}
+where Eq.~\eqref{eq:2.1.1} and Eq.~\eqref{eq:2.1.2} follow from Lemma~\ref{lemma:diff-algebra-rad}, and 
+Eq.~\eqref{eq:2.1.3} follows from Eq.~\eqref{eq:lemma-key-1}.
+
+By the definition of $D$, we have that $w^+_t(D) \ge w^+_t(D')$. 
+This means that 
+\begin{align}
+	\bar w_t(D)+\rad_t(D) &\ge \bar w_t(D')+\rad_t(D')\\
+						  &= \bar w_t(D)-\bar w_t(c)+\bar w_t(b)+\rad_t(D').
+\end{align}
+By regrouping the above inequality, we have
+\begin{align}
+   \bar w_t(c) &\ge \bar w_t(b) + \rad_t(D')-\rad_t(D) \\
+   			   &= \bar w_t(b)+\rad_t(b)-\rad_t(c)-2\rad_t(\tilde D_+\cap b_-)-2\rad_t(\tilde D_-\cap b_+)\\
+   			   &\ge w(b)-\rad_t(c)-2\rad_t(\tilde D_+\cap b_-)-2\rad_t(\tilde D_-\cap b_+) \\
+   			   &> w(b)-\frac13 w(b)-\frac23 w(b) \label{eq:2.1.4}\\
+   			   &= 0,
+\end{align}
+where Eq.~\eqref{eq:2.1.4} follows from Eq.~\eqref{eq:2.1.0.2} and Eq.~\eqref{eq:2.1.0.3}.
+
+This contradicts to the definition of $M_t$.
+
+\textbf{Case (2.2).}
+$(e \in M_* \wedge e\in c_-)$ or $(e \not \in M_* \wedge e\in c_+)$.
+
+Let the decomposition of $M_* \ominus (M_t\oplus D)$ on $\B$ be $b,b_1,\ldots, b_l$.
+Assume wlog that $e\in b$.
+We write that $b=(b_+,b_-)$.
+Note that $b\in \Bopt$ and hence $w(b)>0$.
+
+Define $D'=(M_t\oplus D\oplus b)\ominus M_t$. By Lemma~\ref{lemma:diff-set-algebra}, we know that $D' = D\oplus b$.
+
+First, we show that $|D\del D'| \le |b|$.
+Let $C=D\del D'$ and write $C=(C_+,C_-)$.
+We can bound $|C_+|$ as follows.
+\begin{align*}
+	C_+ &= D_+\del D'_+\\
+		&= D_+\del \left((D_+\cup b_+) \del (D_-\cup b_-)\right)\\
+		&= (D_+ \cap (D_-\cup b_-)) \cup (D_+ \del (D_+\cup b_+))\\
+		&= D_+\cap b_-.
+\end{align*}
+Hence, we have $|C_+| \le |b_-|$.
+Then, we move to bounding $|C_-|$
+\begin{align*}
+	C_- &= D_-\del D'_-\\
+		&= D_-\del \left((D_-\cup b_-) \del (D_+\cup b_+)\right)\\
+		&= (D_- \cap (D_+\cup b_+)) \cup (D_- \del (D_-\cup b_-))\\
+		&= D_-\cap b_+.
+\end{align*}
+Thus $|C_-|\le |b_+|$ and we proved that $|D\del D'|\le |b|$.
+
+
+Next, we show that $\rad_t(D \del D') \le \frac13 w(b)$.
+Since $e\in E_t^3$, $e\in b$ and $b\in \Bopt$, we have $\rad_t(e) \le \frac{1}{3}\Delta_e \le \frac{1}{3K}w(b)$.
+In addition, $\forall g\in (D \del D'), g\not=e$, $\rad_t(g) \le \rad_t(e)\le \frac{1}{3K}w(b)$.
+Note that $|D\del D'| \le |b| \le K$.
+Hence, $\rad_t(D\del D') = \sum_{g\in (D\del D')} \rad_t(g) \le \frac{K}{3K}w(b) \le \frac{1}{3}w(b)$.
+
+We also note that
+\begin{align}
+w(D'\del D)-w(D\del D') &= w(D' \del D)+w(D'\cap D)-w(D\cap D')-w(D\del D')\\
+						&= w(D')-w(D) \\
+						&= w(b),
+\end{align}
+where we have repeatedly applied Lemma~\ref{lemma:weight-diff-simple}.
+
+Then, we show that $w^+_t(D') > w^+_t(D)$.
+\begin{align}
+	w_t^+(D')-w_t^+(D) &= \bar w_t(D')-\bar w_t(D)+\rad_t(D')-\rad_t(D)\\
+					   &= \bar w_t(D'\del D)-\bar w_t(D\del D')+\rad_t(D'\del D)-\rad_t(D\del D') \label{eq:2.2.x.1} \\
+					   &\ge w(D'\del D)-w(D\del D')-2\rad_t(D\del D') \label{eq:2.2.x.2} \\
+					   &= w(b)-2\rad_t(D\del D')\\
+					   &> w(b)-\frac23 w(b) \\
+					   &= \frac13 w(b) > 0,
+\end{align}
+where Eq.~\eqref{eq:2.2.x.1} follows from Lemma~\ref{lemma:rad-diff-simple} and Eq.~\eqref{eq:2.2.x.2} follows from
+the fact that $\bar w_t(D'\del D)+\rad_t(D'\del D)\ge w(D'\del D)$ and that $\bar w_t(D\del D')+\rad_t(D\del D')\ge w(D\del D')$, under the random event $\xi$.
+
+This contradicts to the fact that $D$ is chosen on round $t$.
+\end{proof}
+
 \begin{theorem}
 Given a vector $\{w(1),\ldots, w(n)\}$, a budget $T>0$ and a collection of feasible sets $\M \subseteq 2^{[n]}$.
 Let $\mathbb A$ be an arbitrary algorithm for $\M$-\Problem problem which uses at most $T$ samples.
@@ -1662,15 +2169,30 @@ This gives that $\Pr_0[\out\not=M_*] \ge \frac{1}{2(L+1)^2} \ge A$.
 \end{proof}
 
 
-\section{Technical Lemmas}
-
-
-\begin{lemma}[Basis exchange property]
-AA
-\label{lemma:basis-exchange-matroid}
+\begin{lemma}
+\label{lemma:pac-correct}
+If Algorithm~\ref{algo:pac} stops, then $w(M_*)-w(\out) \le \epsilon$.
 \end{lemma}
 
+\begin{proof}
+Suppose that $\out \not= M_*$.
+Suppose that the algorithm stops on round $T$, we know that $\out = M_T$.
+Consider the diff-set $D=M_* \ominus M_T$ and the diff-set $D_T$ as defined in Step~\ref{algo:step:D} of Algorithm~\ref{algo:pac}.
+By Lemma~Z, we see that 
+\begin{equation}
+w_T^+(D_T) = \max_{C: C \diffvalid M_T} w_T^+(C) \ge w_T^+(D).
+\label{eq:pac-correct-0}
+\end{equation}
+On the other hand, the stopping condition of Algorithm~\ref{algo:pac} gives that
+\begin{align}
+\epsilon &\ge \tilde w_T(\tilde M_T)-\tilde w_T(M_T) \nonumber \\
+		 &= w_T^+(D_T) \ge w_T^+(D) \label{eq:pac-correct-1} \\
+		 &\ge w(D) = w(M_*)-w(M_T), \label{eq:pac-correct-2}
+\end{align}
+where Eq.~\eqref{eq:pac-correct-1} follows from Eq.~\eqref{eq:pac-correct-0}; Eq.~\eqref{eq:pac-correct-2} follows from the assumption that event $\xi$ occurred.
 
+
+\end{proof}
 
 \bibliography{bandit}
 \bibliographystyle{plain}
