@@ -103,6 +103,8 @@
 \newcommand{\nor}[1]{\left\|#1\right\|}
 \renewcommand{\vec}[1]{\boldsymbol{#1}}
 
+\renewcommand{\odot}{\circ}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
@@ -503,7 +505,7 @@ $$
 \label{lemma:max}
 Let $M$ and $M'$ be two sets. 
 Then, we have 
-$$ \max_{e \in (M\del M') \cup (M'\del M)} \rad_t(e) = \big\|\vec r_t \odot |\vec \chi_{M'} - \vec \chi_M| \big\|_\infty.$$
+$$ \max_{e \in (M\del M') \cup (M'\del M)} \rad_t(e) = \big\|\vec \rad_t \odot |\vec \chi_{M'} - \vec \chi_M| \big\|_\infty.$$
 \end{lemma}
 
 \begin{proof}
@@ -542,26 +544,26 @@ Let $M' \in \M$ be a feasible set.
 We have
 $$
 \tilde w_t(M')-\tilde w_t(M_t) = 
-\inn{\vec{\tilde w}_t, \vec \chi_{M'}-\vec \chi_{M_t}} = \inn{\vec w_t, \vec \chi_{M'}-\vec\chi_{M_t}}+\inn{\vec r_t, |\vec \chi_{M'}-\vec\chi_{M_t}|}.
+\inn{\vec{\tilde w}_t, \vec \chi_{M'}-\vec \chi_{M_t}} = \inn{\vec w_t, \vec \chi_{M'}-\vec\chi_{M_t}}+\inn{\vec \rad_t, |\vec \chi_{M'}-\vec\chi_{M_t}|}.
 $$
 \label{lemma:tilde}
 \end{lemma}
 
 \begin{proof}
 We begin with proving the first part.
-It is easy to verify that $\vec {\tilde w_t} = \vec w_t+ \vec r_t \odot (\vec 1_n-2\vec\chi_{M_t})$.
+It is easy to verify that $\vec {\tilde w_t} = \vec w_t+ \vec \rad_t \odot (\vec 1_n-2\vec\chi_{M_t})$.
 Then, we have
 \begin{align}
 \inn{\vec{\tilde w}_t, \vec \chi_{M'}-\vec \chi_{M_t}}
-&= \inn{\vec w_t+ \vec r_t \odot (1-2\vec\chi_{M_t}), \;\vec \chi_{M'}-\vec \chi_{M_t}} \nonumber \\
-&= \inn{\vec w_t,\vec \chi_{M'}-\vec \chi_{M_t}}+\inn{\vec r_t, (\vec 1_n-2\vec\chi_{M_t}) \odot (\vec \chi_{M'}-\vec \chi_{M_t})}
+&= \inn{\vec w_t+ \vec \rad_t \odot (1-2\vec\chi_{M_t}), \;\vec \chi_{M'}-\vec \chi_{M_t}} \nonumber \\
+&= \inn{\vec w_t,\vec \chi_{M'}-\vec \chi_{M_t}}+\inn{\vec \rad_t, (\vec 1_n-2\vec\chi_{M_t}) \odot (\vec \chi_{M'}-\vec \chi_{M_t})}
 \label{eq:l-d-1}\\
-&= \inn{\vec w_t,\vec \chi_{M'}-\vec \chi_{M_t}}+\inn{\vec r_t, \vec\chi_{M'}-\vec\chi_{M_t}-2\vec\chi_{M_t}\odot\vec\chi_{M'}+2\vec\chi_{M_t}^2 } \nonumber\\
-&= \inn{\vec w_t,\vec \chi_{M'}-\vec \chi_{M_t}}+\inn{\vec r_t, \vec\chi_{M'}^2-\vec\chi_{M_t}^2-2\vec\chi_{M_t}\odot\vec\chi_{M'}+2\vec\chi_{M_t}^2 }
+&= \inn{\vec w_t,\vec \chi_{M'}-\vec \chi_{M_t}}+\inn{\vec \rad_t, \vec\chi_{M'}-\vec\chi_{M_t}-2\vec\chi_{M_t}\odot\vec\chi_{M'}+2\vec\chi_{M_t}^2 } \nonumber\\
+&= \inn{\vec w_t,\vec \chi_{M'}-\vec \chi_{M_t}}+\inn{\vec \rad_t, \vec\chi_{M'}^2-\vec\chi_{M_t}^2-2\vec\chi_{M_t}\odot\vec\chi_{M'}+2\vec\chi_{M_t}^2 }
 \label{eq:l-d-2}\\
-&= \inn{\vec w_t,\vec \chi_{M'}-\vec \chi_{M_t}}+\inn{\vec r_t, (\vec\chi_{M'}-\vec\chi_{M_t})^2}
+&= \inn{\vec w_t,\vec \chi_{M'}-\vec \chi_{M_t}}+\inn{\vec \rad_t, (\vec\chi_{M'}-\vec\chi_{M_t})^2}
 \nonumber \\ \
-&= \inn{\vec w_t,\vec \chi_{M'}-\vec \chi_{M_t}}+\inn{\vec r_t, \big|\vec\chi_{M'}-\vec\chi_{M_t}\big|},
+&= \inn{\vec w_t,\vec \chi_{M'}-\vec \chi_{M_t}}+\inn{\vec \rad_t, \big|\vec\chi_{M'}-\vec\chi_{M_t}\big|},
 \label{eq:l-d-3}
 \end{align}
 where
@@ -578,9 +580,9 @@ Subtracting $\tilde w_t(M_t)$ from both sides of the former inequality, we have
 \label{eq:l-d-4}
 \end{equation}
 The lemma follows by noticing that the left-hand side of Eq.~\eqref{eq:l-d-4} equals to 
-$\inn{\vec w_t,\vec \chi_{\tilde M_t}-\vec \chi_{M_t}}+\inn{\vec r_t, \big|\vec\chi_{\tilde M_t}-\vec\chi_{M_t}\big|}$
+$\inn{\vec w_t,\vec \chi_{\tilde M_t}-\vec \chi_{M_t}}+\inn{\vec \rad_t, \big|\vec\chi_{\tilde M_t}-\vec\chi_{M_t}\big|}$
 and the right-hand side equals to
-$\inn{\vec w_t,\vec \chi_{M'}-\vec \chi_{M_t}}+\inn{\vec r_t, \big|\vec\chi_{M'}-\vec\chi_{M_t}\big|}$.
+$\inn{\vec w_t,\vec \chi_{M'}-\vec \chi_{M_t}}+\inn{\vec \rad_t, \big|\vec\chi_{M'}-\vec\chi_{M_t}\big|}$.
 \end{proof}
 
 
@@ -634,7 +636,7 @@ Using a union bound again over all $t>0$, we have
 Given any $t>0$, assume that event $\xi_t$ as defined in Eq.~\eqref{eq:define-xi} occurs. 
 Then, for any vector $\vec a \in \RR^n$, we have
 $$
-\big|\inn{\vec w,\vec a} - \inn{\vec w_t, \vec a}\big| \le \inn{\vec r_t, |\vec a|}.
+\big|\inn{\vec w,\vec a} - \inn{\vec w_t, \vec a}\big| \le \inn{\vec \rad_t, |\vec a|}.
 $$
 \end{lemma}
 
@@ -646,7 +648,7 @@ Suppose that $\xi$ occurs. Then, we have
 &=\left|\sum_{i=1}^n \big(w(i)-w_t(i)\big) a(i)  \right| \nonumber \\
 &\le\sum_{i=1}^n \big| w(i)-w_t(i)\big| |a(i)| \nonumber \\
 &\le\sum_{i=1}^{n} \rad_t(i) \cdot |a(i)| \label{eq:ci-c-1}\\
-&= \inn{\vec r_t,  |\vec a|}, \nonumber
+&= \inn{\vec \rad_t,  |\vec a|}, \nonumber
 \end{align}
 where Eq.~\eqref{eq:ci-c-1} follows the definition of event $\xi_t$ in Eq.~\eqref{eq:define-xi} and the assumption that it occurs.
 \end{proof}
@@ -676,7 +678,7 @@ Hence, we have
 \begin{align}
   \tilde w_t(\tilde M_t)-\tilde w_t(M_t) 
   &\ge \tilde w_t(M_t')-\tilde w_t(M_t) \nonumber \\
-  &= \inn{\vec w_t, \vec \chi_{M_t'}-\vec\chi_{M_t}}+\inn{\vec r_t, |\vec \chi_{M'}-\vec\chi_{M_t}|} \label{eq:lc-1}\\
+  &= \inn{\vec w_t, \vec \chi_{M_t'}-\vec\chi_{M_t}}+\inn{\vec \rad_t, |\vec \chi_{M'}-\vec\chi_{M_t}|} \label{eq:lc-1}\\
   &\ge \inn{\vec w, \vec \chi_{M_t'}-\vec\chi_{M_t}} \label{eq:lc-2}\\
   &= w(M_t')-w(M_t) > 0 \label{eq:lc-3},
 \end{align}
@@ -726,26 +728,26 @@ Now, we define vectors $\vec d = \vec \chi_{\tilde M_t} - \vec \chi_{M_t}$, $\ve
 By the definition of $M_t'$ and Lemma~\ref{lemma:exchange}, we see that $\vec d_1 = \vec d - \vec \chi_{c}$ and $\vec d_2 = \vec d_1+\vec \chi_b = \vec d-\vec \chi_c+\vec \chi_b$.
 
 
-Then, we claim that $\nor{\vec r_t \odot (\vec d-\vec \chi_c)}_\infty < \frac{\Delta_e}{3\rank(\B)}$.
+Then, we claim that $\nor{\vec \rad_t \odot (\vec d-\vec \chi_c)}_\infty < \frac{\Delta_e}{3\rank(\B)}$.
 Since $c_-\subseteq M_t$ and $c_+\cap M_t = \emptyset$, using standard set theoretical manipulations, we can show that $M_t \del \tilde M_t= (M_t \del M_t') \cup c_-$. 
 Similarly, one can show that $\tilde M_t \del M_t = (M_t' \del M_t) \cup c_+$. 
 This means that $\big((M_t \del M_t') \cup (M_t'\del M_t)\big) \subseteq \big((M_t \del \tilde M_t ) \cup (\tilde M_t \del M_t)\big)$.
 Then, applying Lemma~Y, we obtain
 \begin{align}
-   \nor{\vec r_t \odot (\vec d-\vec\chi_c)}_\infty 
-   &= \nor{\vec r_t \odot (\vec \chi_{M_t'} - \vec\chi_{M_t})}_\infty \nonumber\\
+   \nor{\vec \rad_t \odot (\vec d-\vec\chi_c)}_\infty 
+   &= \nor{\vec \rad_t \odot (\vec \chi_{M_t'} - \vec\chi_{M_t})}_\infty \nonumber\\
    &= \max_{i\in (M_t \del M_t') \cup (M_t'\del M_t) } \rad_t(i) \nonumber \\
    &\le \max_{i\in (M_t \del \tilde M_t ) \cup (\tilde M_t \del M_t)}  \rad_t(i) \nonumber \\
    & = \rad_t(e) < \frac{\Delta_e}{3\rank(\B)} \label{eq:u-c-1-0}.
 \end{align}
 
-We show that $\nor{\vec r_t \odot \vec \chi_c}_\infty < \frac{\Delta_e}{3\rank(\B)}$.
+We show that $\nor{\vec \rad_t \odot \vec \chi_c}_\infty < \frac{\Delta_e}{3\rank(\B)}$.
 Recall that, by the definition of $c$, we have
 $c_+\subseteq (\tilde M_t \del M_t)$ and $c_-\subseteq (M_t\del \tilde M_t)$. 
 Hence $c_+\cup c_- \subseteq  (\tilde M_t \del M_t)\cup (M_t\del \tilde M_t)$.
 Since $\vec \chi_c \in [-1,1]^n$, we see that 
 \begin{align}
-\nor{\vec r_t \odot |\vec \chi_c|}_\infty &= \max_{i\in  c_+\cup c_-} \rad_t(i) \nonumber \\
+\nor{\vec \rad_t \odot |\vec \chi_c|}_\infty &= \max_{i\in  c_+\cup c_-} \rad_t(i) \nonumber \\
 									    &\le \max_{i\in  (\tilde M_t \del M_t)\cup (M_t\del \tilde M_t)} \rad_t(i)  \nonumber \\
 									    &= \rad_t(e) < \frac{\Delta_e}{3\rank(\B)} \label{eq:u-c-1-0-1}.
 \end{align}
@@ -769,36 +771,36 @@ Therefore, we have
 \end{align*}
 where the last equality holds since $c_+\cap c_- =\emptyset$.
 
-Now, we bound  quantity $\langle \vec r_t, |\vec d_2| \rangle - \langle \vec r_t, |\vec d| \rangle$ as follows
+Now, we bound  quantity $\langle \vec \rad_t, |\vec d_2| \rangle - \langle \vec \rad_t, |\vec d| \rangle$ as follows
 \begin{align}
-\langle \vec r_t, |\vec d_2| \rangle - \langle \vec r_t, |\vec d| \rangle &=
-\langle \vec r_t, |\vec d_2|-|\vec d| \rangle = \left\langle \vec r_t, \vec d_2^2- \vec d^2 \right\rangle
+\langle \vec \rad_t, |\vec d_2| \rangle - \langle \vec \rad_t, |\vec d| \rangle &=
+\langle \vec \rad_t, |\vec d_2|-|\vec d| \rangle = \left\langle \vec \rad_t, \vec d_2^2- \vec d^2 \right\rangle
 \label{eq:u-c-1-1} \\
-&= \left\langle \vec r_t, (\vec d-\vec \chi_c+\vec \chi_b)^2- \vec d^2 \right\rangle 
+&= \left\langle \vec \rad_t, (\vec d-\vec \chi_c+\vec \chi_b)^2- \vec d^2 \right\rangle 
 \nonumber \\
-&= \left\langle \vec r_t, \vec \chi_b^2+\vec \chi_c^2-2\vec \chi_b\odot \vec \chi_c -
+&= \left\langle \vec \rad_t, \vec \chi_b^2+\vec \chi_c^2-2\vec \chi_b\odot \vec \chi_c -
 						  2\vec d \odot \vec \chi_c + 2\vec d\odot\vec \chi_b \right\rangle
 \nonumber \\
-&= \left\langle \vec r_t, \vec \chi_b^2 - \vec \chi_c^2+2\vec \chi_b\odot (\vec d-\vec \chi_c)\right\rangle
+&= \left\langle \vec \rad_t, \vec \chi_b^2 - \vec \chi_c^2+2\vec \chi_b\odot (\vec d-\vec \chi_c)\right\rangle
 \label{eq:u-c-1-2}\\
-&= \left\langle \vec r_t, |\vec\chi_b| \right\rangle
-  -\left\langle \vec r_t, |\vec\chi_c| \right\rangle
-  -2\left\langle \vec r_t, \vec \chi_b\odot (\vec d-\vec \chi_c) \right\rangle
+&= \left\langle \vec \rad_t, |\vec\chi_b| \right\rangle
+  -\left\langle \vec \rad_t, |\vec\chi_c| \right\rangle
+  -2\left\langle \vec \rad_t, \vec \chi_b\odot (\vec d-\vec \chi_c) \right\rangle
   \nonumber \\
-&= \left\langle \vec r_t, |\vec\chi_b| \right\rangle
-  -\left\langle \vec r_t, |\vec\chi_c| \right\rangle
-  -2\left\langle \vec r_t \odot (\vec d-\vec \chi_c), \vec \chi_b \right\rangle
+&= \left\langle \vec \rad_t, |\vec\chi_b| \right\rangle
+  -\left\langle \vec \rad_t, |\vec\chi_c| \right\rangle
+  -2\left\langle \vec \rad_t \odot (\vec d-\vec \chi_c), \vec \chi_b \right\rangle
   \label{eq:u-c-1-3}\\  
-& \ge \left\langle \vec r_t, |\vec\chi_b| \right\rangle
-  -\left\langle \vec r_t, |\vec\chi_c| \right\rangle
-  -2\left\|\vec r_t \odot (\vec d-\vec \chi_c)\right\|_\infty \left\| \vec \chi_b\right\|_1
+& \ge \left\langle \vec \rad_t, |\vec\chi_b| \right\rangle
+  -\left\langle \vec \rad_t, |\vec\chi_c| \right\rangle
+  -2\left\|\vec \rad_t \odot (\vec d-\vec \chi_c)\right\|_\infty \left\| \vec \chi_b\right\|_1
   \label{eq:u-c-1-4} \\
-& > \left\langle \vec r_t, |\vec\chi_b| \right\rangle
-  -\left\langle \vec r_t, |\vec\chi_c| \right\rangle
+& > \left\langle \vec \rad_t, |\vec\chi_b| \right\rangle
+  -\left\langle \vec \rad_t, |\vec\chi_c| \right\rangle
   -\frac{2\Delta_e}{3\rank(\B)} \|\vec\chi_b\|_1 
   \label{eq:u-c-1-5}\\
-& \ge \left\langle \vec r_t, |\vec\chi_b| \right\rangle
-  -\left\langle \vec r_t, |\vec\chi_c| \right\rangle
+& \ge \left\langle \vec \rad_t, |\vec\chi_b| \right\rangle
+  -\left\langle \vec \rad_t, |\vec\chi_c| \right\rangle
   -\frac{2\Delta_e}{3}
   \label{eq:u-c-1-6},
 \end{align}
@@ -810,23 +812,23 @@ and Eq.~\eqref{eq:u-c-1-6} holds since $b\in\B$ and $\nor{\vec\chi_b}_1 = |b_+|+
 
 Applying Lemma~\ref{lemma:tilde} by setting $M' = M_t' \oplus b$ and using the fact that $\tilde w_t(\tilde M_t) \ge \tilde w_t(M_t')$, we have 
 \begin{align*}
-\inn{\vec w_t, \vec d}+\inn{\vec r_t, |\vec d|}
-& = \inn{\vec w_t, \vec \chi_{\tilde M_t}-\vec\chi_{M_t}}+\inn{\vec r_t, |\vec \chi_{\tilde M_t}-\vec\chi_{M_t}|}\\
+\inn{\vec w_t, \vec d}+\inn{\vec \rad_t, |\vec d|}
+& = \inn{\vec w_t, \vec \chi_{\tilde M_t}-\vec\chi_{M_t}}+\inn{\vec \rad_t, |\vec \chi_{\tilde M_t}-\vec\chi_{M_t}|}\\
 & = \tilde w_t(\tilde M_t)- \tilde w_t(M_t)\\
 & \ge \tilde w_t(M_t') - \tilde w_t(M_t)\\
-&= \inn{\vec w_t, \vec \chi_{M_t'}-\vec\chi_{M_t}}+\inn{\vec r_t, |\vec \chi_{M_t'}-\vec\chi_{M_t}|}\\
-&= \inn{\vec w_t, \vec d_2}+\inn{\vec r_t, |\vec d_2|} \\
-									  &= \inn{\vec w_t, \vec d}-\inn{\vec w_t, \vec \chi_c}+\inn{\vec w_t,\vec\chi_b}+\inn{\vec r_t, |\vec d_2|},
+&= \inn{\vec w_t, \vec \chi_{M_t'}-\vec\chi_{M_t}}+\inn{\vec \rad_t, |\vec \chi_{M_t'}-\vec\chi_{M_t}|}\\
+&= \inn{\vec w_t, \vec d_2}+\inn{\vec \rad_t, |\vec d_2|} \\
+									  &= \inn{\vec w_t, \vec d}-\inn{\vec w_t, \vec \chi_c}+\inn{\vec w_t,\vec\chi_b}+\inn{\vec \rad_t, |\vec d_2|},
 \end{align*}
 where the last equality follows from the fact that $\vec d_2 = \vec d-\vec \chi_{c}+\vec \chi_{b}$.
 Rearranging the above inequality, we obtain
 \begin{align}
-\inn{\vec w_t, \vec \chi_c} &\ge \inn{\vec w_t, \vec \chi_b}+\inn{\vec r_t, |\vec d_2|}-\inn{\vec r_t, |\vec d|}\nonumber \\
+\inn{\vec w_t, \vec \chi_c} &\ge \inn{\vec w_t, \vec \chi_b}+\inn{\vec \rad_t, |\vec d_2|}-\inn{\vec \rad_t, |\vec d|}\nonumber \\
 &\ge  \inn{\vec w_t, \vec \chi_b}+
-\left\langle \vec r_t, |\vec\chi_b| \right\rangle
-  -\left\langle \vec r_t, |\vec\chi_c| \right\rangle
+\left\langle \vec \rad_t, |\vec\chi_b| \right\rangle
+  -\left\langle \vec \rad_t, |\vec\chi_c| \right\rangle
   -\frac{2\Delta_e}{3} \label{eq:u-c-1-7}\\
-&> \inn{\vec w, \vec \chi_b}-\inn{\vec r_t, \vec \chi_c}-\frac{2\Delta_e}{3} \label{eq:u-c-1-8}\\
+&> \inn{\vec w, \vec \chi_b}-\inn{\vec \rad_t, \vec \chi_c}-\frac{2\Delta_e}{3} \label{eq:u-c-1-8}\\
 &> \inn{\vec w, \vec \chi_b}-\frac{\Delta_e}{3}-\frac{2\Delta}{3} \label{eq:u-c-1-9}\\
 &= \inn{\vec w, \vec \chi_b}-\Delta_e \ge 0,
 \end{align}
@@ -861,21 +863,21 @@ Notice that Lemma~\ref{lemma:exchange} gives that $\vec d_1= \vec d+\vec b$.
 Then, we apply Lemma~\ref{lemma:max} by setting $M = M_t$ and $M' = \tilde M_t$. 
 This shows that 
 \begin{equation}
-\nor{\vec r_t\odot \vec d}_\infty \le \max_{i: (\tilde M_t \del M_t)\cup (M_t\del \tilde M_t)} \rad_t(i) = \rad_t(e) < \frac{\Delta_e}{3}.
+\nor{\vec \rad_t\odot \vec d}_\infty \le \max_{i: (\tilde M_t \del M_t)\cup (M_t\del \tilde M_t)} \rad_t(i) = \rad_t(e) < \frac{\Delta_e}{3}.
 \label{eq:u-c-2-0}
 \end{equation}
 
-Now, we bound quantity $\inn{\vec w_t, \vec d_1}+\inn{\vec r_t, |\vec d_1|}
--\inn{\vec w_t, \vec d}-\inn{\vec r_t,  |\vec d|}$ as follows
+Now, we bound quantity $\inn{\vec w_t, \vec d_1}+\inn{\vec \rad_t, |\vec d_1|}
+-\inn{\vec w_t, \vec d}-\inn{\vec \rad_t,  |\vec d|}$ as follows
 \begin{align}
-\inn{\vec w_t, \vec d_1}+\inn{\vec r_t, |\vec d_1|}
--\inn{\vec w_t, \vec d}-\inn{\vec r_t,  |\vec d|}
-& = \inn{\vec w_t, \vec \chi_b} + \inn{\vec r_t, |\vec d_1|-|\vec d|} \nonumber\\
-& =	\inn{\vec w_t, \vec \chi_b} + \inn{\vec r_t, \vec d_1^2-\vec d^2} \label{eq:u-c-2-1} \\
-& =	\inn{\vec w_t, \vec \chi_b} + \inn{\vec r_t, 2\vec d\odot \vec \chi_b +\vec \chi_b^2} \label{eq:u-c-2-2} \\
-& =	\inn{\vec w_t, \vec \chi_b} + \inn{\vec r_t, \vec\chi_b^2} + 2\inn{\vec r_t\odot \vec d, \vec \chi_b} \nonumber \\
-& \ge \inn{\vec w, \vec \chi_b}- 2\inn{\vec r_t\odot \vec d, \vec \chi_b}  \label{eq:u-c-2-3} \\
-& \ge \inn{\vec w, \vec \chi_b}-2\nor{\vec r_t\odot \vec d}_\infty\nor{\vec\chi_b}_1 \label{eq:u-c-2-3.5} \\
+\inn{\vec w_t, \vec d_1}+\inn{\vec \rad_t, |\vec d_1|}
+-\inn{\vec w_t, \vec d}-\inn{\vec \rad_t,  |\vec d|}
+& = \inn{\vec w_t, \vec \chi_b} + \inn{\vec \rad_t, |\vec d_1|-|\vec d|} \nonumber\\
+& =	\inn{\vec w_t, \vec \chi_b} + \inn{\vec \rad_t, \vec d_1^2-\vec d^2} \label{eq:u-c-2-1} \\
+& =	\inn{\vec w_t, \vec \chi_b} + \inn{\vec \rad_t, 2\vec d\odot \vec \chi_b +\vec \chi_b^2} \label{eq:u-c-2-2} \\
+& =	\inn{\vec w_t, \vec \chi_b} + \inn{\vec \rad_t, \vec\chi_b^2} + 2\inn{\vec \rad_t\odot \vec d, \vec \chi_b} \nonumber \\
+& \ge \inn{\vec w, \vec \chi_b}- 2\inn{\vec \rad_t\odot \vec d, \vec \chi_b}  \label{eq:u-c-2-3} \\
+& \ge \inn{\vec w, \vec \chi_b}-2\nor{\vec \rad_t\odot \vec d}_\infty\nor{\vec\chi_b}_1 \label{eq:u-c-2-3.5} \\
 & > \inn{\vec w, \vec \chi_b}-\frac{2\Delta_e}{3} \label{eq:u-c-2-4} \\
 & \ge 0 \label{eq:u-c-2-5},
 \end{align}
@@ -885,16 +887,16 @@ Eq.~\eqref{eq:u-c-2-3} follows from the assumption that $\xi$ occurs and Lemma~X
 Eq.~\eqref{eq:u-c-2-3.5} follows from Lemma~\ref{lemma:vector-technical}  and H\"older's inequality;
 and Eq.~\eqref{eq:u-c-2-4} is due to Eq.~\eqref{eq:u-c-2-0}.
 
-Therefore, we have proved that $\inn{\vec w_t, \vec d}+\inn{\vec r_t,  |\vec d|} < \inn{\vec w_t, \vec d_1}+\inn{\vec r_t, |\vec d_1|}.
+Therefore, we have proved that $\inn{\vec w_t, \vec d}+\inn{\vec \rad_t,  |\vec d|} < \inn{\vec w_t, \vec d_1}+\inn{\vec \rad_t, |\vec d_1|}.
 $
 However, Lemma~\ref{lemma:tilde} shows that 
 \begin{align*}
-\inn{\vec w_t, \vec d}+\inn{\vec r_t,  |\vec d|} 
-&= \inn{\vec w_t, \vec \chi_{\tilde M_t} - \vec \chi_{M_t}}+\inn{\vec r_t,  |\vec \chi_{\tilde M_t} - \vec \chi_{M_t}|} \\
+\inn{\vec w_t, \vec d}+\inn{\vec \rad_t,  |\vec d|} 
+&= \inn{\vec w_t, \vec \chi_{\tilde M_t} - \vec \chi_{M_t}}+\inn{\vec \rad_t,  |\vec \chi_{\tilde M_t} - \vec \chi_{M_t}|} \\
 &= \tilde w_t(\tilde M_t) - \tilde w_t(M_t)\\
 & \ge \tilde w_t(\tilde M_t \oplus b)-\tilde w_t(M_t)\\
-&= \inn{\vec w_t, \vec \chi_{\tilde M_t \oplus b} - \vec \chi_{M_t}}+\inn{\vec r_t,  |\vec \chi_{\tilde M_t \oplus b} - \vec \chi_{M_t}|} \\
-&= \inn{\vec w_t, \vec d_1}+\inn{\vec r_t,  |\vec d_1|}. 
+&= \inn{\vec w_t, \vec \chi_{\tilde M_t \oplus b} - \vec \chi_{M_t}}+\inn{\vec \rad_t,  |\vec \chi_{\tilde M_t \oplus b} - \vec \chi_{M_t}|} \\
+&= \inn{\vec w_t, \vec d_1}+\inn{\vec \rad_t,  |\vec d_1|}. 
 \end{align*}
 This is a contradiction and therefore $p_t\not= e$.
 
