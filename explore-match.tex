@@ -56,7 +56,7 @@
 \newtheorem{corollary}{Corollary}
 \newtheorem{theorem}{Theorem}
 
-
+\newcommand{\Algorithm}{\texttt{CGapExp}\xspace}
 \newcommand{\Problem}{\texttt{ExpCMAB}\xspace}
 \newcommand{\Rew}{\varphi}
 \newcommand{\E}{\mathbb E}
@@ -155,7 +155,8 @@ We consider the following applications as running examples.
 \item \Path.
 \end{itemize}
 
-\textbf{Useful notations.}
+%\textbf{Useful notations.}
+%For any vector $\vec v\in \RR^n$ and any set $M \subseteq [n]$, we define $v(M) = \sum_{e\in M} v(e)$.
 
 
 \section{Algorithm and Main Results}
@@ -173,7 +174,7 @@ For most non-trivial combinatorial problems, the size of the collection of feasi
 %Hence, the definition of $\M$ 
 Therefore, the learning algorithm needs a succinct representation of $\M$.
 In particular, we allow the learning algorithm to use a \emph{maximization oracle} which can find the optimal set $M\in \M$ when the expected reward of each arm is known.
-Specifically, we assume that there exists an oracle which takes expected reward vector $\vec w = \big(w(1),\ldots,w(n)\big)^T$ as input and returns a set $\Oracle(\vec w) = \argmax_{M\in \M} w(M)$.
+Specifically, we assume that there exists an oracle which takes a vector $\vec v = \big(v(1),\ldots,v(n)\big)^T$ as input and returns a set $\Oracle(\vec v) = \argmax_{M\in \M} v(M)$.
 It is clear that a large class of combinatorial problems admit efficient maximization oracles.
 
 
@@ -190,15 +191,15 @@ Notice that $M_t$ is the ``best'' set according to the empirical means $\bar w_t
 Then, in order to explore possible refinements of $M_t$, the algorithm uses the confidence radius to compute an adjusted expectation vector $\tilde w_t$ in the following way: for each arm $e \in M_t$, $\tilde w_t(e)$ equals to the lower confidence bound $\tilde w_t(e) = \bar w_t(e)-\rad_t(e)$; and for each arm $e\not\in M_t$, $\tilde w_t(e)$ equals to the upper confidence bound $\tilde w_t(e)=\bar w_t(e)+\rad_t(e)$.
 Intuitively, the adjusted expectation vector $\tilde w_t$ penalizes arms belonging to $M_t$ and encourages exploring arms out of $M_t$.
 The algorithm then calls the oracle using the adjusted expectation vector $\tilde w_t$ as input, which returns another set $\tilde M_t = \argmax_{M\in \M} \tilde w_t(M)$.
-The algorithm stops if $\tilde w_t(\tilde M_t)-\tilde w_t(M_t) \le \epsilon$ or the budget of samples is exhausted, i.e. $t=T$, in the fixed budget setting.
+The algorithm stops if $\tilde M_t= M_t$ or the budget is exhausted, i.e. $t=T$, in the fixed budget setting.
 In either cases, the algorithm outputs $\out=M_t$ as result.
 Otherwise, the algorithm plays the arm belonging to the symmetric difference $(\tilde M_t \del M_t) \cup (M_t \del \tilde M_t)$ with the largest confidence radius in the end of round $t$.
 The pseudo-code of the algorithm is shown in Algorithm~\ref{algo:pac}. 
 
 \begin{algorithm}[htbp]
 \begin{algorithmic}[1]
-\Require Confidence parameter: $\delta \in (0,1)$; Tolerance parameter: $\epsilon >0$; Maximization oracle: $\Oracle(w)$.
-\Statex \textbf{Initialize:} Play each arm $e \in [n]$ once. Initialize empirical means $\bar w_{n}(e)$ and set $T_{n}(e) \gets 1$ for all $e$.
+\Require Confidence parameter: $\delta \in (0,1)$; Maximization oracle: $\Oracle(\vec w)$.
+\Statex \textbf{Initialize:} Play each arm $e \in [n]$ once. Initialize empirical means $\vec w_n$ and set $T_{n}(e) \gets 1$ for all $e$.
 \For{$t=n,n+1,\ldots$}
 	\State $M_t \gets \Oracle(\vec w_t)$
 	\For{$e\in [n]$}
@@ -209,17 +210,17 @@ The pseudo-code of the algorithm is shown in Algorithm~\ref{algo:pac}.
 		\EndIf
 	\EndFor
 	\State $\tilde M_t \gets \Oracle(\vec{\tilde w}_t)$
-	\If{$\tilde w_t(\tilde M_t)-\tilde w_t(M_t) \le \epsilon$}
+	\If{$\tilde M_t = M_t$}
 		\State $\out \gets M_t$
 		\State \textbf{return} $\out$
 	\EndIf
 	\State $p_t \gets \argmax_{e\in (\tilde M_t \del M_t) \cup (M_t \del \tilde M_t)} \rad_t(e)$\label{algo:step:D}
 	\State Play $p_t$ and observe the reward
-	\State Update empirical mean $\bar w_{t+1}(p_t)$
+	\State Update empirical means $\vec w_{t+1}$
 	\State Update $T_{t+1}(p_t)\gets T_{t}(p_t)+1$ and $T_{t+1}(e) \gets T_{t}(e)$ for every $e\not=p_t$
 	\EndFor
 \end{algorithmic}
-\caption{ExploreComb: Pure exploration algorithm for combinatorial bandits}
+\caption{\Algorithm: Combinatorial Gap Exploration}
 \label{algo:pac}
 \end{algorithm}
 
@@ -307,7 +308,8 @@ A detailed proof of Lemma~\ref{lemma:example-exchange-class} is deferred to the 
 Our main results are problem-dependent bounds of our algorithm in both fixed confidence and fixed budget settings.
 First, we show that, in the fixed confidence setting, our algorithm returns the optimal set with high probability and uses at most $\tilde O\big(\sum_e \rank(\B)^2/\Delta_e^2\big)$ samples.
 \begin{theorem}
-Given any $\delta \in (0,1)$, any combinatorial problem $\M \subseteq 2^{[n]}$ and any expected rewards $\vec w \in \RR^{n}$.
+Given any $\delta \in (0,1)$, any combinatorial problem $\M \subseteq 2^{[n]}$ and any vector $\vec w \in \RR^{n}$.
+Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ is  $B$-sub-Gaussian with mean $w(e)$.
 Let $\B$ be an exchange class for $\M$ and let $\{\Delta_e\}_{e\in [n]}$ be the gaps defined in Eq.~\eqref{eq:define-delta}.
 Then, with probability at least $1-\delta$, Algorithm~\ref{algo:pac} returns the optimal set and
 $$
@@ -387,15 +389,24 @@ Notice that
 
 \section{Proof of Main Results}
 
-\subsection{Preliminaries}
 
-
-Let $\vec \chi_a \in \{0,1\}^n$ denote the incidence vector of set $a \subseteq [n]$, i.e. $\chi_a(e) = 1$ if and only if $e\in a$.
+\textbf{Notations.} 
+For any set $a\subseteq [n]$, let $\vec \chi_a \in \{0,1\}^n$ denote the incidence vector of set $a \subseteq [n]$, i.e. $\chi_a(e) = 1$ if and only if $e\in a$.
 For an exchange set $b=(b_+,b_-)$, we define $\vec \chi_b \triangleq \vec \chi_{b_+}- \vec \chi_{b_-}$ as the incidence vector of $b$.
 We notice that $\vec \chi_b \in \{-1,0,1\}^n$.
 
 For each round $t$, we define vector $\vec\rad_t = \big(\rad_t(1),\ldots,\rad_t(n)\big)^T$ and recall that $\vec w_t\in \RR^n$ is the empirical mean rewards of arms up to round $t$.
-We define $w_t(a) = \langle \vec w_t, \vec \chi_a \rangle$ and $\rad_t(a) = \langle \vec\rad_t, \left|\vec \chi_a \right| \rangle$, where $a$ is a set or an exchange set and $\vec \chi_a$ is the incidence vector of $a$. 
+
+Let $\vec u\in \RR^n$ and $\vec v\in \RR^n$ be two vectors.
+Let $\inn{\vec u, \vec v}$ denote the inner product of $\vec u$ and $\vec v$.
+We define $\vec u \odot \vec v \triangleq \big(u(1)\cdot v(1),\ldots,u(n)\cdot v(n)\big)^T$ as the element-wise product of $\vec u$ and $\vec v$.
+For any $s\in \RR$, we also define $\vec u^s \triangleq \big(u(1)^s, \ldots, u(n)^s)^T$ as the element-wise exponentiation of $\vec u$.
+Let $|\vec u| = \big(|u(1)|, \ldots, |u(n)|\big)^T$ denote the element-wise absolute value of $\vec u$.
+
+
+
+\subsection{Preparatory Lemmas}
+%We define $w_t(a) = \langle \vec w_t, \vec \chi_a \rangle$ and $\rad_t(a) = \langle \vec\rad_t, \left|\vec \chi_a \right| \rangle$, where $a$ is a set or an exchange set and $\vec \chi_a$ is the incidence vector of $a$. 
 
 
 \begin{lemma}
@@ -557,7 +568,7 @@ where
 Eq.~\eqref{eq:l-d-1} follows from Lemma~\ref{lemma:vector-technical};
 Eq.~\eqref{eq:l-d-2} holds since $\vec \chi_{M'}\in \{0,1\}^n$ and $\vec \chi_{M_t}\in \{0,1\}^n$
 and therefore $\vec\chi_{M'}=\vec\chi_{M'}^2$ and $\vec\chi_{M_t}=\vec\chi_{M_t}^2$;
-and Eq.~\eqref{eq:l-d-3} follows since $\vec\chi_{M'}-\vec\chi_{M_t}\in \{-1,0,1\}^2$.
+and Eq.~\eqref{eq:l-d-3} follows since $\vec\chi_{M'}-\vec\chi_{M_t}\in \{-1,0,1\}^n$.
 
 Next, recall that $\tilde M_t = \argmax_{M\in \M} \tilde w_t(M)$.
 Therefore, we have $\tilde w_t(\tilde M_t) \ge \tilde w_t(M')$.
@@ -609,7 +620,7 @@ $$
 $$
 
 By union bound over all $e\in [n]$, we see that $\Pr[\xi_t] \ge 1-\frac{\delta}{2t^2}$. 
-Using a union bound over all $t>0$ again, we have
+Using a union bound again over all $t>0$, we have
 \begin{align*}
 \Pr\left[\bigcap_{t=1}^\infty \xi_t \right] &\ge 1-\sum_{t=1}^\infty \Pr[\neg \xi_t]\\
 &\ge 1-\sum_{t=1}^\infty \frac{\delta}{2t^2}\\
@@ -1153,7 +1164,7 @@ H_1: \Rew_e = \begin{cases}
 $$
 And under hypothesis $H_2$, the mean reward of each arm is given by 
 $$
-H_2: q_e = \begin{cases}
+H_2: \Rew_e = \begin{cases}
 	\mathcal N\left(w(e)-2\frac{w(b)}{|b_-|},1\right)  & \text{if } e\in b_+,\\
 	\mathcal N(w(e), 1)  & \text{if } e\not\in b_+.\\
     \end{cases}
