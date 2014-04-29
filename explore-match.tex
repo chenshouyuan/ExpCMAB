@@ -121,7 +121,7 @@
 Suppose that the arms are numbered $1,2,\ldots,n$.
 Each arm $e\in[n]$ is associated with a reward distribution $\Rew_e$. 
 We assume that all reward distributions are $B$-sub-Gaussian, i.e. ().
-Notice that all distributions that are supported on $[0,B]$ are $B$-sub-Gaussian distributions [].
+Notice that all distributions that are supported on $[0,B]$ are $B$-sub-Gaussian distributions [] and therefore our model subsumes the cases of bounded rewards.
 Let $w(e)$ denote the expected reward of arm $e$, i.e. $w(e)=\E_{X\sim \Rew_e}[X]$.
 In addition, for any set of arms $M\subseteq [n]$, we define $w(M) = \sum_{e\in M} w(e)$ as the sum of expected rewards of arms that belong to $M$.
 
@@ -131,19 +131,19 @@ And the reward distributions $\{\Rew_e\}_{e\in[n]}$ are unknown to the learner.
 Then, the game is played for multiple rounds;
 on each round $t$, the learner pulls an arm $p_t\in [n]$ and observes a reward sampled from the associated reward distribution $\Rew_{p_t}$.
 The game continues until certain stopping condition is satisfied, which will be specified later.
-After the game finishes, the learner is asked to output a set of arms $\out \in \M$ which approximately maximizes the sum of expected weight, i.e. $w(M_*) - w(\out) \le \epsilon$, where we denote $M_*=\argmax_{M\in \M} w(M)$ to be the optimal set of arms.
+After the game finishes, the learner is asked to output a set of arms $\out \in \M$ which maximizes the sum of expected weight, i.e. $\out=M_*$, where we denote $M_*=\argmax_{M\in \M} w(M)$ to be the optimal set of arms.
 For the sake of simplicity, we shall assume that the optimal set $M_*$ is unique throughout the paper.
-Notice that, if $\epsilon = 0$, then the learner is required to identify the optimal set, i.e. $\out = M_*$.
+%Notice that, if $\epsilon = 0$, then the learner is required to identify the optimal set, i.e. $\out = M_*$.
 
 
 
 \textbf{Fixed confidence and fixed budget.} We consider two different stopping conditions of the game, which are known as \emph{fixed confidence} setting and \emph{fixed budget} setting. 
 In the fixed confidence setting, the learner can stop the game at any point and her goal is to achieve a fixed confidence about the optimality of the returned set using a small number of samples (pulls).
-Specifically, given a confidence parameter $\delta$, the learner need to guarantee that $\Pr[w(M_*)-w(\out) \le \epsilon] \ge 1-\delta$.
+Specifically, given a confidence parameter $\delta$, the learner need to guarantee that $\Pr[\out = M_*] \ge 1-\delta$.
 The performance is evaluated by the number of pulls used by the learner.
 Notice that the learner can stop the game at any point in this setting.
 In the fixed budget setting, the game stops after a fixed number rounds.
-The learner tries to minimize the probability of error $\Pr[w(M_*)-w(\out) > \epsilon]$ within these rounds.
+The learner tries to minimize the probability of error $\Pr[\out \not= M_*]$ within these rounds.
 In this case, the learner's performance is measured by the probability of error.
 
 
@@ -237,9 +237,10 @@ For each arm $e \in [n]$, we define gap $\Delta_e$ as
 \label{eq:define-delta}
 \Delta_e = \begin{cases}
 			   w(M_*)-\max_{M\in \M: e\in M} w(M) & \text{if } e\not \in M_*, \\
-			   w(M_*)-\max_{M\in \M: e\not \in M} w(M) & \text{if } e\in M_*.
+			   w(M_*)-\max_{M\in \M: e\not \in M} w(M) & \text{if } e\in M_*,
 			\end{cases}
 \end{equation}
+where we use the convention that the maximal of an empty set is $-\infty$.
 By this definition of gap $\Delta_e$, for each arm $e\not\in M_*$, $\Delta_e$ represents the gap between the optimal set $M_*$ and the best set that includes arm $e$; and, for each arm $e\in M_*$, $\Delta_e$ is the sub-optimality of the best set that does not include arm $e$.
 %We notice that, for many combinatorial problems, the definition Eq.~\eqref{eq:define-delta} naturally reflects the hardness of an arm.
 %().
@@ -314,7 +315,9 @@ First, we show that, in the fixed confidence setting, our algorithm returns the 
 Given any $\delta \in (0,1)$, any combinatorial problem $\M \subseteq 2^{[n]}$ and any vector $\vec w \in \RR^{n}$.
 Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ is  $B$-sub-Gaussian with mean $w(e)$.
 Let $\B$ be an exchange class for $\M$ and let $\{\Delta_e\}_{e\in [n]}$ be the gaps defined in Eq.~\eqref{eq:define-delta}.
-Then, with probability at least $1-\delta$, Algorithm~\ref{algo:pac} returns the optimal set and
+Set $\rad_t(e) = B\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_e(t)}}$ for all $t > 0$ and $e\in[n]$.
+
+Then, with probability at least $1-\delta$, Algorithm~\ref{algo:pac} returns the optimal set $\out=M_*$ and
 $$
 T \le O\left(\frac{1}{B^2}\cdot \sum_{e\in [n]} \frac{\rank(\B)^2}{\Delta_e^2} \log\left(\frac{1}{B^2}\cdot \frac{n}{\delta} \sum_{e\in[n]}\frac{\rank(\B)^2}{\Delta_e^2} \right)\right),
 $$
@@ -328,6 +331,23 @@ This matches the best known problem-dependent bounds for the \MultiIdent problem
 %And Theorem~\ref{algo:pac} establishes the first sample complexity bound for the pure exploration of other combinatorial bandits.
 
 
+\begin{theorem}
+Given any $T>0$, any combinatorial problem $\M \subseteq 2^{[n]}$ and any vector $\vec w \in \RR^{n}$.
+Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ is  $B$-sub-Gaussian with mean $w(e)$.
+Let $\B$ be an exchange class for $\M$ and let $\{\Delta_e\}_{e\in [n]}$ be the gaps defined in Eq.~\eqref{eq:define-delta}.
+
+Fix parameter $\alpha > 0$, set the confidence radius $\rad_t(e) = B\sqrt{\frac{\alpha}{T_e(t)}}$ for all arms $e\in[n]$ and all rounds $t\in [T]$.
+Run Algorithm~\ref{algo:pac} in the fixed budget mode with budget $T$.
+Then, the probability of error of Algorithm~\ref{algo:pac} is bounded as follows
+$$
+\Pr\big[\out\not=M_*\big] \le 2Tn\exp\left(-2\alpha\right),
+$$
+as long as $\alpha < O\left(T\left(B^2\rank(\B)^2\left(\sum_{i\in[n]}\Delta_i^{-2}\right)\right)^{-1}\right)$.
+
+\label{theorem:main-budget}
+\end{theorem}
+
+
 
 %Many combinatorial problem $\M$ is associated with an exchange class with small width.
 
@@ -337,11 +357,11 @@ This matches the best known problem-dependent bounds for the \MultiIdent problem
 
 
 
-\subsection{Lower bounds}
+\section{Lower bounds}
 
 In this part, we establish a problem-dependent lower bound on the sample complexity of the \Problem problem. 
 To state our results, we first define the notion of \emph{$\delta$-correct algorithm} as follows.
-For any $\delta \in (0,1)$, we call an algorithm $\mathbb A$ a $\delta$-correct algorithm if, for any expected reward $\vec w$, the probability of error of $\mathbb A$ is at most $\delta$, i.e $\Pr[w(M_*)-w(\out) \ge \epsilon] \le \delta$, where $\out$ is the output of algorithm $\mathbb A$.
+For any $\delta \in (0,1)$, we call an algorithm $\mathbb A$ a $\delta$-correct algorithm if, for any expected reward $\vec w$, the probability of error of $\mathbb A$ is at most $\delta$, i.e $\Pr[M_*=\out] \le \delta$, where $\out$ is the output of algorithm $\mathbb A$.
 
 Our next theorem shows shat, for any combinatorial problem $\M$, any expected rewards $\vec w$ and any $\delta$-correct algorithm $\mathbb A$, algorithm $\mathbb A$ must use at least $\tilde\Omega\left(\sum_{e} \frac{1}{\Delta_e^2}\right)$ samples in expectation.
 
@@ -387,6 +407,10 @@ $$
 where $T_b$ denotes the number of samples of arms belonging to $b$ used by algorithm $\mathbb A$.
 \end{theorem}
 Notice that 
+
+
+\section{Extensions}
+
 
 
 
@@ -599,39 +623,7 @@ For all $t>0$, we define random event $\xi_t$ as follows
 \end{equation}
 We notice that random event $\xi_t$ characterizes the event that the confidence bounds of all arms are valid at round $t$.
 
-\begin{lemma}
-\label{lemma:ci}
-Suppose that the reward distribution $\Rew_e$ is a $B$-sub-Gaussian distribution for all $e\in [n]$.
-And if, for all $t>0$ and all $e\in [n]$, 
-the confidence interval $\rad_t(e)$ is given by
-$$
-\rad_t(e) = B\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_e(t)}},
-$$
-where $T_e(t)$ is the number of samples of arm $e$ up to round $t$.
-Then, we have
-$$
-\Pr\left[\bigcap_{t=1}^\infty \xi_t \right] \ge 1-\delta.
-$$
-\end{lemma}
-
-\begin{proof}
-%We claim that, for any $t>0$, one has $\Pr[\xi_t] \ge 1- \frac{\delta}{4t^2}$.
-For any $t>0$ and $e\in [n]$, notice $\Rew_e$ is a $B$-sub-Gaussian distribution with mean $w(e)$ and $w_t(e)$ is the empirical mean of $\Rew_e$ for $T_e(t)$ samples. 
-Using Hoeffding's inequality (see XXX), we obtain
-$$
-\Pr\left[ \big|\bar w_t(e)-w(e) \big| \ge B\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_e(t)}} \right] \le \frac{\delta}{2nt^2}.
-$$
-
-By union bound over all $e\in [n]$, we see that $\Pr[\xi_t] \ge 1-\frac{\delta}{2t^2}$. 
-Using a union bound again over all $t>0$, we have
-\begin{align*}
-\Pr\left[\bigcap_{t=1}^\infty \xi_t \right] &\ge 1-\sum_{t=1}^\infty \Pr[\neg \xi_t]\\
-&\ge 1-\sum_{t=1}^\infty \frac{\delta}{2t^2}\\
-&= 1-\frac{\pi^2}{12}\delta \ge 1-\delta.
-\end{align*}
-\end{proof}
-
-
+If the confidence bounds are valid, we can generalize Eq.~\eqref{eq:define-xi} to inner products as follows.
 \begin{lemma}
 \label{lemma:ci-property}
 Given any $t>0$, assume that event $\xi_t$ as defined in Eq.~\eqref{eq:define-xi} occurs. 
@@ -654,6 +646,61 @@ Suppose that $\xi$ occurs. Then, we have
 where Eq.~\eqref{eq:ci-c-1} follows the definition of event $\xi_t$ in Eq.~\eqref{eq:define-xi} and the assumption that it occurs.
 \end{proof}
 
+
+Next, we construct the high probability confidence intervals for the fixed confidence setting.
+\begin{lemma}
+\label{lemma:ci}
+Suppose that the reward distribution $\Rew_e$ is a $B$-sub-Gaussian distribution for all $e\in [n]$.
+And if, for all $t>0$ and all $e\in [n]$, 
+the confidence radius $\rad_t(e)$ is given by
+$$
+\rad_t(e) = B\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_e(t)}},
+$$
+where $T_e(t)$ is the number of samples of arm $e$ up to round $t$.
+Then, we have
+$$
+\Pr\left[\bigcap_{t=1}^\infty \xi_t \right] \ge 1-\delta.
+$$
+\end{lemma}
+
+\begin{proof}
+%We claim that, for any $t>0$, one has $\Pr[\xi_t] \ge 1- \frac{\delta}{4t^2}$.
+For any $t>0$ and $e\in [n]$, notice $\Rew_e$ is a $B$-sub-Gaussian distribution with mean $w(e)$ and $w_t(e)$ is the empirical mean of $\Rew_e$ for $T_e(t)$ samples. 
+Using Hoeffding's inequality (see Lemma~\ref{lemma:hoeffeding} in Section~\ref{section:technical}), we obtain
+$$
+\Pr\left[ \big|\bar w_t(e)-w(e) \big| \ge B\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_e(t)}} \right] \le \frac{\delta}{2nt^2}.
+$$
+By union bound over all $e\in [n]$, we see that $\Pr[\xi_t] \ge 1-\frac{\delta}{2t^2}$. 
+Using a union bound again over all $t>0$, we have
+\begin{align*}
+\Pr\left[\bigcap_{t=1}^\infty \xi_t \right] &\ge 1-\sum_{t=1}^\infty \Pr[\neg \xi_t]\\
+&\ge 1-\sum_{t=1}^\infty \frac{\delta}{2t^2}\\
+&= 1-\frac{\pi^2}{12}\delta \ge 1-\delta.
+\end{align*}
+\end{proof}
+
+
+Finally, we construct the confidence intervals for the fixed budget case.
+\begin{lemma}
+Fix parameter $\alpha > 0$ and the number of rounds $T > 0$.
+Assume that the reward distribution $\Rew_e$ is a $B$-sub-Gaussian distribution for all $e\in [n]$.
+Let the confidence radius $\rad_t(e)$ of arm $e\in[n]$ and round $t>0$ be 
+$\rad_t(e)=B\sqrt{\frac{\alpha}{T_e(t)}}.$
+Then, we have
+$$
+\Pr\left[\bigcap_{t=1}^T \xi_t \right] \ge 1-2nT\exp\left(-2\alpha\right).
+$$
+\label{lemma:ci-budget}
+\end{lemma}
+
+\begin{proof}
+For any $t>0$ and $e\in[n]$, using Hoeffding's inequality, we have
+$$
+\Pr\left[ \big|\bar w_t(e)-w(e) \big| \ge \rad_t(e) \right] \le 2\exp(-2\alpha).
+$$
+By a union bound over all arms $e\in[n]$, we see that $\Pr[\xi_t] \ge 1-2n\exp(-2\alpha)$. 
+The lemma follows immediately by using union bound again over all round $t\in [T]$.
+\end{proof}
 
 \subsection{Main Lemmas}
 
@@ -936,6 +983,37 @@ Then, the total number of samples $T$ can be bounded by
 T = \sum_{e\in [n]} T_e \le \sum_{e\in [n]} \lceil t_e^* \rceil \le 
 O\left(\frac{1}{B^2}\sum_{e\in [n]} \frac{\rank(\B)^2}{\Delta_e^2} \log\left(\frac{1}{B^2}\cdot \frac{n}{\delta} \sum_{e\in[n]}\frac{\rank(\B)^2}{\Delta_e^2} \right)\right).
 \end{align*}
+
+\end{proof}
+
+
+\subsection{Proof of Theorem~\ref{theorem:main-budget}}
+
+\begin{proof}
+Define random event $\xi=\bigcap_{t=1}^T \xi_t$. 
+By Lemma~\ref{lemma:ci-budget}, we see that $\Pr[\xi] \ge 1-2nT\exp(-2\alpha)$.
+In the rest of the proof, we assume that $\xi$ happens.
+
+We claim that Algorithm~\ref{algo:pac} before round $T$.
+If the claim is true, then there exists a round $t^* < T$ such that $\tilde M_{t^*} = M_{t^*}$ and $\out = M_{t^*}$.
+By assumption on $\xi$ and Lemma~\ref{lemma:correct}, we know that $M_{t^*} = M_*$.
+Therefore the theorem follows immediately from this claim and the bound of $\Pr[\xi]$.
+
+Next, we show that this claim is true.
+For any round $t \in [T]$ and any arm $e\in[n]$, 
+by Lemma~\ref{lemma:key-technical}, 
+we see that if $\rad_t(e) < \frac{\Delta_e}{3\rank(\B)}$, then arm $e$ will no longer be pulled.
+Also notice that, by construction in the fixed budget setting, the radius $\rad_t(e)$ is monotone decreasing with respect to $T_e(t)$.
+Therefore, plugging the definition of $\rad_t(e)$, we have
+$$
+T_e \le \frac{9B^2\rank(\B)^2}{\Delta_e^2}\cdot\alpha.
+$$
+
+Summing up $T_e$ for all $e\in [n]$, we have
+$$
+t^* = \sum_{e\in [n]} T_e \le \alpha \cdot 9B^2\rank(\B)^2 \left(\sum_{e\in[n]}\Delta_e^{-2}\right) < T,
+$$
+where we have used the assumption that $\alpha < 9 T \cdot \left(B^2\rank(\B)^2 \left(\sum_{e\in[n]}\Delta_e^{-2}\right)\right)^{-1}.$
 
 \end{proof}
 
@@ -1374,12 +1452,23 @@ We show that one can slightly modify the vector $\{w(e)\}_{e\in [n]}$ to constru
 
 \section{Technical Lemmas}
 
+\label{section:technical}
 
 \begin{lemma}[Basis exchange property]
 AA
 \label{lemma:basis-exchange-matroid}
 \end{lemma}
 
+\begin{lemma}[Hoeffding's inequality]
+\label{lemma:hoeffeding}
+Let $X_1,\ldots, X_n$ be $n$ independent $R$-sub-Gaussian random variables. 
+Let $\bar X=\frac{1}{n}\sum X_i$ be the average of these random variables.
+Then, we have
+$$
+\Pr\Big[ \big|\bar X - \mathbb E[\bar X] \big| \ge t \Big] \le 
+2\exp\left(-\frac{2nt^2}{R^2}\right).
+$$
+\end{lemma}
 
 \section{Trash}
 
