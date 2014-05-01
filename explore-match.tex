@@ -118,12 +118,12 @@
 
 
 \textbf{\Problem: problem formulation.}
-Suppose that the arms are numbered $1,2,\ldots,n$.
+Let $n$ denote the number of arms and suppose that the arms are numbered $1,2,\ldots,n$.
 Each arm $e\in[n]$ is associated with a reward distribution $\Rew_e$. 
-We assume that all reward distributions are $B$-sub-Gaussian, i.e. ().
-Notice that all distributions that are supported on $[0,B]$ are $B$-sub-Gaussian distributions [] and therefore our model subsumes the cases of bounded rewards.
+We assume that all reward distributions are $R$-sub-Gaussian [].
+Notice that all distributions that are supported on $[0,R]$ are $R$-sub-Gaussian distributions [] and therefore our model subsumes the cases of bounded rewards.
 Let $w(e)$ denote the expected reward of arm $e$, i.e. $w(e)=\E_{X\sim \Rew_e}[X]$.
-In addition, for any set of arms $M\subseteq [n]$, we define $w(M) = \sum_{e\in M} w(e)$ as the sum of expected rewards of arms that belong to $M$.
+%In addition, for any set of arms $M\subseteq [n]$, we define $w(M) = \sum_{e\in M} w(e)$ as the sum of expected rewards of arms that belong to $M$.
 
 The learning problem of pure exploration combinatorial bandit can be formalized as a game between a learner and a stochastic environment.
 At the beginning of the game, the learner is given a collection of feasible sets $\M\subseteq 2^{[n]}$ which corresponds to some combinatorial problem. 
@@ -217,9 +217,9 @@ The pseudo-code of the algorithm is shown in Algorithm~\ref{algo:pac}.
 		\State \textbf{return} $\out$
 	\EndIf
 	\State $p_t \gets \argmax_{e\in (\tilde M_t \del M_t) \cup (M_t \del \tilde M_t)} \rad_t(e)$\label{algo:step:D}
-	\State Play arm $p_t$ and observe the reward
+	\State Pull arm $p_t$ and observe the reward
 	\State Update empirical means $\vec {\bar w}_{t+1}$ using the observed reward
-	\State Update number of samples: $T_{t+1}(p_t)\gets T_{t}(p_t)+1$ and $T_{t+1}(e) \gets T_{t}(e)$ for all $e\not=p_t$
+	\State Update number of pulls: $T_{t+1}(p_t)\gets T_{t}(p_t)+1$ and $T_{t+1}(e) \gets T_{t}(e)$ for all $e\not=p_t$
 	\EndFor
 \end{algorithmic}
 \caption{\Algorithm: Combinatorial Gap Exploration}
@@ -240,7 +240,7 @@ For each arm $e \in [n]$, we define gap $\Delta_e$ as
 			   w(M_*)-\max_{M\in \M: e\not \in M} w(M) & \text{if } e\in M_*,
 			\end{cases}
 \end{equation}
-where we use the convention that the maximal of an empty set is $-\infty$.
+where we use the convention that the maximum value of an empty set is $-\infty$.
 By this definition of gap $\Delta_e$, for each arm $e\not\in M_*$, $\Delta_e$ represents the gap between the optimal set $M_*$ and the best set that includes arm $e$; and, for each arm $e\in M_*$, $\Delta_e$ is the sub-optimality of the best set that does not include arm $e$.
 %We notice that, for many combinatorial problems, the definition Eq.~\eqref{eq:define-delta} naturally reflects the hardness of an arm.
 %().
@@ -310,23 +310,25 @@ A detailed proof of Lemma~\ref{lemma:example-exchange-class} is deferred to the 
 
 \textbf{Main results.} 
 Our main results are problem-dependent bounds of our algorithm in both fixed confidence and fixed budget settings.
-First, we show that, in the fixed confidence setting, our algorithm returns the optimal set with high probability and uses at most $\tilde O\big(\sum_e \rank(\B)^2/\Delta_e^2\big)$ samples.
+For clarity, we define $\mathbf H = \sum_{i\in [n]}\Delta_i^{-2}$.
+
+First, we show that, in the fixed confidence setting, our algorithm returns the optimal set with high probability and uses at most $\tilde O\big(\rank(\B)^2 \mathbf H\big)$ samples.
 \begin{theorem}
 Given any $\delta \in (0,1)$, any combinatorial problem $\M \subseteq 2^{[n]}$ and any vector $\vec w \in \RR^{n}$.
-Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ is  $B$-sub-Gaussian with mean $w(e)$.
+Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ is  $R$-sub-Gaussian with mean $w(e)$.
 Let $\B$ be an exchange class for $\M$ and let $\{\Delta_e\}_{e\in [n]}$ be the gaps defined in Eq.~\eqref{eq:define-delta}.
-Set $\rad_t(e) = B\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_e(t)}}$ for all $t > 0$ and $e\in[n]$.
+Set $\rad_t(e) = R\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_e(t)}}$ for all $t > 0$ and $e\in[n]$.
 
-Then, with probability at least $1-\delta$, Algorithm~\ref{algo:pac} returns the optimal set $\out=M_*$ and
+Then, with probability at least $1-\delta$, \Algorithm (Algorithm~\ref{algo:pac}) returns the optimal set $\out=M_*$ and
 $$
-T \le O\left(\frac{1}{B^2}\cdot \sum_{e\in [n]} \frac{\rank(\B)^2}{\Delta_e^2} \log\left(\frac{1}{B^2}\cdot \frac{n}{\delta} \sum_{e\in[n]}\frac{\rank(\B)^2}{\Delta_e^2} \right)\right),
+T \le O\left(\frac{1}{R^2}\rank(\B)^2\mathbf H\log\left(\frac{1}{R^2}\rank(\B)^2\mathbf H\right)\right),
 $$
 where $T$ denotes the number of samples used by Algorithm~\ref{algo:pac}.
 \label{theorem:main}
 \end{theorem}
 Theorem~\ref{theorem:main} is a general result which provides a sample complexity for any combinatorial problem $\M$.
 In addition, notice that $\rank(\B_{\MultiIdent})=O(1)$.
-Therefore, the sample complexity bound of our algorithm for the \MultiIdent problem is $O\big(\sum_e \Delta_e^{-2}\log(n\delta^{-1}\sum_{a}\Delta_a^{-2})\big)$.
+Therefore, the sample complexity bound of our algorithm for the \MultiIdent problem is $O\big(\mathbf H \log(n\delta^{-1} \mathbf H)\big)$.
 This matches the best known problem-dependent bounds for the \MultiIdent problem due to XXX [], within logarithmic factors.
 %And Theorem~\ref{algo:pac} establishes the first sample complexity bound for the pure exploration of other combinatorial bandits.
 
@@ -342,10 +344,14 @@ Then, the probability of error of Algorithm~\ref{algo:pac} is bounded as follows
 $$
 \Pr\big[\out\not=M_*\big] \le 2Tn\exp\left(-2\alpha\right),
 $$
-as long as $\alpha < O\left(T\left(B^2\rank(\B)^2\left(\sum_{i\in[n]}\Delta_i^{-2}\right)\right)^{-1}\right)$.
+as long as $\alpha < 9T\left(B^2\rank(\B)^2 \mathbf H\right)^{-1}$.
 
 \label{theorem:main-budget}
 \end{theorem}
+
+Theorem~\ref{theorem:main-budget} suggests that the probability of error of \Algorithm in the fixed budget model is bounded by $O(Tn\exp(-T/(\rank(\B)^2\mathbf H)))$ for certain parameter $\alpha$. 
+For \MultiIdent problem, we see that this matches the guarantees of previous fixed budget algorithm [], up to logarithmic factors.
+
 
 
 
@@ -370,7 +376,7 @@ Fix any $\M\subseteq 2^{[n]}$ and any vector $\vec w \in \RR^n$.
 Suppose that, for each arm $e\in [n]$, the reward distribution $\Rew_e$ is given by $\Rew_e=\mathcal N(w(e),1)$, where $\mathcal N(\mu, \sigma^2)$ denotes a Gaussian distribution with mean $\mu$ and variance $\sigma^2$. 
 Then, for any $\delta \in (0,e^{-16}/4)$ and any $\delta$-correct algorithm $\mathbb A$, we have
 $$
-\E[T] \ge \sum_e \frac{1}{16\Delta_e^2}\log(1/4\delta),
+\E[T] \ge \frac{1}{16} \mathbf H \log(1/4\delta),
 $$
 where 
 $T$ denote the number of total samples used by algorithm $\mathbb A$ and
@@ -416,8 +422,11 @@ Notice that
 
 \section{Proof of Main Results}
 
+In this section, we prove our main results: Theorem~\ref{theorem:main} and Theorem~\ref{theorem:main-budget}
+
 
 \textbf{Notations.} 
+For our analysis, we need some additional notations.
 For any set $a\subseteq [n]$, let $\vec \chi_a \in \{0,1\}^n$ denote the incidence vector of set $a \subseteq [n]$, i.e. $\chi_a(e) = 1$ if and only if $e\in a$.
 For an exchange set $b=(b_+,b_-)$, we define $\vec \chi_b \triangleq \vec \chi_{b_+}- \vec \chi_{b_-}$ as the incidence vector of $b$.
 We notice that $\vec \chi_b \in \{-1,0,1\}^n$.
@@ -596,7 +605,7 @@ Eq.~\eqref{eq:l-d-1} follows from Lemma~\ref{lemma:vector-technical};
 Eq.~\eqref{eq:l-d-2} holds since $\vec \chi_{M'}\in \{0,1\}^n$ and $\vec \chi_{M_t}\in \{0,1\}^n$
 and therefore $\vec\chi_{M'}=\vec\chi_{M'}^2$ and $\vec\chi_{M_t}=\vec\chi_{M_t}^2$;
 and Eq.~\eqref{eq:l-d-3} follows since $\vec\chi_{M'}-\vec\chi_{M_t}\in \{-1,0,1\}^n$.
-
+\junk{
 Next, recall that $\tilde M_t = \argmax_{M\in \M} \tilde w_t(M)$.
 Therefore, we have $\tilde w_t(\tilde M_t) \ge \tilde w_t(M')$.
 Subtracting $\tilde w_t(M_t)$ from both sides of the former inequality, we have
@@ -608,6 +617,7 @@ The lemma follows by noticing that the left-hand side of Eq.~\eqref{eq:l-d-4} eq
 $\inn{\vec {\bar w}_t,\vec \chi_{\tilde M_t}-\vec \chi_{M_t}}+\inn{\vec \rad_t, \big|\vec\chi_{\tilde M_t}-\vec\chi_{M_t}\big|}$
 and the right-hand side equals to
 $\inn{\vec {\bar w}_t,\vec \chi_{M'}-\vec \chi_{M_t}}+\inn{\vec \rad_t, \big|\vec\chi_{M'}-\vec\chi_{M_t}\big|}$.
+}
 \end{proof}
 
 
@@ -650,11 +660,11 @@ where Eq.~\eqref{eq:ci-c-1} follows the definition of event $\xi_t$ in Eq.~\eqre
 Next, we construct the high probability confidence intervals for the fixed confidence setting.
 \begin{lemma}
 \label{lemma:ci}
-Suppose that the reward distribution $\Rew_e$ is a $B$-sub-Gaussian distribution for all $e\in [n]$.
+Suppose that the reward distribution $\Rew_e$ is a $R$-sub-Gaussian distribution for all $e\in [n]$.
 And if, for all $t>0$ and all $e\in [n]$, 
 the confidence radius $\rad_t(e)$ is given by
 $$
-\rad_t(e) = B\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_e(t)}},
+\rad_t(e) = R\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_e(t)}},
 $$
 where $T_e(t)$ is the number of samples of arm $e$ up to round $t$.
 Then, we have
@@ -665,10 +675,10 @@ $$
 
 \begin{proof}
 %We claim that, for any $t>0$, one has $\Pr[\xi_t] \ge 1- \frac{\delta}{4t^2}$.
-For any $t>0$ and $e\in [n]$, notice $\Rew_e$ is a $B$-sub-Gaussian distribution with mean $w(e)$ and $w_t(e)$ is the empirical mean of $\Rew_e$ for $T_e(t)$ samples. 
+For any $t>0$ and $e\in [n]$, notice $\Rew_e$ is a $R$-sub-Gaussian distribution with mean $w(e)$ and $w_t(e)$ is the empirical mean of $\Rew_e$ for $T_e(t)$ samples. 
 Using Hoeffding's inequality (see Lemma~\ref{lemma:hoeffeding} in Section~\ref{section:technical}), we obtain
 $$
-\Pr\left[ \big|\bar w_t(e)-w(e) \big| \ge B\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_e(t)}} \right] \le \frac{\delta}{2nt^2}.
+\Pr\left[ \big|\bar w_t(e)-w(e) \big| \ge R\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_e(t)}} \right] \le \frac{\delta}{2nt^2}.
 $$
 By union bound over all $e\in [n]$, we see that $\Pr[\xi_t] \ge 1-\frac{\delta}{2t^2}$. 
 Using a union bound again over all $t>0$, we have
@@ -683,9 +693,9 @@ Using a union bound again over all $t>0$, we have
 Finally, we construct the confidence intervals for the fixed budget case.
 \begin{lemma}
 Fix parameter $\alpha > 0$ and the number of rounds $T > 0$.
-Assume that the reward distribution $\Rew_e$ is a $B$-sub-Gaussian distribution for all $e\in [n]$.
+Assume that the reward distribution $\Rew_e$ is a $R$-sub-Gaussian distribution for all $e\in [n]$.
 Let the confidence radius $\rad_t(e)$ of arm $e\in[n]$ and round $t>0$ be 
-$\rad_t(e)=B\sqrt{\frac{\alpha}{T_e(t)}}.$
+$\rad_t(e)=R\sqrt{\frac{\alpha}{T_e(t)}}.$
 Then, we have
 $$
 \Pr\left[\bigcap_{t=1}^T \xi_t \right] \ge 1-2nT\exp\left(-2\alpha\right).
@@ -965,7 +975,7 @@ Next, we focus on bounding $T$.
 Let $T_e$ denote the total number of pull of arm $e\in [n]$.
 Define 
 $$
-t_e^* = \left\lceil\frac{275}{B^2}\cdot\frac{\rank(\B)^2}{\Delta_e^2}\log\left(\frac{1}{B^2}\cdot\frac{4n}{\delta}\sum_{i\in[n]}\frac{\rank(\B)^2}{\Delta_i^2}\right)\right\rceil.
+t_e^* = \left\lceil\frac{275}{R^2}\cdot\frac{\rank(\B)^2}{\Delta_e^2}\log\left(\frac{1}{R^2}\cdot\frac{4n}{\delta}\sum_{i\in[n]}\frac{\rank(\B)^2}{\Delta_i^2}\right)\right\rceil.
 $$
 We claim that, for any $e \in [n]$, we have $T_e \le \lceil t_e^* \rceil$.
 Suppose that $T_e \ge \lceil t_e^* \rceil+1$.
@@ -973,15 +983,15 @@ Then, consider the round $t$ that such that $p_t=e$ and $T_e(t) =  \lceil t_e^* 
 Notice that $t \le T_e(t)$.
 Then, by straightforward computations, we obtain
 \begin{align*}
-\rad_t(e) &=   B\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_e(t)}} \le
- B\sqrt{\frac{2\log\left(\frac{4n (t_e^*)^2}\delta\right)}{t_e^*}} <  \frac{\Delta_e}{3\rank(\B)}. 	
+\rad_t(e) &=   R\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_e(t)}} \le
+ R\sqrt{\frac{2\log\left(\frac{4n (t_e^*)^2}\delta\right)}{t_e^*}} <  \frac{\Delta_e}{3\rank(\B)}. 	
 \end{align*}
 However, by Lemma~\ref{lemma:key-technical}, we see that $p_t\not=e$. This is a contradiction, and therefore the claim that $T_e \le \lceil t_e^* \rceil$ is true.
 
 Then, the total number of samples $T$ can be bounded by
 \begin{align*}
 T = \sum_{e\in [n]} T_e \le \sum_{e\in [n]} \lceil t_e^* \rceil \le 
-O\left(\frac{1}{B^2}\sum_{e\in [n]} \frac{\rank(\B)^2}{\Delta_e^2} \log\left(\frac{1}{B^2}\cdot \frac{n}{\delta} \sum_{e\in[n]}\frac{\rank(\B)^2}{\Delta_e^2} \right)\right).
+O\left(\frac{1}{R^2}\sum_{e\in [n]} \frac{\rank(\B)^2}{\Delta_e^2} \log\left(\frac{1}{R^2}\cdot \frac{n}{\delta} \sum_{e\in[n]}\frac{\rank(\B)^2}{\Delta_e^2} \right)\right).
 \end{align*}
 
 \end{proof}
@@ -1006,14 +1016,14 @@ we see that if $\rad_t(e) < \frac{\Delta_e}{3\rank(\B)}$, then arm $e$ will no l
 Also notice that, by construction in the fixed budget setting, the radius $\rad_t(e)$ is monotone decreasing with respect to $T_e(t)$.
 Therefore, plugging the definition of $\rad_t(e)$, we have
 $$
-T_e \le \frac{9B^2\rank(\B)^2}{\Delta_e^2}\cdot\alpha.
+T_e \le \frac{9R^2\rank(\B)^2}{\Delta_e^2}\cdot\alpha.
 $$
 
 Summing up $T_e$ for all $e\in [n]$, we have
 $$
-t^* = \sum_{e\in [n]} T_e \le \alpha \cdot 9B^2\rank(\B)^2 \left(\sum_{e\in[n]}\Delta_e^{-2}\right) < T,
+t^* = \sum_{e\in [n]} T_e \le \alpha \cdot 9R^2\rank(\B)^2 \left(\sum_{e\in[n]}\Delta_e^{-2}\right) < T,
 $$
-where we have used the assumption that $\alpha < 9 T \cdot \left(B^2\rank(\B)^2 \left(\sum_{e\in[n]}\Delta_e^{-2}\right)\right)^{-1}.$
+where we have used the assumption that $\alpha < 9 T \cdot \left(R^2\rank(\B)^2 \left(\sum_{e\in[n]}\Delta_e^{-2}\right)\right)^{-1}.$
 
 \end{proof}
 
@@ -1071,7 +1081,7 @@ By definition of $\Delta_e$, we know that $w(M_*)-w(M_e)=\Delta_e$.
 Let $\vec w_0$ and $\vec w_1$ be expected reward vectors under $H_0$ and $H_1$ respectively.
 Notice that $w_0(M_*)-w_0(M_e)=\Delta_e > 0$.
 On the other hand, 
-$w_1(M_*)-w_1(M_e) = -\Delta < 0$.
+$w_1(M_*)-w_1(M_e) = -\Delta_e < 0$.
 This means that under $H_1$, $M_*$ is not the optimal set.
 For $l\in \{0,1\}$, we use $\E_l$ and $\Pr_l$ to denote the expectation and probability, respectively, under the hypothesis $H_l$.
 
