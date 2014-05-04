@@ -57,6 +57,7 @@
 \newtheorem{theorem}{Theorem}
 
 \newcommand{\Algorithm}{\texttt{CGapExp}\xspace}
+\newcommand{\AlgorithmPAC}{\texttt{CGapExpPAC}\xspace}
 \newcommand{\Problem}{\texttt{ExpCMAB}\xspace}
 \newcommand{\Rew}{\varphi}
 \newcommand{\E}{\mathbb E}
@@ -116,6 +117,9 @@
 
 \section{Pure Exploration of Combinatorial Bandits}
 
+\textbf{Notations.} 
+%Let $\vec u \in \RR^{n}$ be a vector. 
+% and $M\subseteq [n]$ be a set. 
 
 \textbf{\Problem: problem formulation.}
 Let $n$ denote the number of arms and suppose that the arms are numbered $1,2,\ldots,n$.
@@ -123,10 +127,11 @@ Each arm $e\in[n]$ is associated with a reward distribution $\Rew_e$.
 We assume that all reward distributions are $R$-sub-Gaussian [].
 Notice that all distributions that are supported on $[0,R]$ are $R$-sub-Gaussian distributions [] and therefore our model subsumes the cases of bounded rewards.
 Let $w(e)$ denote the expected reward of arm $e$, i.e. $w(e)=\E_{X\sim \Rew_e}[X]$.
+Further, we define $\vec w = \big(w(1),\ldots,w(n)\big)^T$ as the vector of expected rewards.
 %In addition, for any set of arms $M\subseteq [n]$, we define $w(M) = \sum_{e\in M} w(e)$ as the sum of expected rewards of arms that belong to $M$.
 
 The learning problem of pure exploration combinatorial bandit can be formalized as a game between a learner and a stochastic environment.
-At the beginning of the game, the learner is given a collection of feasible sets $\M\subseteq 2^{[n]}$ which corresponds to some combinatorial problem. 
+At the beginning of the game, the learner is given a family of feasible sets $\M\subseteq 2^{[n]}$ which corresponds to some combinatorial problem. 
 And the reward distributions $\{\Rew_e\}_{e\in[n]}$ are unknown to the learner.
 Then, the game is played for multiple rounds;
 on each round $t$, the learner pulls an arm $p_t\in [n]$ and observes a reward sampled from the associated reward distribution $\Rew_{p_t}$.
@@ -162,16 +167,20 @@ We consider the following applications as running examples.
 
 
 \section{Algorithm and Main Results}
-Our main contribution is an algorithm for solving the \Problem problem.
-Our algorithm 
+%Our main contribution is an algorithm for solving the \Problem problem.
+%Our algorithm 
 
 %In this section, we describe our algorithm for pure exploration combinatorial bandit problem.
-Then, we analyze the sample complexity and the probability of error of our algorithm.
+%Then, we analyze the sample complexity and the probability of error of our algorithm.
 
+In this section, we present \Algorithm, a learning algorithm for the \Problem problem in the fixed confidence setting, and analyze its sample complexity. 
+%Then, we analyze the sample complexity of \Algorithm algorithm.
+The \Algorithm algorithm can be extended to the fixed budget and PAC learning settings. 
+We will discuss this extension in Section~X.
 
 %Many common combinatorial problems admit computationally efficient oracles.
 
-\textbf{Maximization oracle.}
+\textbf{Oracle.}
 For most non-trivial combinatorial problems, the size of the collection of feasible sets $\M$ is exponential in $n$.
 %Hence, the definition of $\M$ 
 Therefore, the learning algorithm needs a succinct representation of $\M$.
@@ -181,22 +190,24 @@ It is clear that a large class of combinatorial problems admit efficient maximiz
 
 
 \textbf{Algorithm.} 
-Our algorithm works for both fixed confidence and fixed budget settings.
-In either settings, the behaviors of our algorithm only differ in the construction of confidence radius and the stopping condition.
-In the following, we describe the procedure of our algorithm.
-Our algorithm maintains empirical mean $\bar w_t(e)$ and confidence radius $\rad_t(e)$ for each arm $e\in[n]$ and each round $t$.
+%
+%Our algorithm works for both fixed confidence and fixed budget settings.
+%In either settings, the behaviors of our algorithm only differ in the construction of confidence radius and the stopping condition.
+%In the following, we describe the procedure of our algorithm.
+The \Algorithm algorithm maintains empirical mean $\bar w_t(e)$ and confidence radius $\rad_t(e)$ for each arm $e\in[n]$ and each round $t$.
 The construction of confidence radius ensures that $|w(e)-\bar w_t(e)| \le \rad_t(e)$ holds with high probability for each arm $e \in [n]$ and each round $t>0$.
-At each round $t$, our algorithm accesses the maximization oracle twice. 
+At each round $t$, \Algorithm accesses the  oracle twice. 
 The first access to the oracle computes the set $M_t=\argmax_{M\in \M} \bar w_t(M)$.
-Notice that $M_t$ is the ``best'' set according to the empirical means $\bar w_t$.
+Notice that $M_t$ is the ``best'' set according to the empirical means $\vec {\bar w}_t$.
 % which maximizes empirical means $\bar w_t$ up to  $t$.
-Then, in order to explore possible refinements of $M_t$, the algorithm uses the confidence radius to compute an adjusted expectation vector $\tilde w_t$ in the following way: for each arm $e \in M_t$, $\tilde w_t(e)$ equals to the lower confidence bound $\tilde w_t(e) = \bar w_t(e)-\rad_t(e)$; and for each arm $e\not\in M_t$, $\tilde w_t(e)$ equals to the upper confidence bound $\tilde w_t(e)=\bar w_t(e)+\rad_t(e)$.
-Intuitively, the adjusted expectation vector $\tilde w_t$ penalizes arms belonging to $M_t$ and encourages exploring arms out of $M_t$.
-The algorithm then calls the oracle using the adjusted expectation vector $\tilde w_t$ as input, which returns another set $\tilde M_t = \argmax_{M\in \M} \tilde w_t(M)$.
-The algorithm stops if $\tilde M_t= M_t$ or the budget is exhausted, i.e. $t=T$, in the fixed budget setting.
-In either cases, the algorithm outputs $\out=M_t$ as result.
-Otherwise, the algorithm plays the arm belonging to the symmetric difference $(\tilde M_t \del M_t) \cup (M_t \del \tilde M_t)$ with the largest confidence radius in the end of round $t$.
-The pseudo-code of the algorithm is shown in Algorithm~\ref{algo:pac}. 
+Then, \Algorithm explores possible refinements of $M_t$. 
+In particular, \Algorithm uses the confidence radius to compute an adjusted expectation vector $\vec {\tilde w}_t$ in the following way: for each arm $e \in M_t$, $\tilde w_t(e)$ equals to the lower confidence bound $\tilde w_t(e) = \bar w_t(e)-\rad_t(e)$; and for each arm $e\not\in M_t$, $\tilde w_t(e)$ equals to the upper confidence bound $\tilde w_t(e)=\bar w_t(e)+\rad_t(e)$.
+Intuitively, the adjusted expectation vector $\vec {\tilde w}_t$ penalizes arms belonging to $M_t$ and encourages exploring arms out of $M_t$.
+The algorithm then calls the oracle using the adjusted expectation vector $\vec {\tilde w}_t$ as input, which returns another set $\tilde M_t = \argmax_{M\in \M} \tilde w_t(M)$.
+The \Algorithm algorithm stops if $\tilde w_t(\tilde M_t) = \tilde w_t(\tilde M_t)$ and outputs $\out=M_t$.
+Otherwise, \Algorithm pulls the arm belonging to the symmetric difference $(\tilde M_t \del M_t) \cup (M_t \del \tilde M_t)$ between $M_t$ and $\tilde M_t$ with the largest confidence radius in the end of round $t$.
+The pseudo-code of \Algorithm is shown in Algorithm~\ref{algo:pac}. 
+
 
 \begin{algorithm}[htbp]
 \begin{algorithmic}[1]
@@ -212,7 +223,7 @@ The pseudo-code of the algorithm is shown in Algorithm~\ref{algo:pac}.
 		\EndIf
 	\EndFor
 	\State $\tilde M_t \gets \Oracle(\vec{\tilde w}_t)$
-	\If{$\tilde M_t = M_t$}
+	\If{$\tilde w_t(\tilde M_t) = \tilde w_t(M_t)$}
 		\State $\out \gets M_t$
 		\State \textbf{return} $\out$
 	\EndIf
@@ -228,7 +239,7 @@ The pseudo-code of the algorithm is shown in Algorithm~\ref{algo:pac}.
 
 
 \subsection{Analysis}
-In this part, we analyze the performance of Algorithm~\ref{algo:pac} for both fixed confidence and fixed budget settings. 
+%In this part, we analyze the performance of Algorithm~\ref{algo:pac} for both fixed confidence and fixed budget settings. 
 
 
 \textbf{Gap.} We begin with defining a natural complexity measure of the \Problem problem. 
@@ -241,7 +252,12 @@ For each arm $e \in [n]$, we define gap $\Delta_e$ as
 			\end{cases}
 \end{equation}
 where we use the convention that the maximum value of an empty set is $-\infty$.
-By this definition of gap $\Delta_e$, for each arm $e\not\in M_*$, $\Delta_e$ represents the gap between the optimal set $M_*$ and the best set that includes arm $e$; and, for each arm $e\in M_*$, $\Delta_e$ is the sub-optimality of the best set that does not include arm $e$.
+We also define $\mathbf H$ as the sum of inverse squared gaps 
+$$
+\mathbf H =\sum_{e\in [n]} \Delta_e^{-2}.
+$$
+
+From Eq.~\eqref{eq:define-delta}, we see that, for each arm $e\not\in M_*$, $\Delta_e$ represents the gap between the optimal set $M_*$ and the best set that includes arm $e$; and, for each arm $e\in M_*$, $\Delta_e$ is the sub-optimality of the best set that does not include arm $e$.
 %We notice that, for many combinatorial problems, the definition Eq.~\eqref{eq:define-delta} naturally reflects the hardness of an arm.
 %().
 %Figure X illustrates these interpretations.
@@ -251,7 +267,7 @@ We notice that this definition resembles the definition of gaps for \MultiIdent 
 
 \textbf{Exchange class.} 
 The analysis of our algorithm depends on certain exchange properties of combinatorial structures.
-To study these properties, we introduce notions of \emph{exchange set} and \emph{exchange class} as our tools for the analysis.
+To capture these properties, we introduce notions of \emph{exchange set} and \emph{exchange class} as tools for our analysis.
 We present their definitions in the following.
 
 %An exchange set is defined as a pair of disjoint sets.
@@ -264,9 +280,10 @@ We call a set of exchange sets $\B$ an \emph{exchange class for $\M$} if $\B$ sa
 Let $M$ and $M'$ be two  elements of $\M$.
 Then, for any $e \in (M\del M')$, there exists an exchange set $(b_+,b_-)\in \B$ which satisfies $e\in b_-$, $b_+ \subseteq M'\del M$, $b_- \subseteq M \del M'$, $(M\oplus b) \in \M$ and $(M'\ominus b) \in \M$.
 Finally, we define the \emph{width} of exchange class $\B$ as follows
-$$
+\begin{equation}
+\label{eq:width}
 \rank(\B) = \max_{(b_+,b_-) \in \B} |b_+|+|b_-|.
-$$
+\end{equation}
 
 %An exchange class can be seen as a set operations that transform one feasible set to another.
 
@@ -291,7 +308,7 @@ Next, we construct the exchange classes for our running examples.
 Our constructions are summarized in Lemma~\ref{lemma:example-exchange-class}.
 \begin{lemma}
 There exist exchange classes $\B_{\MultiIdent}$, $\B_{\Matroid}$, $\B_{\Match}$ and $\B_{\Path}$ for $\M_{\MultiIdent}$, $\M_{\Matroid}$, $\M_{\Match}$ and $\M_{\Path}$, respectively. 
-These exchangese classes can be constructed as follows
+These exchange classes can be constructed as follows
 \begin{enumerate}
 	\item $\B_{\MultiIdent}=\big\{(\{i\},\{j\})\;|\;\forall i\in [n], j\in [n]\big\}$.
 	\item $\B_{\Matroid}=\big\{(\{i\},\{j\})\;|\;\forall i\in [n], j\in [n]\big\}$.
@@ -303,54 +320,33 @@ In addition, we have $\rank(\B_{\MultiIdent})=2$, $\rank(\B_{\Matroid})=2$, $\ra
 \end{lemma}
 The  construction for \MultiIdent problem is straightforward. 
 For \Matroid problem, we leverage the basis exchange property of matroids (see Lemma~\ref{lemma:basis-exchange-matroid} in the appendix).
-And for \Match and \Path problems, we appeal to the graph-theoretical properties of matchings and paths.
+And for \Match and \Path problems, we appeal to  graph-theoretical properties of matchings and paths.
 We illustrate these  exchanges classes in Figure~Y.
 A detailed proof of Lemma~\ref{lemma:example-exchange-class} is deferred to the supplementary material.
 
 
-\textbf{Main results.} 
-Our main results are problem-dependent bounds of our algorithm in both fixed confidence and fixed budget settings.
-For clarity, we define $\mathbf H = \sum_{i\in [n]}\Delta_i^{-2}$.
-
-First, we show that, in the fixed confidence setting, our algorithm returns the optimal set with high probability and uses at most $\tilde O\big(\rank(\B)^2 \mathbf H\big)$ samples.
+\textbf{Main result.} 
+Our main result is a problem-dependent sample complexity bound of \Algorithm algorithm.
+In particular, we show that \Algorithm returns the optimal set with high probability and uses at most $\tilde O\big(\rank(\B)^2 \mathbf H\big)$ samples.
 \begin{theorem}
 Given any $\delta \in (0,1)$, any combinatorial problem $\M \subseteq 2^{[n]}$ and any vector $\vec w \in \RR^{n}$.
 Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ is  $R$-sub-Gaussian with mean $w(e)$.
 Let $\B$ be an exchange class for $\M$ and let $\{\Delta_e\}_{e\in [n]}$ be the gaps defined in Eq.~\eqref{eq:define-delta}.
-Set $\rad_t(e) = R\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_e(t)}}$ for all $t > 0$ and $e\in[n]$.
 
-Then, with probability at least $1-\delta$, \Algorithm (Algorithm~\ref{algo:pac}) returns the optimal set $\out=M_*$ and
+Set $\rad_t(e) = R\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_e(t)}}$ for all $t > 0$ and $e\in[n]$.
+Then, with probability at least $1-\delta$, the \Algorithm algorithm (Algorithm~\ref{algo:pac}) returns the optimal set $\out=M_*$ and
 $$
-T \le O\left(\frac{1}{R^2}\rank(\B)^2\mathbf H\log\left(\frac{1}{R^2}\rank(\B)^2\mathbf H\right)\right),
+T \le O\left(R^2\rank(\B)^2\mathbf H\log\left(R^2\rank(\B)^2\mathbf H n/\delta\right)\right),
 $$
 where $T$ denotes the number of samples used by Algorithm~\ref{algo:pac}.
 \label{theorem:main}
 \end{theorem}
+
 Theorem~\ref{theorem:main} is a general result which provides a sample complexity for any combinatorial problem $\M$.
 In addition, notice that $\rank(\B_{\MultiIdent})=O(1)$.
 Therefore, the sample complexity bound of our algorithm for the \MultiIdent problem is $O\big(\mathbf H \log(n\delta^{-1} \mathbf H)\big)$.
 This matches the best known problem-dependent bounds for the \MultiIdent problem due to XXX [], within logarithmic factors.
 %And Theorem~\ref{algo:pac} establishes the first sample complexity bound for the pure exploration of other combinatorial bandits.
-
-
-\begin{theorem}
-Given any $T>0$, any combinatorial problem $\M \subseteq 2^{[n]}$ and any vector $\vec w \in \RR^{n}$.
-Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ is  $B$-sub-Gaussian with mean $w(e)$.
-Let $\B$ be an exchange class for $\M$ and let $\{\Delta_e\}_{e\in [n]}$ be the gaps defined in Eq.~\eqref{eq:define-delta}.
-
-Fix parameter $\alpha > 0$, set the confidence radius $\rad_t(e) = B\sqrt{\frac{\alpha}{T_e(t)}}$ for all arms $e\in[n]$ and all rounds $t\in [T]$.
-Run Algorithm~\ref{algo:pac} in the fixed budget mode with budget $T$.
-Then, the probability of error of Algorithm~\ref{algo:pac} is bounded as follows
-$$
-\Pr\big[\out\not=M_*\big] \le 2Tn\exp\left(-2\alpha\right),
-$$
-as long as $\alpha < 9T\left(B^2\rank(\B)^2 \mathbf H\right)^{-1}$.
-
-\label{theorem:main-budget}
-\end{theorem}
-
-Theorem~\ref{theorem:main-budget} suggests that the probability of error of \Algorithm in the fixed budget model is bounded by $O(Tn\exp(-T/(\rank(\B)^2\mathbf H)))$ for certain parameter $\alpha$. 
-For \MultiIdent problem, we see that this matches the guarantees of previous fixed budget algorithm [], up to logarithmic factors.
 
 
 
@@ -363,20 +359,19 @@ For \MultiIdent problem, we see that this matches the guarantees of previous fix
 
 
 
-\section{Lower bounds}
+\section{Lower Bounds}
 
-In this part, we establish a problem-dependent lower bound on the sample complexity of the \Problem problem. 
+In this section, we establish a problem-dependent lower bound on the sample complexity of the \Problem problem. 
 To state our results, we first define the notion of \emph{$\delta$-correct algorithm} as follows.
-For any $\delta \in (0,1)$, we call an algorithm $\mathbb A$ a $\delta$-correct algorithm if, for any expected reward $\vec w$, the probability of error of $\mathbb A$ is at most $\delta$, i.e $\Pr[M_*=\out] \le \delta$, where $\out$ is the output of algorithm $\mathbb A$.
+For any $\delta \in (0,1)$, we call an algorithm $\mathbb A$ a $\delta$-correct algorithm if, for any expected reward $\vec w \in \RR^{n}$, the probability of error of $\mathbb A$ is at most $\delta$, i.e $\Pr[M_*\not =\out] \le \delta$, where $\out$ is the output of algorithm $\mathbb A$.
 
-Our next theorem shows shat, for any combinatorial problem $\M$, any expected rewards $\vec w$ and any $\delta$-correct algorithm $\mathbb A$, algorithm $\mathbb A$ must use at least $\tilde\Omega\left(\sum_{e} \frac{1}{\Delta_e^2}\right)$ samples in expectation.
-
+We show that, for any combinatorial problem $\M$ and any expected rewards $\vec w$, any $\delta$-correct algorithm $\mathbb A$ must use at least $\tilde\Omega\left(\mathbf H\right)$ samples in expectation.
 \begin{theorem}
 Fix any $\M\subseteq 2^{[n]}$ and any vector $\vec w \in \RR^n$.
 Suppose that, for each arm $e\in [n]$, the reward distribution $\Rew_e$ is given by $\Rew_e=\mathcal N(w(e),1)$, where $\mathcal N(\mu, \sigma^2)$ denotes a Gaussian distribution with mean $\mu$ and variance $\sigma^2$. 
 Then, for any $\delta \in (0,e^{-16}/4)$ and any $\delta$-correct algorithm $\mathbb A$, we have
 $$
-\E[T] \ge \frac{1}{16} \mathbf H \log(1/4\delta),
+\E[T] \ge \frac{1}{16} \mathbf H \log(\frac{1}{4\delta}),
 $$
 where 
 $T$ denote the number of total samples used by algorithm $\mathbb A$ and
@@ -384,9 +379,9 @@ $\Delta_e$ is defined in Eq.~\eqref{eq:define-delta}.
 \label{theorem:lower-bound}
 \end{theorem}
 
-Now, we compare the sample complexity of Algorithm~\ref{algo:pac} to the lower bound provided in Theorem~\ref{theorem:lower-bound} on our running examples \MultiIdent, \Matroid, \Match and \Path.
-For clarity, we consider the case that $\epsilon=0$ which corresponds to the learning problem of finding the optimal set.
-We see that Algorithm~\ref{algo:pac} uses at most $\tilde O(\sum_{e} \rank(\B)^2/\Delta_e^2)$ samples.
+Now we compare the sample complexity of Algorithm~\ref{algo:pac} to the lower bound provided in Theorem~\ref{theorem:lower-bound} on our running examples \MultiIdent, \Matroid, \Match and \Path.
+%For clarity, we consider the case that $\epsilon=0$ which corresponds to the learning problem of finding the optimal set.
+We see that \Algorithm algorithm uses at most $\tilde O(\rank(\B)^2 \mathbf H)$ samples.
 Recall that, for \MultiIdent and \Matroid problems, Lemma~X shows that $\rank(\B)=2$.
 Hence, for these two problems, Algorithm~\ref{algo:pac} achieves optimal sample complexity within logarithmic factors.
 
@@ -395,7 +390,7 @@ This means that the gap between our algorithm and this lower bound is a factor o
 Notice this gap only depends on the underlying combinatorial structure of $\M$ and is independent of expected rewards $\vec w$. 
 This means that  the sample complexity of Algorithm~\ref{algo:pac} has an optimal dependency on the gaps $\{\Delta_e\}_{e\in[n]}$.
 
-However, we still remain to investigate the necessity of the dependency on $\rank(\B)$ of Algorithm~\ref{algo:pac}.
+Next, we argue that the dependency on $\rank(\B)$ on the sample complexity might be intrinsic.
 To this end, we provide evidence showing that the sample complexity of any $\delta$-correct algorithm should be related to size of exchange sets.
 %Furthermore, the lower bound can be improved to be dependent on the size of exchange sets.
 In fact, we show that, for any optimal exchange set $b\in\Bopt$ and any $\delta$-correct algorithm, the algorithm  must spend $\tilde \Omega\left(|b|^2/w(b)^2\right)$ samples on the arms belonging to $b$.
@@ -417,16 +412,72 @@ Notice that
 
 \section{Extensions}
 
+\subsection{Fixed Budget Setting}
+We can extend the \Algorithm algorithm to the fixed budget setting through two simple modifications: (1) requiring \Algorithm to terminate after $T$ rounds; and (2) using a different construction of confidence intervals.
+The first modification ensures that \Algorithm use at most $T$ samples, which meets the requirement of the fixed budget setting.
+And the second modification guarantees that the confidence intervals are valid for all arms in $T$ rounds.
+The following theorem shows that the probability of error of the modified \Algorithm is bounded by 
+$O\left(Tn\exp\left(\frac{-T}{\rank(\B)^2\mathbf H} \right)\right)$.
+\begin{theorem}
+%Given any $T>0$, any combinatorial problem $\M \subseteq 2^{[n]}$ and any vector $\vec w \in \RR^{n}$.
+%Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ is  $R$-sub-Gaussian with mean $w(e)$.
+%Let $\B$ be an exchange class for $\M$ and let $\{\Delta_e\}_{e\in [n]}$ be the gaps defined in Eq.~\eqref{eq:define-delta}.
+Use the same notations as in Theorem~\ref{theorem:main}.
+Given $T>0$ and parameter $\alpha > 0$, set the confidence radius $\rad_t(e) = R\sqrt{\frac{\alpha}{T_e(t)}}$ for all arms $e\in[n]$ and all $t>0$.
+Run \Algorithm algorithm for at most $T$ rounds.
+Then, we have
+%the probability of error of \Algorithm is bounded as follows
+\begin{equation}
+\label{eq:fix-budget}
+\Pr\big[\out\not=M_*\big] \le 2Tn\exp\left(-2\alpha\right),
+\end{equation}
+as long as $\alpha < 9T\left(R^2\rank(\B)^2 \mathbf H\right)^{-1}$.
+\label{theorem:main-budget}
+\end{theorem}
+The right-hand side of Eq.~\eqref{eq:fix-budget} equals to $O\left(Tn\exp\left(\frac{-T}{\rank(\B)^2\mathbf H} \right)\right)$
+when parameter $\alpha = O(T\mathbf H^{-1}\rank(\B)^{-2})$.
+For \MultiIdent problem, we see that this matches the guarantees of previous fixed budget algorithm [], up to logarithmic factors.
+
+\subsection{PAC Learning}
+Now we consider a setting where the learner is only required to report an approximately optimal set of arms. 
+More specifically, we consider the notion of $(\epsilon,\delta)$-PAC algorithm.
+Formally, an algorithm $\mathbb A$ is called an $(\epsilon,\delta)$-PAC algorithm if its output $\out$ satisfies $\Pr\big[w(M_*)-w(\out) > \epsilon\big] \le \delta$.
+
+We show that a simple modification on the \Algorithm algorithm gives an $(\epsilon,\delta)$-PAC algorithm, with guarantees similar  to Theorem~\ref{theorem:main}.
+In fact, the only modification needed is to change the stopping condition from $\tilde w_t(\tilde M_t)\le \tilde w_t(M_t)$ to $w(\tilde M_t)-w(M_t) \le \epsilon$ on line~XXX of Algorithm~\ref{algo:pac}.
+We denote the modified algorithm as \AlgorithmPAC.
+In the following theorem, we show that \AlgorithmPAC is indeed an $(\epsilon,\delta)$-PAC algorithm and has sample complexity similar to Theorem~\ref{theorem:main}.
+\begin{theorem}
+Use the same notations as in Theorem~\ref{theorem:main}.
+Fix $\delta\in(0,1)$ and $\epsilon \ge 0$.
+Then, with probability at least $1-\delta$, the output $\out$ of \AlgorithmPAC satisfies
+$
+w(M_*)-w(\out) \le \epsilon.
+$
+In addition, the number of samples $T$ used by the algorithm satisfies
+\begin{equation}
+T \le 
+O\left(R^2\sum_{e\in [n]} \min\left\{\frac{\rank(\B)^2}{\Delta_e^2}, \frac{K^2}{\epsilon^2}\right\} 
+\log\left(\frac{R^2n}\delta \sum_{e\in [n]} \min\left\{\frac{\rank(\B)^2}{\Delta_e^2}, \frac{K^2}{\epsilon^2}\right\}\right)\right),
+\label{eq:pac}
+\end{equation}
+where $K=\max_{M\in \M} |M|$ is the size of largest feasible solution.
+\end{theorem}
+We see that the sample complexity of \AlgorithmPAC decreases when $\epsilon$ increases.
+And if $\epsilon=0$, the sample complexity Eq.~\eqref{eq:pac} of \AlgorithmPAC equals to that of \Algorithm. 
+(difference??)
+
+%Notice that our sample complexity bound of PAC learning is not comparable to that of XXX. 
+%Since their objective is to find $K$
 
 
+\section{Proof of Main Result}
 
-\section{Proof of Main Results}
-
-In this section, we prove our main results: Theorem~\ref{theorem:main} and Theorem~\ref{theorem:main-budget}
+In this section, we prove our main result: Theorem~\ref{theorem:main}.
 
 
 \textbf{Notations.} 
-For our analysis, we need some additional notations.
+We need some additional notations for our analysis.
 For any set $a\subseteq [n]$, let $\vec \chi_a \in \{0,1\}^n$ denote the incidence vector of set $a \subseteq [n]$, i.e. $\chi_a(e) = 1$ if and only if $e\in a$.
 For an exchange set $b=(b_+,b_-)$, we define $\vec \chi_b \triangleq \vec \chi_{b_+}- \vec \chi_{b_-}$ as the incidence vector of $b$.
 We notice that $\vec \chi_b \in \{-1,0,1\}^n$.
@@ -690,27 +741,6 @@ Using a union bound again over all $t>0$, we have
 \end{proof}
 
 
-Finally, we construct the confidence intervals for the fixed budget case.
-\begin{lemma}
-Fix parameter $\alpha > 0$ and the number of rounds $T > 0$.
-Assume that the reward distribution $\Rew_e$ is a $R$-sub-Gaussian distribution for all $e\in [n]$.
-Let the confidence radius $\rad_t(e)$ of arm $e\in[n]$ and round $t>0$ be 
-$\rad_t(e)=R\sqrt{\frac{\alpha}{T_e(t)}}.$
-Then, we have
-$$
-\Pr\left[\bigcap_{t=1}^T \xi_t \right] \ge 1-2nT\exp\left(-2\alpha\right).
-$$
-\label{lemma:ci-budget}
-\end{lemma}
-
-\begin{proof}
-For any $t>0$ and $e\in[n]$, using Hoeffding's inequality, we have
-$$
-\Pr\left[ \big|\bar w_t(e)-w(e) \big| \ge \rad_t(e) \right] \le 2\exp(-2\alpha).
-$$
-By a union bound over all arms $e\in[n]$, we see that $\Pr[\xi_t] \ge 1-2n\exp(-2\alpha)$. 
-The lemma follows immediately by using union bound again over all round $t\in [T]$.
-\end{proof}
 
 \subsection{Main Lemmas}
 
@@ -741,10 +771,10 @@ Hence, we have
   &= w(M_t')-w(M_t) > 0 \label{eq:lc-3},
 \end{align}
 where Eq.~\eqref{eq:lc-1} follows from Lemma~\ref{lemma:tilde};
-and Eq.~\eqref{eq:lc-2} follows the assumption that event $\xi$ occurs and Lemma~X;
+and Eq.~\eqref{eq:lc-2} follows the assumption that event $\xi_t$ occurs and Lemma~\ref{lemma:ci-property};
 
 Therefore Eq.~\eqref{eq:lc-3} shows that $\tilde w_t(\tilde M_t) > \tilde w_t(M_t)$. 
-However, this contradicts to the stopping condition of Algorithm~\ref{algo:pac}: $\tilde w_t(\tilde M_t) \le \tilde w_t(M_t)$ and the assumption that the algorithm terminates on round $t$.
+However, this contradicts to the stopping condition of \Algorithm: $\tilde w_t(\tilde M_t) \le \tilde w_t(M_t)$ and the assumption that the algorithm terminates on round $t$.
 \end{proof}
 
 
@@ -969,63 +999,32 @@ Lemma~\ref{lemma:ci} indicates that the event $\xi \triangleq \bigcap_{t=1}^\inf
 In the rest of the proof, we shall assume that this event holds.
 
 By Lemma~\ref{lemma:correct} and the assumption on $\xi$, we see that $\out=M_*$.
-Next, we focus on bounding $T$.
+Next, we focus on bounding the total number $T$ of samples.
 
-
+Fix any arm $e\in [n]$.
 Let $T_e$ denote the total number of pull of arm $e\in [n]$.
-Define 
-$$
-t_e^* = \left\lceil\frac{275}{R^2}\cdot\frac{\rank(\B)^2}{\Delta_e^2}\log\left(\frac{1}{R^2}\cdot\frac{4n}{\delta}\sum_{i\in[n]}\frac{\rank(\B)^2}{\Delta_i^2}\right)\right\rceil.
-$$
-We claim that, for any $e \in [n]$, we have $T_e \le \lceil t_e^* \rceil$.
-Suppose that $T_e \ge \lceil t_e^* \rceil+1$.
-Then, consider the round $t$ that such that $p_t=e$ and $T_e(t) =  \lceil t_e^* \rceil+1$.
-Notice that $t \le T_e(t)$.
-Then, by straightforward computations, we obtain
-\begin{align*}
-\rad_t(e) &=   R\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_e(t)}} \le
- R\sqrt{\frac{2\log\left(\frac{4n (t_e^*)^2}\delta\right)}{t_e^*}} <  \frac{\Delta_e}{3\rank(\B)}. 	
-\end{align*}
-However, by Lemma~\ref{lemma:key-technical}, we see that $p_t\not=e$. This is a contradiction, and therefore the claim that $T_e \le \lceil t_e^* \rceil$ is true.
+Let $t_e$ be the last round which arm $e$ is pulled, i.e. $p_{t_e} = e$. 
+It is easy to see that 
+$T_e(t_e) = T_e - 1$.
+By Lemma~\ref{lemma:key-technical}, we see that 
+$\rad_{t_e}(e) \ge \frac{\Delta_e}{3\rank(\B)}$.
+Plugging in the construction radius $\rad$, we have
+\begin{equation}
+\frac{\Delta_e}{3\rank(\B)} \le 
+R\sqrt{\frac{2\log\left(4n t_e^2/\delta\right)}{T_e-1}} \le
+R\sqrt{\frac{2\log\left(4n T^2/\delta\right)}{T_e-1}}.
+\label{eq:bound-te}
+\end{equation}
+Solving Eq.~\eqref{eq:bound-te} for $T_e$, we obtain
+\begin{equation}
+\label{eq:bound-te-2}
+T_e \le \frac{18 \rank(\B)^2 R^2}{\Delta_e^2} \log(4nT^2/\delta)+1.
+\end{equation}
 
-Then, the total number of samples $T$ can be bounded by
-\begin{align*}
-T = \sum_{e\in [n]} T_e \le \sum_{e\in [n]} \lceil t_e^* \rceil \le 
-O\left(\frac{1}{R^2}\sum_{e\in [n]} \frac{\rank(\B)^2}{\Delta_e^2} \log\left(\frac{1}{R^2}\cdot \frac{n}{\delta} \sum_{e\in[n]}\frac{\rank(\B)^2}{\Delta_e^2} \right)\right).
-\end{align*}
-
+Notice that $T=\sum_{i\in[n]} T_i$. 
+Hence the theorem follows by summing up Eq.~\eqref{eq:bound-te-2} for all $e\in [n]$ and solving for $T$.
 \end{proof}
 
-
-\subsection{Proof of Theorem~\ref{theorem:main-budget}}
-
-\begin{proof}
-Define random event $\xi=\bigcap_{t=1}^T \xi_t$. 
-By Lemma~\ref{lemma:ci-budget}, we see that $\Pr[\xi] \ge 1-2nT\exp(-2\alpha)$.
-In the rest of the proof, we assume that $\xi$ happens.
-
-We claim that Algorithm~\ref{algo:pac} before round $T$.
-If the claim is true, then there exists a round $t^* < T$ such that $\tilde M_{t^*} = M_{t^*}$ and $\out = M_{t^*}$.
-By assumption on $\xi$ and Lemma~\ref{lemma:correct}, we know that $M_{t^*} = M_*$.
-Therefore the theorem follows immediately from this claim and the bound of $\Pr[\xi]$.
-
-Next, we show that this claim is true.
-For any round $t \in [T]$ and any arm $e\in[n]$, 
-by Lemma~\ref{lemma:key-technical}, 
-we see that if $\rad_t(e) < \frac{\Delta_e}{3\rank(\B)}$, then arm $e$ will no longer be pulled.
-Also notice that, by construction in the fixed budget setting, the radius $\rad_t(e)$ is monotone decreasing with respect to $T_e(t)$.
-Therefore, plugging the definition of $\rad_t(e)$, we have
-$$
-T_e \le \frac{9R^2\rank(\B)^2}{\Delta_e^2}\cdot\alpha.
-$$
-
-Summing up $T_e$ for all $e\in [n]$, we have
-$$
-t^* = \sum_{e\in [n]} T_e \le \alpha \cdot 9R^2\rank(\B)^2 \left(\sum_{e\in[n]}\Delta_e^{-2}\right) < T,
-$$
-where we have used the assumption that $\alpha < 9 T \cdot \left(R^2\rank(\B)^2 \left(\sum_{e\in[n]}\Delta_e^{-2}\right)\right)^{-1}.$
-
-\end{proof}
 
 
 
@@ -1227,7 +1226,7 @@ Therefore, we can obtain
 Now we have proved that, if $\E_0[T_e] \le t_e^*$, then $\Pr_1[\mathcal B]>\delta$.
 This means that, if $\E_0[T_e] \le t_e^*$, algorithm $\mathbb A$ will choose $M_*$ as the output with probability at least $\delta$, under hypothesis $H_1$.
 However, under $H_1$, we have shown that $M_*$ is not the optimal set since $w_1(M_e) > w_1(M_*)$.
-Therefore, algorithm $\mathbb A$ has a probability of error larger than $\delta$ under $H_1$. 
+Therefore, algorithm $\mathbb A$ has a probability of error at least $\delta$ under $H_1$. 
 This contradicts to the assumption that algorithm $\mathbb A$ is a $\delta$-correct algorithm.
 Hence, we must have $\E_0[T_e] > t_e^* = \frac{1}{16\Delta_e^2}\log(1/4\delta)$.
 
@@ -1451,14 +1450,174 @@ We obtain
 \end{align*}
 \end{proof}
 
-Now we prove a lower bound on the probability of error in the fixed budget setting.
-In particular, we show that for any expected rewards $\{w(1),\ldots, w(n)\}$ and any fixed budget algorithm $\mathbb A$ for pure exploration combinatorial bandit problem with feasible sets $\M$. 
-We show that one can slightly modify the vector $\{w(e)\}_{e\in [n]}$ to construct another vector $\{\tilde w(1),\ldots,\tilde w(n)\}$ such that the probability of error of the fixed algorithm on a \Problem problem with expected rewards given by $\tilde w$ is at least $\Omega(\exp(n/\mathbf H(w)))$.
+%Now we prove a lower bound on the probability of error in the fixed budget setting.
+%In particular, we show that for any expected rewards $\{w(1),\ldots, w(n)\}$ and any fixed budget algorithm $\mathbb A$ for pure exploration combinatorial bandit problem with feasible sets $\M$. 
+%We show that one can slightly modify the vector $\{w(e)\}_{e\in [n]}$ to construct another vector $\{\tilde w(1),\ldots,\tilde w(n)\}$ such that the probability of error of the fixed algorithm on a \Problem problem with expected rewards given by $\tilde w$ is at least $\Omega(\exp(n/\mathbf H(w)))$.
 %In addition, newthe modified vector $\{\tilde w(1)\}$
 %On the other hand, it is clear that one cannot prove any non-trivial lower bounds on the probability of error of algorithm $\mathbb A$: an algorithm which always outputs $M_*$ has zero probability of error for this particular problem instance.
 %We also notice that Theorem~\ref{theorem:lower-bound} does not imply 
 
 
+
+\section{Proof of Extension Results}
+
+\subsection{Fixed Budget Setting}
+In this part, we analyze the probability of error of the modified \Algorithm algorithm in the fixed budget setting and prove Theorem~\ref{theorem:main-budget}. 
+First, we prove a lemma which characterizes the confidence intervals constructed in Theorem~\ref{theorem:main-budget}.
+\begin{lemma}
+Fix parameter $\alpha > 0$ and the number of rounds $T > 0$.
+Assume that the reward distribution $\Rew_e$ is a $R$-sub-Gaussian distribution for all $e\in [n]$.
+Let the confidence radius $\rad_t(e)$ of arm $e\in[n]$ and round $t>0$ be 
+$\rad_t(e)=R\sqrt{\frac{\alpha}{T_e(t)}}.$
+Then, we have
+$$
+\Pr\left[\bigcap_{t=1}^T \xi_t \right] \ge 1-2nT\exp\left(-2\alpha\right).
+$$
+\label{lemma:ci-budget}
+\end{lemma}
+\begin{proof}
+For any $t>0$ and $e\in[n]$, using Hoeffding's inequality, we have
+$$
+\Pr\left[ \big|\bar w_t(e)-w(e) \big| \ge \rad_t(e) \right] \le 2\exp(-2\alpha).
+$$
+By a union bound over all arms $e\in[n]$, we see that $\Pr[\xi_t] \ge 1-2n\exp(-2\alpha)$. 
+The lemma follows immediately by using union bound again over all round $t\in [T]$.
+\end{proof}
+
+Then, Theorem~\ref{theorem:main-budget} can be obtained from the key lemmas (Lemma~\ref{lemma:correct} and Lemma~\ref{lemma:key-technical}) and Lemma~\ref{lemma:ci-budget} as follows.
+
+\begin{proof}
+Define random event $\xi=\bigcap_{t=1}^T \xi_t$. 
+By Lemma~\ref{lemma:ci-budget}, we see that $\Pr[\xi] \ge 1-2nT\exp(-2\alpha)$.
+In the rest of the proof, we assume that $\xi$ happens.
+
+We claim that Algorithm~\ref{algo:pac} stops before round $T$.
+If the claim is true, then there exists a round $t^* < T$ such that $\tilde M_{t^*} = M_{t^*}$ and $\out = M_{t^*}$.
+By assumption on $\xi$ and Lemma~\ref{lemma:correct}, we know that $M_{t^*} = M_*$.
+Therefore the theorem follows immediately from this claim and the bound of $\Pr[\xi]$.
+
+Next, we show that this claim is true.
+For any round $t \in [T]$ and any arm $e\in[n]$, 
+by Lemma~\ref{lemma:key-technical}, 
+we see that if $\rad_t(e) < \frac{\Delta_e}{3\rank(\B)}$, then arm $e$ will no longer be pulled.
+Also notice that, by construction in the fixed budget setting, the radius $\rad_t(e)$ is monotone decreasing with respect to $T_e(t)$.
+Therefore, plugging the definition of $\rad_t(e)$, we have
+$$
+T_e \le \frac{9R^2\rank(\B)^2}{\Delta_e^2}\cdot\alpha.
+$$
+
+Summing up $T_e$ for all $e\in [n]$, we have
+$$
+t^* = \sum_{e\in [n]} T_e \le \alpha \cdot 9R^2\rank(\B)^2 \left(\sum_{e\in[n]}\Delta_e^{-2}\right) < T,
+$$
+where we have used the assumption that $\alpha < 9 T \cdot \left(R^2\rank(\B)^2 \left(\sum_{e\in[n]}\Delta_e^{-2}\right)\right)^{-1}.$
+
+\end{proof}
+
+\subsection{PAC Learning}
+First, we prove a $(\epsilon,\delta)$-PAC counterpart of Lemma~\ref{lemma:correct}.
+\begin{lemma}
+\label{lemma:pac-correct}
+If \AlgorithmPAC stops on round $t$ and suppose that event $\xi_t$ occurs. 
+Then, we have $w(M_*)-w(\out) \le \epsilon$.
+\end{lemma}
+
+\begin{proof}
+By definition, we know that $\out = M_t$.
+%Suppose that $M_t \not= M_*$, since otherwise $w(M_*)-w(\out) \le 0$ and the lemma trivially holds.
+Notice that the stopping condition of \AlgorithmPAC ensures that $\tilde w_t(\tilde M_t) \le \epsilon$.
+Therefore, we have
+\begin{align}
+	\epsilon &\ge \tilde w_t(\tilde M_t) - \tilde w_t(M_t) \nonumber \\
+           &\ge \tilde w_t(M_*) - \tilde w_t(M_t) \label{eq:lcp-1} \\
+           &= \inn{\vec {\bar w}_t, \vec \chi_{M_*}-\vec\chi_{M_t}}+\inn{\vec \rad_t, |\vec \chi_{M_*}-\vec\chi_{M_t}|} \label{eq:lcp-2}\\
+           &\ge \inn{\vec w, \vec \chi_{M_*}-\vec\chi_{M_t}}  \label{eq:lcp-3} \\
+           &= w(M_*)-w(M_t),\nonumber
+\end{align}
+where Eq.~\eqref{eq:lcp-1} follows from the definition of $\tilde M_t \triangleq \argmax_{M\in \M}\tilde w_t(M)$;
+Eq.~\eqref{eq:lcp-2} follows from Lemma~\ref{lemma:tilde};
+Eq.~\eqref{eq:lcp-3} follows from the assumption that $\xi_t$ occurs and Lemma~\ref{lemma:ci-property}.
+\end{proof}
+
+The next lemma generalizes Lemma~\ref{lemma:key-technical} and shows that, with high probability, each arm $e\in [n]$ will not be played if .
+
+
+
+\begin{lemma}
+\label{lemma:pac-key}
+For any arm $e \in [n]$ and any round $t > n$ after initialization, if $\rad_t(e) \le \max\left\{\frac{\Delta_e}{3\rank(\B)}, \frac{\epsilon}{2K}\right\}$,
+then arm $e$ will not be played on round $t$, i.e. $p_t\not= e$.
+\end{lemma}
+
+
+\begin{proof}
+If $\rad_t(e) \le \frac{\Delta_e}{3\rank(\B)}$, then we can apply Lemma~\ref{lemma:key-technical} which immediately gives that $p_t\not= e$.
+Hence, we only need to prove the case that $\frac{\Delta_e}{3\rank(\B)} \le \rad_t(e) \le \frac{\epsilon}{2K}$.
+%We claim that, in this case, the algorithm stops on round $t$.
+
+Now suppose that $p_t = e$.
+By the choice of $p_t$, we know that for each $i\in (M_t\del \tilde M_t) \cup (\tilde M_t \del M_t)$, we have
+$\rad_t(i) \le \rad_t(e) \le \frac{\epsilon}{2K}$.
+By summing up this inequality for all $i \in (M_t\del \tilde M_t) \cup (\tilde M_t \del M_t)$, we have
+\begin{align}
+\epsilon &\ge \sum_{i\in (M_t\del \tilde M_t) \cup (\tilde M_t \del M_t)} \rad_t(i)\label{eq:pac-key-1} \\
+		     &= \inn{\vec \rad_t, \big|\chi_{M_t}-\chi_{\tilde M_t}\big|}, \label{eq:pac-key-2}
+\end{align}
+where Eq.~\eqref{eq:pac-key-1} follows from the fact that
+$|(M_t\del \tilde M_t) \cup (\tilde M_t \del M_t)| \le |M_t|+|\tilde M_t| \le 2K$;
+and Eq.~\eqref{eq:pac-key-2} uses the fact that
+$\vec \chi_{(M_t\del \tilde M_t) \cup (\tilde M_t \del M_t)} = |\vec \chi_{M_t}-\vec \chi_{\tilde M_t}|$.
+
+
+
+Then, using the fact that $\bar w_t(M_t) \ge \bar w_t(\tilde M_t)$, we have
+\begin{align}
+\tilde w_t(\tilde M_t) - \tilde w_t(M_t) 
+&= \inn{\vec {\bar w}_t, \vec \chi_{\tilde M_t}-\vec\chi_{M_t}}+\inn{\vec \rad_t, |\vec \chi_{\tilde M_t}-\vec\chi_{M_t}|}
+\label{eq:pac-key-3}\\
+&\le \inn{\vec {\bar w}_t, \vec \chi_{\tilde M_t}-\vec\chi_{M_t}}+\epsilon 
+\label{eq:pac-key-4}\\
+&= \bar w_t(\tilde M_t)-\bar w_t(M_t)+\epsilon \nonumber\\
+&\le \epsilon, \label{eq:pac-key-5}
+\end{align}
+where Eq.~\eqref{eq:pac-key-3} follows from Lemma~\ref{lemma:tilde};
+Eq.~\eqref{eq:pac-key-4} uses Eq.~\eqref{eq:pac-key-2};
+and Eq.~\eqref{eq:pac-key-5} follows from $\bar w_t(M_t)\ge \bar w_t(\tilde M_t)$.
+
+
+Therefore, we see that $\tilde w_t(\tilde M_t)-\tilde w_t(M_t) \le \epsilon$.
+By the stopping condition of \AlgorithmPAC, the algorithm must terminate on round $t$. 
+This contradicts to the assumption that $p_t = e$.
+\end{proof}
+
+\begin{proof}
+Similar to the proof of Theorem~\ref{theorem:main}, we appeal to Lemma~\ref{lemma:ci}, which shows that the event $\xi \triangleq \bigcap_{t=1}^\infty \xi_t$ occurs with probability at least $1-\delta$.
+And we shall assume that $\xi$ occurs in the rest of the proof.
+
+By the assumption of $\xi$ and Lemma~\ref{lemma:pac-correct}, we know that $\out=M_*$. Therefore, we only remain to bound the number of samples $T$.
+
+Consider an arbitrary arm $e\in [n]$.
+Let $T_e$ denote the total number of pull of arm $e\in [n]$.
+Let $t_e$ be the last round which arm $e$ is pulled, i.e. $p_{t_e} = e$. 
+Hence $T_e(t_e) = T_e - 1$.
+By Lemma~\ref{lemma:pac-key}, we see that 
+$\rad_{t_e}(e) \ge \min\{\frac{\Delta_e}{3\rank(\B)},\frac{\epsilon}{2K}\}$.
+Then, by the construction of $\rad_{t_e}(e)$, we have
+\begin{equation}
+\min\left\{\frac{\Delta_e}{3\rank(\B)},\frac{\epsilon}{2K}\right\} \le 
+R\sqrt{\frac{2\log\left(4n t_e^2/\delta\right)}{T_e-1}} \le
+R\sqrt{\frac{2\log\left(4n T^2/\delta\right)}{T_e-1}}.
+\label{eq:bound-pac-te}
+\end{equation}
+Solving Eq.~\eqref{eq:bound-pac-te} for $T_e$, we obtain
+\begin{equation}
+\label{eq:bound-pac-te-2}
+T_e \le R^2\min\left\{\frac{18 \rank(\B)^2}{\Delta_e^2},\frac{16K^2}{\epsilon^2}\right\} \log(4nT^2/\delta)+1.
+\end{equation}
+
+Notice that $T=\sum_{i\in[n]} T_i$. 
+Hence the theorem follows by summing up Eq.~\eqref{eq:bound-pac-te-2} for all $e\in [n]$ and solving for $T$.
+\end{proof}
 
 \section{Technical Lemmas}
 
