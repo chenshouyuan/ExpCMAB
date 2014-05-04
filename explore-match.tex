@@ -22,7 +22,7 @@
 \usepackage{algorithm}
 \usepackage{xspace}
 \usepackage{subcaption}
-
+\usepackage{theoremref}
 % In case you need to adjust margins:
 \topmargin=-0.45in
 \evensidemargin=0in
@@ -96,10 +96,10 @@
 \let\Pr\undefined
 \DeclareMathOperator{\Pr}{Pr}
 
-\newcommand{\MultiIdent}{\textbf{Multi}\xspace}
-\newcommand{\Matroid}{\textbf{Matroid}\xspace}
-\newcommand{\Match}{\textbf{Match}\xspace}
-\newcommand{\Path}{\textbf{Path}\xspace}
+\newcommand{\MultiIdent}{\texttt{Multi}\xspace}
+\newcommand{\Matroid}{\texttt{Matroid}\xspace}
+\newcommand{\Match}{\texttt{Match}\xspace}
+\newcommand{\Path}{\texttt{Path}\xspace}
 
 \newcommand{\inn}[1]{\left\langle #1 \right\rangle}
 \newcommand{\nor}[1]{\left\|#1\right\|}
@@ -116,58 +116,78 @@
 \maketitle
 
 
-\section{Pure Exploration of Combinatorial Bandits}
+\section{Introduction}
+
+\subsection{Related Work}
 
 \textbf{Notations.} 
+
+\section{Pure Exploration of Combinatorial Bandits}
+
+
 %Let $\vec u \in \RR^{n}$ be a vector. 
 % and $M\subseteq [n]$ be a set. 
 
 \textbf{\Problem: problem formulation.}
-Let $n$ denote the number of arms and suppose that the arms are numbered $1,2,\ldots,n$.
-Each arm $e\in[n]$ is associated with a reward distribution $\Rew_e$. 
-We assume that all reward distributions are $R$-sub-Gaussian [].
-Notice that all distributions that are supported on $[0,R]$ are $R$-sub-Gaussian distributions [] and therefore our model subsumes the cases of bounded rewards.
-Let $w(e)$ denote the expected reward of arm $e$, i.e. $w(e)=\E_{X\sim \Rew_e}[X]$.
-Further, we define $\vec w = \big(w(1),\ldots,w(n)\big)^T$ as the vector of expected rewards.
-%In addition, for any set of arms $M\subseteq [n]$, we define $w(M) = \sum_{e\in M} w(e)$ as the sum of expected rewards of arms that belong to $M$.
+Suppose that there are $n$ arms and the arms are numbered $1,2,\ldots,n$.
+Each arm $e\in[n]$ is associated with a reward distribution $\Rew_e$ and define $w(e)=\E_{X\sim \Rew_e}[X]$ be the expected reward. 
+Let $\vec w = \big(w(1),\ldots, w(n)\big)^T$ denote the vector of expected rewards.
 
-The learning problem of pure exploration combinatorial bandit can be formalized as a game between a learner and a stochastic environment.
-At the beginning of the game, the learner is given a family of feasible sets $\M\subseteq 2^{[n]}$ which corresponds to some combinatorial problem. 
-And the reward distributions $\{\Rew_e\}_{e\in[n]}$ are unknown to the learner.
+Let $\M\subseteq 2^{[n]}$ be the family of all feasible solutions to a combinatorial problem.
+%Let $M_* = \argmax_{M\in \M} w(M)$ denote the optimal set of arms which max
+A learner wants to find the optimal solution of $\M$ which maximizes the expected reward $M_*=\argmax_{M\in \M} w(M)$ by playing the following game.
+%The learning problem of pure exploration combinatorial bandit can be formalized as a game between a learner and a stochastic environment, where the learner's goal is to find the optimal solution to the combinatorial problem which maximizes the sum of expected reward $M_* = \argmax_{M\in \M} w(M)$.
+At the beginning of the game, the reward distributions $\{\Rew_e\}_{e\in[n]}$ are unknown to the learner.
 Then, the game is played for multiple rounds;
 on each round $t$, the learner pulls an arm $p_t\in [n]$ and observes a reward sampled from the associated reward distribution $\Rew_{p_t}$.
-The game continues until certain stopping condition is satisfied, which will be specified later.
-After the game finishes, the learner is asked to output a set of arms $\out \in \M$ which maximizes the sum of expected weight, i.e. $\out=M_*$, where we denote $M_*=\argmax_{M\in \M} w(M)$ to be the optimal set of arms.
-For the sake of simplicity, we shall assume that the optimal set $M_*$ is unique throughout the paper.
+The game continues until certain stopping condition is satisfied.
+%which will be specified later.
+After the game finishes, the learner need to output a solution $\out \in \M$.
+%For the sake of simplicity, we shall assume that the optimal set $M_*$ is unique throughout the paper.
+
+%Let $n$ denote the number of arms and suppose that the arms are numbered $1,2,\ldots,n$.
+
+%We assume that all reward distributions are $R$-sub-Gaussian [].
+%Notice that all distributions that are supported on $[0,R]$ are $R$-sub-Gaussian distributions [] and therefore our model subsumes the cases of bounded rewards.
+%Let $w(e)=\E_{X\sim \Rew_e}[X]$ denote the expected reward of arm $e$ and let $\vec w = \big(w(1),\ldots,w(n)\big)^T$ denote the vector of expected rewards.
+%In addition, for any set of arms $M\subseteq [n]$, we define $w(M) = \sum_{e\in M} w(e)$ as the sum of expected rewards of arms that belong to $M$.
+
 %Notice that, if $\epsilon = 0$, then the learner is required to identify the optimal set, i.e. $\out = M_*$.
 
 
 
-\textbf{Fixed confidence and fixed budget.} We consider two different stopping conditions of the game, which are known as \emph{fixed confidence} setting and \emph{fixed budget} setting. 
-In the fixed confidence setting, the learner can stop the game at any point and her goal is to achieve a fixed confidence about the optimality of the returned set using a small number of samples (pulls).
+%\textbf{Fixed confidence and fixed budget.} 
+We consider two different stopping conditions of the game, which are known as \emph{fixed confidence} setting and \emph{fixed budget} setting.
+In the fixed confidence setting, the learner can stop the game at any point and her goal is to achieve a fixed confidence about the optimality of the returned set while uses a small number of pulls.
 Specifically, given a confidence parameter $\delta$, the learner need to guarantee that $\Pr[\out = M_*] \ge 1-\delta$.
 The performance is evaluated by the number of pulls used by the learner.
-Notice that the learner can stop the game at any point in this setting.
+%Notice that the learner can stop the game at any point in this setting.
 In the fixed budget setting, the game stops after a fixed number rounds.
 The learner tries to minimize the probability of error $\Pr[\out \not= M_*]$ within these rounds.
 In this case, the learner's performance is measured by the probability of error.
 
 
-\textbf{Applications.} 
-Our formulation of the \Problem problem covers many online learning tasks.
-We consider the following applications as running examples.
-
+\textbf{Examples of combinatorial problems.} 
+The formulation of the \Problem problem covers many online learning tasks.
+We consider the following problems as examples.
 \begin{itemize}
 \item \MultiIdent.
+\item \Matroid.
 \item \Match.
 \item \Path.
 \end{itemize}
+
+We assume that all reward distributions have $R$-sub-Gaussian tails. 
+Formally, for each $e\in [n]$, let $X_e$ be an independent sample of $\Rew_e$. 
+Then, for all $t\in \RR$, we have $\exp\big(t (X_e-w(e) \big) \le \exp(R^2t^2/2)$.
+It is well known that all distributions that are supported on $[0,R]$ satisfy by this assumption [].
+Finally, for the sake of simplicity, we will assume that the optimal solution $M_*$ is unique.
 
 %\textbf{Useful notations.}
 %For any vector $\vec v\in \RR^n$ and any set $M \subseteq [n]$, we define $v(M) = \sum_{e\in M} v(e)$.
 
 
-\section{Algorithm and Main Results}
+\section{Algorithm and Main Result}
 %Our main contribution is an algorithm for solving the \Problem problem.
 %Our algorithm 
 
@@ -177,17 +197,22 @@ We consider the following applications as running examples.
 In this section, we present \Algorithm, a learning algorithm for the \Problem problem in the fixed confidence setting, and analyze its sample complexity. 
 %Then, we analyze the sample complexity of \Algorithm algorithm.
 The \Algorithm algorithm can be extended to the fixed budget and PAC learning settings. 
-We will discuss this extension in Section~X.
+We will discuss these extensions in Section~\ref{section:extensions}.
 
 %Many common combinatorial problems admit computationally efficient oracles.
 
 \textbf{Oracle.}
-For most non-trivial combinatorial problems, the size of the collection of feasible sets $\M$ is exponential in $n$.
+We allow the \Algorithm algorithm to access a \emph{maximization oracle}. 
+A maximization oracle takes a weight vector $\vec v \in \RR^{n}$ as input and computes an optimal solution with respect to the weight vector $\vec v$.
+Formally, we call a function $\text{Oracle:}~\RR^{n} \rightarrow \M$ a maximization oracle if $\Oracle(\vec v) \in \argmax_{M\in \M} v(M)$ for all $\vec v\in \RR^{n}$.
+It is clear that a very broad class of combinatorial problems admit such maximization oracles.
+Besides the access to the oracle, \Algorithm does not need \emph{any} additional knowledge of the combinatorial problem $\M$.
+
+%For most non-trivial combinatorial problems, the size of the collection of feasible sets $\M$ is exponential in $n$.
 %Hence, the definition of $\M$ 
-Therefore, the learning algorithm needs a succinct representation of $\M$.
-In particular, we allow the learning algorithm to use a \emph{maximization oracle} which can find the optimal set $M\in \M$ when the expected reward of each arm is known.
-Specifically, we assume that there exists an oracle which takes a vector $\vec v = \big(v(1),\ldots,v(n)\big)^T$ as input and returns a set $\Oracle(\vec v) = \argmax_{M\in \M} v(M)$.
-It is clear that a large class of combinatorial problems admit efficient maximization oracles.
+%Therefore, the learning algorithm needs a succinct representation of $\M$.
+%In particular, we allow the learning algorithm to use a \emph{maximization oracle} which can find the optimal set $M\in \M$ when the expected reward of each arm is known.
+%Specifically, we assume that there exists an oracle which takes a vector $\vec v = \big(v(1),\ldots,v(n)\big)^T$ as input and returns a set $\Oracle(\vec v) = \argmax_{M\in \M} v(M)$.
 
 
 \textbf{Algorithm.} 
@@ -197,15 +222,16 @@ It is clear that a large class of combinatorial problems admit efficient maximiz
 %In the following, we describe the procedure of our algorithm.
 The \Algorithm algorithm maintains empirical mean $\bar w_t(e)$ and confidence radius $\rad_t(e)$ for each arm $e\in[n]$ and each round $t$.
 The construction of confidence radius ensures that $|w(e)-\bar w_t(e)| \le \rad_t(e)$ holds with high probability for each arm $e \in [n]$ and each round $t>0$.
-At each round $t$, \Algorithm accesses the  oracle twice. 
-The first access to the oracle computes the set $M_t=\argmax_{M\in \M} \bar w_t(M)$.
-Notice that $M_t$ is the ``best'' set according to the empirical means $\vec {\bar w}_t$.
+\Algorithm begins with an initialization phase in which each arm is pulled once.
+Then, at round $t \ge n$, \Algorithm uses the following procedure to find an arm to pull. 
+First, \Algorithm calls the oracle which computes the solution $M_t=\Oracle(\vec {\bar w}_t)$. 
+The solution $M_t$ is the ``best'' solution with respect to the empirical means $\vec {\bar w}_t$.
 % which maximizes empirical means $\bar w_t$ up to  $t$.
 Then, \Algorithm explores possible refinements of $M_t$. 
 In particular, \Algorithm uses the confidence radius to compute an adjusted expectation vector $\vec {\tilde w}_t$ in the following way: for each arm $e \in M_t$, $\tilde w_t(e)$ equals to the lower confidence bound $\tilde w_t(e) = \bar w_t(e)-\rad_t(e)$; and for each arm $e\not\in M_t$, $\tilde w_t(e)$ equals to the upper confidence bound $\tilde w_t(e)=\bar w_t(e)+\rad_t(e)$.
-Intuitively, the adjusted expectation vector $\vec {\tilde w}_t$ penalizes arms belonging to $M_t$ and encourages exploring arms out of $M_t$.
-The algorithm then calls the oracle using the adjusted expectation vector $\vec {\tilde w}_t$ as input, which returns another set $\tilde M_t = \argmax_{M\in \M} \tilde w_t(M)$.
-The \Algorithm algorithm stops if $\tilde w_t(\tilde M_t) = \tilde w_t(\tilde M_t)$ and outputs $\out=M_t$.
+Intuitively, the adjusted expectation vector $\vec {\tilde w}_t$ penalizes arms belonging to the current solution $M_t$ and encourages exploring arms out of $M_t$.
+\Algorithm then calls the oracle using the adjusted expectation vector $\vec {\tilde w}_t$ as input to compute a refined solution $\tilde M_t = \Oracle(\vec {\tilde w}_t)$.
+If $\tilde w_t(\tilde M_t) = \tilde w_t(M_t)$ then \Algorithm stops and returns $\out=M_t$.
 Otherwise, \Algorithm pulls the arm belonging to the symmetric difference $(\tilde M_t \del M_t) \cup (M_t \del \tilde M_t)$ between $M_t$ and $\tilde M_t$ with the largest confidence radius in the end of round $t$.
 The pseudo-code of \Algorithm is shown in Algorithm~\ref{algo:pac}. 
 
@@ -277,7 +303,8 @@ We begin with the definition of exchange set.
 We define an exchange set $b$ as an ordered pair of disjoint sets $b=(b_+,b_-)$.
 Then, we define operator $\oplus$ such that, for any set $M$ and any exchange set $b=(b_+,b_-)$, we have $M\oplus b \triangleq M\del b_- \cup b_+$.
 Similarly, we also define operator $\ominus$ such that $M\ominus b \triangleq M\del b_+\cup b_-$.
-We call a set of exchange sets $\B$ an \emph{exchange class for $\M$} if $\B$ satisfies the following property.
+
+We call a family of exchange sets $\B$ an \emph{exchange class for $\M$} if $\B$ satisfies the following property.
 Let $M$ and $M'$ be two  elements of $\M$.
 Then, for any $e \in (M\del M')$, there exists an exchange set $(b_+,b_-)\in \B$ which satisfies $e\in b_-$, $b_+ \subseteq M'\del M$, $b_- \subseteq M \del M'$, $(M\oplus b) \in \M$ and $(M'\ominus b) \in \M$.
 Finally, we define the \emph{width} of exchange class $\B$ as follows
@@ -288,10 +315,15 @@ Finally, we define the \emph{width} of exchange class $\B$ as follows
 
 %An exchange class can be seen as a set operations that transform one feasible set to another.
 
-Intuitively, for any feasible sets $M$ and $M'$, there exists an exchange set $(b_+,b_-)\in \B$ which can be seen as an ``operation'' that transforms $M$ one step towards $M'$: this operation generates a new feasible set $M\oplus b$ by removing elements (including $e$) from $M$ and adding elements which belongs to $M'$.
+Intuitively, for any feasible sets $M$ and $M'$, there exists an exchange set $(b_+,b_-)\in \B$ belonging to the exchange clas $\B$ which can be seen as an ``operation'' that transforms $M$ one step towards $M'$: this operation generates a new feasible set $M\oplus b$ by removing elements (including $e$) from $M$ and adding elements which belongs to $M'$.
 %Therefore, for any two elements $M,M'$ of $\M$, one can sequentially apply a finite number of these operations of $\B$ to transform $M$ to $M'$.it
-One can chain these operations together such that, for any $M\not= M'$, there exists a sequence of exchange sets $b_1,\ldots, b_k$ of $\B$ such that $M'=M\oplus b_1 \ldots \oplus b_k$.
+One can chain these operations together such that, for any $M\not= M'$, there exists a sequence of exchange sets $b_1,\ldots, b_k$ of $\B$ such that $M'=M\oplus b_1 \oplus \ldots \oplus b_k$.
 
+We notice that an exchange class for $\M$ can be ``redundant'' by our definition, i.e. it may contains some unnecessary exchange set $b$, such that $M\oplus b \not\in \M$ for any $M \in \M$.
+These redundant exchange sets do not affect our analysis.
+But allowing them would simplify the construction and description of exchange classes for certain combinatorial problems.
+%On the other hand, this also means that, for a fixed combinatorial problem, there exist many exchange classes.
+%In particular, we are interested with the exchange classes with small widths.
 
 \junk{
 Next, we investigate the exchange classes for our running examples.
@@ -319,10 +351,10 @@ These exchange classes can be constructed as follows
 In addition, we have $\rank(\B_{\MultiIdent})=2$, $\rank(\B_{\Matroid})=2$, $\rank(\B_{\Match})=|V|$ and $\rank(\B_{\Path})=|V|$.
 \label{lemma:example-exchange-class}
 \end{lemma}
-The  construction for \MultiIdent problem is straightforward. 
+The  construction for \MultiIdent problem is straightforward.
 For \Matroid problem, we leverage the basis exchange property of matroids (see Lemma~\ref{lemma:basis-exchange-matroid} in the appendix).
 And for \Match and \Path problems, we appeal to  graph-theoretical properties of matchings and paths.
-We illustrate these  exchanges classes in \autoref{fig:exchange}.
+We illustrate elements of these  exchanges classes in \autoref{fig:exchange}.
 A detailed proof of Lemma~\ref{lemma:example-exchange-class} is deferred to the supplementary material.
 
 \begin{figure}
@@ -348,14 +380,15 @@ A detailed proof of Lemma~\ref{lemma:example-exchange-class} is deferred to the 
 	\caption{An element of $\B_{\Path}$.}
 \end{subfigure}
 \caption{
-Elements of exchange classes $\B_{\MultiIdent}$, $\B_{\Matroid}$, $\B_{\Match}$ and $\B_{\Path}$ for running examples.
-(In \autoref{fig:exchange:matroid}, we use spanning tree as a specific instance for the \Matroid problem.)
+Examples of exchange sets belonging to the exchange classes $\B_{\MultiIdent}$, $\B_{\Matroid}$, $\B_{\Match}$ and $\B_{\Path}$:
+green elements constitute the set $b_+$, red elements constitute the set $b_-$ and the example exchange set is given by $b=(b_+,b_-)$. 
+(In \autoref{fig:exchange:matroid}, we consider spanning tree as a specific instance for the \Matroid problem.)
 }
 \label{fig:exchange}
 \end{figure}
 
 \textbf{Main result.} 
-Our main result is a problem-dependent sample complexity bound of \Algorithm algorithm.
+Our main result is a problem-dependent sample complexity bound of the \Algorithm algorithm.
 In particular, we show that \Algorithm returns the optimal set with high probability and uses at most $\tilde O\big(\rank(\B)^2 \mathbf H\big)$ samples.
 \begin{theorem}
 Given any $\delta \in (0,1)$, any combinatorial problem $\M \subseteq 2^{[n]}$ and any vector $\vec w \in \RR^{n}$.
@@ -364,19 +397,26 @@ Let $\B$ be an exchange class for $\M$ and let $\{\Delta_e\}_{e\in [n]}$ be the 
 
 Set $\rad_t(e) = R\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_e(t)}}$ for all $t > 0$ and $e\in[n]$.
 Then, with probability at least $1-\delta$, the \Algorithm algorithm (Algorithm~\ref{algo:pac}) returns the optimal set $\out=M_*$ and
-$$
-T \le O\left(R^2\rank(\B)^2\mathbf H\log\left(R^2\rank(\B)^2\mathbf H n/\delta\right)\right),
-$$
+\begin{equation}
+\label{eq:sample-complexity}
+T \le O\left(R^2\rank(\B)^2\mathbf H\log\left(R^2\rank(\B)^2\mathbf H \cdot n/\delta\right)\right),
+\end{equation}
 where $T$ denotes the number of samples used by Algorithm~\ref{algo:pac}.
 \label{theorem:main}
 \end{theorem}
 
-Theorem~\ref{theorem:main} is a general result which provides a sample complexity for any combinatorial problem $\M$.
-In addition, notice that $\rank(\B_{\MultiIdent})=O(1)$.
-Therefore, the sample complexity bound of our algorithm for the \MultiIdent problem is $O\big(\mathbf H \log(n\delta^{-1} \mathbf H)\big)$.
-This matches the best known problem-dependent bounds for the \MultiIdent problem due to XXX [], within logarithmic factors.
+\textbf{Remarks.}
+%Theorem~\ref{theorem:main} upper bounds the sample complexity of \Algorithm for an arbitrary combinatorial problem $\M$.
+%We see that the sample complexity Eq.~\eqref{eq:sample-complexity} depends on $\rank(\B)$ and $\B$ is an arbitrary exchange class for $\M$.
+%Therefore, the sample complexity Eq.~\eqref{eq:sample-complexity} is minimizes $\B$ 
+%Notice that $\B$ does not 
+%Theorem~\ref{theorem:main} is a general result which provides a sample complexity for any combinatorial problem $\M$.
+For the \MultiIdent problem, we see that Lemma~\ref{lemma:example-exchange-class} indicates that $\B_{\MultiIdent}$ is an exchange class for $\M_{\MultiIdent}$ and $\rank(\B_{\MultiIdent})=O(1)$.
+Therefore, the sample complexity bound of \Algorithm for the \MultiIdent problem is $O\big(\mathbf H \log(n\mathbf H/\delta)\big)$.
+This matches the previous known problem-dependent bounds for the \MultiIdent problem due to XXX [] within logarithmic factors.
 %And Theorem~\ref{algo:pac} establishes the first sample complexity bound for the pure exploration of other combinatorial bandits.
-
+For the \Matroid problem, we know that $\B_{\Matroid}=O(1)$ and hence the sample complexity is also $O\big(\mathbf H \log(n\mathbf H/\delta)\big)$.
+Finally, for \Match and \Path problem, we see that the sample complexity is bounded by $\tilde O(|V|^2 \mathbf H)$.
 
 
 
@@ -390,34 +430,37 @@ This matches the best known problem-dependent bounds for the \MultiIdent problem
 
 \section{Lower Bounds}
 
-In this section, we establish a problem-dependent lower bound on the sample complexity of the \Problem problem. 
+In this section, we prove a problem-dependent lower bound on the sample complexity of the \Problem problem. 
 To state our results, we first define the notion of \emph{$\delta$-correct algorithm} as follows.
-For any $\delta \in (0,1)$, we call an algorithm $\mathbb A$ a $\delta$-correct algorithm if, for any expected reward $\vec w \in \RR^{n}$, the probability of error of $\mathbb A$ is at most $\delta$, i.e $\Pr[M_*\not =\out] \le \delta$, where $\out$ is the output of algorithm $\mathbb A$.
+For any $\delta \in (0,1)$, we call an algorithm $\mathbb A$ a $\delta$-correct algorithm if, for any expected reward $\vec w \in \RR^{n}$, the probability of error of $\mathbb A$ is at most $\delta$, i.e. $\Pr[M_*\not =\out] \le \delta$, where $\out$ is the output of algorithm $\mathbb A$.
 
-We show that, for any combinatorial problem $\M$ and any expected rewards $\vec w$, any $\delta$-correct algorithm $\mathbb A$ must use at least $\tilde\Omega\left(\mathbf H\right)$ samples in expectation.
+We show that, for any combinatorial problem $\M$ and any expected rewards $\vec w$, any $\delta$-correct algorithm $\mathbb A$ must use at least $\Omega\big(\mathbf H \log(1/\delta) \big)$ samples in expectation.
 \begin{theorem}
 Fix any $\M\subseteq 2^{[n]}$ and any vector $\vec w \in \RR^n$.
 Suppose that, for each arm $e\in [n]$, the reward distribution $\Rew_e$ is given by $\Rew_e=\mathcal N(w(e),1)$, where $\mathcal N(\mu, \sigma^2)$ denotes a Gaussian distribution with mean $\mu$ and variance $\sigma^2$. 
 Then, for any $\delta \in (0,e^{-16}/4)$ and any $\delta$-correct algorithm $\mathbb A$, we have
-$$
-\E[T] \ge \frac{1}{16} \mathbf H \log(\frac{1}{4\delta}),
-$$
+\begin{equation}
+\label{eq:lower-bound}
+\E[T] \ge \frac{1}{16} \mathbf H \log\left(\frac{1}{4\delta}\right),
+\end{equation}
 where 
 $T$ denote the number of total samples used by algorithm $\mathbb A$ and
 $\Delta_e$ is defined in Eq.~\eqref{eq:define-delta}.
 \label{theorem:lower-bound}
 \end{theorem}
 
-Now we compare the sample complexity of Algorithm~\ref{algo:pac} to the lower bound provided in Theorem~\ref{theorem:lower-bound} on our running examples \MultiIdent, \Matroid, \Match and \Path.
+%Now we compare the sample complexity Eq.~\eqref{eq:sample-complexity} of \Algorithm to the lower bound provided in Theorem~\ref{theorem:lower-bound} on our running examples \MultiIdent, \Matroid, \Match and \Path.
 %For clarity, we consider the case that $\epsilon=0$ which corresponds to the learning problem of finding the optimal set.
-We see that \Algorithm algorithm uses at most $\tilde O(\rank(\B)^2 \mathbf H)$ samples.
-Recall that, for \MultiIdent and \Matroid problems, Lemma~X shows that $\rank(\B)=2$.
-Hence, for these two problems, Algorithm~\ref{algo:pac} achieves optimal sample complexity within logarithmic factors.
+%We see that \Algorithm algorithm uses at most $\tilde O(\rank(\B)^2 \mathbf H)$ samples.
+%Recall that, for \MultiIdent and \Matroid, Lemma~\ref{lemma:example-exchange-class} shows that $\rank(\B)=2$.
+Recall that, for the \MultiIdent problem and the \Matroid problem, the sample complexity of \Algorithm is $O(\mathbf H\log(n\mathbf H/\delta))$.
+Hence, for these two problems, the \Algorithm algorithm achieves the optimal sample complexity within logarithmic factors.
+In addition, our result confirms the conjecture of XXX [] that the lower bound of sample complexity of \MultiIdent problem is $\Omega\big(\mathbf H\log(1/\delta)\big)$.
 
-On the other hand, for $\Match(V,E)$ and $\Path(V,E)$, Lemma~X indicates that $\rank(\B)=|V| \le n$.
-This means that the gap between our algorithm and this lower bound is a factor of $|V|^2$.
+%On the other hand, for $\Match(V,E)$ and $\Path(V,E)$, we see that the gap between the upper bound Eq.~\eqref{eq:sample-complexity} and this lower bound is a factor of $|V|^2$.
+On the other hand, for general combinatorial problems, we see that the gap between the upper bound Eq.~\eqref{eq:sample-complexity} and the lower bound Eq.~\eqref{eq:lower-bound} is $\rank(\B)^2$.
 Notice this gap only depends on the underlying combinatorial structure of $\M$ and is independent of expected rewards $\vec w$. 
-This means that  the sample complexity of Algorithm~\ref{algo:pac} has an optimal dependency on the gaps $\{\Delta_e\}_{e\in[n]}$.
+This suggests that  the sample complexity of \Algorithm has an optimal dependency on the gaps $\{\Delta_e\}_{e\in[n]}$ for general combinatorial problems.
 
 Next, we argue that the dependency on $\rank(\B)$ on the sample complexity might be intrinsic.
 To this end, we provide evidence showing that the sample complexity of any $\delta$-correct algorithm should be related to size of exchange sets.
@@ -436,15 +479,16 @@ $$
 $$
 where $T_b$ denotes the number of samples of arms belonging to $b$ used by algorithm $\mathbb A$.
 \end{theorem}
-Notice that 
+%Notice that 
 
 
 \section{Extensions}
-
+\label{section:extensions}
 \subsection{Fixed Budget Setting}
+\label{section:fixed-budget}
 We can extend the \Algorithm algorithm to the fixed budget setting through two simple modifications: (1) requiring \Algorithm to terminate after $T$ rounds; and (2) using a different construction of confidence intervals.
-The first modification ensures that \Algorithm use at most $T$ samples, which meets the requirement of the fixed budget setting.
-And the second modification guarantees that the confidence intervals are valid for all arms in $T$ rounds.
+The first modification ensures that \Algorithm uses at most $T$ samples, which meets the requirement of the fixed budget setting.
+And the second modification bounds the probability that the confidence intervals are valid for all arms in $T$ rounds.
 The following theorem shows that the probability of error of the modified \Algorithm is bounded by 
 $O\left(Tn\exp\left(\frac{-T}{\rank(\B)^2\mathbf H} \right)\right)$.
 \begin{theorem}
@@ -474,7 +518,7 @@ Formally, an algorithm $\mathbb A$ is called an $(\epsilon,\delta)$-PAC algorith
 
 We show that a simple modification on the \Algorithm algorithm gives an $(\epsilon,\delta)$-PAC algorithm, with guarantees similar  to Theorem~\ref{theorem:main}.
 In fact, the only modification needed is to change the stopping condition from $\tilde w_t(\tilde M_t)\le \tilde w_t(M_t)$ to $w(\tilde M_t)-w(M_t) \le \epsilon$ on line~XXX of Algorithm~\ref{algo:pac}.
-We denote the modified algorithm as \AlgorithmPAC.
+We let  \AlgorithmPAC denote the modified algorithm.
 In the following theorem, we show that \AlgorithmPAC is indeed an $(\epsilon,\delta)$-PAC algorithm and has sample complexity similar to Theorem~\ref{theorem:main}.
 \begin{theorem}
 Use the same notations as in Theorem~\ref{theorem:main}.
@@ -490,7 +534,7 @@ O\left(R^2\sum_{e\in [n]} \min\left\{\frac{\rank(\B)^2}{\Delta_e^2}, \frac{K^2}{
 \log\left(\frac{R^2n}\delta \sum_{e\in [n]} \min\left\{\frac{\rank(\B)^2}{\Delta_e^2}, \frac{K^2}{\epsilon^2}\right\}\right)\right),
 \label{eq:pac}
 \end{equation}
-where $K=\max_{M\in \M} |M|$ is the size of largest feasible solution.
+where $K=\max_{M\in \M} |M|$ is the size of the largest feasible solution.
 \end{theorem}
 We see that the sample complexity of \AlgorithmPAC decreases when $\epsilon$ increases.
 And if $\epsilon=0$, the sample complexity Eq.~\eqref{eq:pac} of \AlgorithmPAC equals to that of \Algorithm. 
@@ -1000,7 +1044,7 @@ Now, we bound quantity $\inn{\vec {\bar w}_t, \vec d_1}+\inn{\vec \rad_t, |\vec 
 \end{align}
 where Eq.~\eqref{eq:u-c-2-1} follows from the fact that $\vec d_1\in \{-1,0,1\}^n$ and $\vec d \in \{-1,0,1\}^n$;
 Eq.~\eqref{eq:u-c-2-2} holds since $\vec d_1=\vec d+\vec \chi_b$;
-Eq.~\eqref{eq:u-c-2-3} follows from the assumption that $\xi$ occurs and Lemma~X;
+Eq.~\eqref{eq:u-c-2-3} follows from the assumption that $\xi_t$ occurs and Lemma~\ref{lemma:ci-property};
 Eq.~\eqref{eq:u-c-2-3.5} follows from Lemma~\ref{lemma:vector-technical}  and H\"older's inequality;
 and Eq.~\eqref{eq:u-c-2-4} is due to Eq.~\eqref{eq:u-c-2-0}.
 
@@ -1059,18 +1103,8 @@ Hence the theorem follows by summing up Eq.~\eqref{eq:bound-te-2} for all $e\in 
 
 \section{Proof of Lower Bounds}
 
-\begin{lemma}
-$$
-\Delta_e = \min_{b: e \in b, b \in \Bopt} w(b).
-$$
-\end{lemma}
-
 \begin{proof}
-\end{proof}
-
-
-\begin{proof}
-Fix $\delta >0$, $\vec w =\{w(1),\ldots,w(n)\}$ and a $\delta$-correct policy $\mathbb A$.
+Fix $\delta >0$, $\vec w =\big(w(1),\ldots,w(n)\big)^T$ and a $\delta$-correct algorithm $\mathbb A$.
 For each $e\in [n]$, assume that the reward distribution is given by $\Rew_e=\mathcal N(w(e),1)$.
 For any $e\in [n]$, let $T_e$ denote the  number of trials of arm $e$ used by algorithm $\mathbb A$.
 In the rest of the proof, we will show that for any $e\in [n]$, the number of trials of arm $e$ is lower-bounded by
