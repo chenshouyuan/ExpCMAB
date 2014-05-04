@@ -21,6 +21,7 @@
 \usepackage{algpseudocode}
 \usepackage{algorithm}
 \usepackage{xspace}
+\usepackage{subcaption}
 
 % In case you need to adjust margins:
 \topmargin=-0.45in
@@ -321,9 +322,37 @@ In addition, we have $\rank(\B_{\MultiIdent})=2$, $\rank(\B_{\Matroid})=2$, $\ra
 The  construction for \MultiIdent problem is straightforward. 
 For \Matroid problem, we leverage the basis exchange property of matroids (see Lemma~\ref{lemma:basis-exchange-matroid} in the appendix).
 And for \Match and \Path problems, we appeal to  graph-theoretical properties of matchings and paths.
-We illustrate these  exchanges classes in Figure~Y.
+We illustrate these  exchanges classes in \autoref{fig:exchange}.
 A detailed proof of Lemma~\ref{lemma:example-exchange-class} is deferred to the supplementary material.
 
+\begin{figure}
+\centering
+\begin{subfigure}[c]{0.22\textwidth}
+	\includegraphics[width=\textwidth]{fig/exchange-multi}
+	\caption{An element of $\B_{\MultiIdent}$.}
+\end{subfigure}
+~
+\begin{subfigure}[c]{0.25\textwidth}
+	\includegraphics[width=\textwidth]{fig/exchange-matroid}
+	\caption{An element of $\B_{\Matroid}$}
+	\label{fig:exchange:matroid}
+\end{subfigure}
+~
+\begin{subfigure}[c]{0.22\textwidth}
+	\includegraphics[width=\textwidth]{fig/exchange-match}
+	\caption{An element of $\B_{\Match}$.}
+\end{subfigure}
+~
+\begin{subfigure}[c]{0.22\textwidth}
+	\includegraphics[width=\textwidth]{fig/exchange-path}
+	\caption{An element of $\B_{\Path}$.}
+\end{subfigure}
+\caption{
+Elements of exchange classes $\B_{\MultiIdent}$, $\B_{\Matroid}$, $\B_{\Match}$ and $\B_{\Path}$ for running examples.
+(In \autoref{fig:exchange:matroid}, we use spanning tree as a specific instance for the \Matroid problem.)
+}
+\label{fig:exchange}
+\end{figure}
 
 \textbf{Main result.} 
 Our main result is a problem-dependent sample complexity bound of \Algorithm algorithm.
