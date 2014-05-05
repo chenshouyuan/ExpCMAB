@@ -23,6 +23,8 @@
 \usepackage{xspace}
 \usepackage{subcaption}
 \usepackage{theoremref}
+\usepackage{thmtools}
+\usepackage{thm-restate}
 % In case you need to adjust margins:
 \topmargin=-0.45in
 \evensidemargin=0in
@@ -51,11 +53,18 @@
 % Some tools
 \newcommand{\junk}[1]{}
 
-\newtheorem{define}{Definition}
-\newtheorem{example}{Example}
-\newtheorem{lemma}{Lemma}
-\newtheorem{corollary}{Corollary}
-\newtheorem{theorem}{Theorem}
+%\newtheorem{define}{Definition}
+%\newtheorem{example}{Example}
+%\newtheorem{lemma}{Lemma}
+%\newtheorem{corollary}{Corollary}
+%\newtheorem{theorem}{Theorem}
+
+\declaretheorem{theorem}
+\declaretheorem{lemma}
+\declaretheorem{corollary}
+\declaretheorem{define}
+\declaretheorem{example}
+
 
 \newcommand{\Algorithm}{\texttt{CGapExp}\xspace}
 \newcommand{\AlgorithmPAC}{\texttt{CGapExpPAC}\xspace}
@@ -89,6 +98,7 @@
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator{\Oracle}{Oracle}
+\DeclareMathOperator{\Exchange}{Exchange}
 
 \newcommand{\out}{\mathsf{Out}}
 
@@ -223,7 +233,7 @@ Besides the access to the oracle, \Algorithm does not need \emph{any} additional
 The \Algorithm algorithm maintains empirical mean $\bar w_t(e)$ and confidence radius $\rad_t(e)$ for each arm $e\in[n]$ and each round $t$.
 The construction of confidence radius ensures that $|w(e)-\bar w_t(e)| \le \rad_t(e)$ holds with high probability for each arm $e \in [n]$ and each round $t>0$.
 \Algorithm begins with an initialization phase in which each arm is pulled once.
-Then, at round $t \ge n$, \Algorithm uses the following procedure to find an arm to pull. 
+Then, at round $t \ge n$, \Algorithm uses the following procedure to choose an arm to play. 
 First, \Algorithm calls the oracle which computes the solution $M_t=\Oracle(\vec {\bar w}_t)$. 
 The solution $M_t$ is the ``best'' solution with respect to the empirical means $\vec {\bar w}_t$.
 % which maximizes empirical means $\bar w_t$ up to  $t$.
@@ -307,23 +317,33 @@ Similarly, we also define operator $\ominus$ such that $M\ominus b \triangleq M\
 We call a family of exchange sets $\B$ an \emph{exchange class for $\M$} if $\B$ satisfies the following property.
 Let $M$ and $M'$ be two  elements of $\M$.
 Then, for any $e \in (M\del M')$, there exists an exchange set $(b_+,b_-)\in \B$ which satisfies $e\in b_-$, $b_+ \subseteq M'\del M$, $b_- \subseteq M \del M'$, $(M\oplus b) \in \M$ and $(M'\ominus b) \in \M$.
-Finally, we define the \emph{width} of exchange class $\B$ as follows
+We define the \emph{width} of exchange class $\B$ as follows
 \begin{equation}
 \label{eq:width}
 \rank(\B) = \max_{(b_+,b_-) \in \B} |b_+|+|b_-|.
 \end{equation}
 
 %An exchange class can be seen as a set operations that transform one feasible set to another.
-
-Intuitively, for any feasible sets $M$ and $M'$, there exists an exchange set $(b_+,b_-)\in \B$ belonging to the exchange clas $\B$ which can be seen as an ``operation'' that transforms $M$ one step towards $M'$: this operation generates a new feasible set $M\oplus b$ by removing elements (including $e$) from $M$ and adding elements which belongs to $M'$.
+Intuitively, for any feasible sets $M$ and $M'$, there exists an exchange set $(b_+,b_-)\in \B$ belonging to the exchange class $\B$ which can be seen as an ``operation'' that transforms $M$ one step towards $M'$: this operation generates a new feasible set $M\oplus b$ by removing elements (including $e$) from $M$ and adding elements which belongs to $M'$.
 %Therefore, for any two elements $M,M'$ of $\M$, one can sequentially apply a finite number of these operations of $\B$ to transform $M$ to $M'$.it
 One can chain these operations together such that, for any $M\not= M'$, there exists a sequence of exchange sets $b_1,\ldots, b_k$ of $\B$ such that $M'=M\oplus b_1 \oplus \ldots \oplus b_k$.
 
-We notice that an exchange class for $\M$ can be ``redundant'' by our definition, i.e. it may contains some unnecessary exchange set $b$, such that $M\oplus b \not\in \M$ for any $M \in \M$.
+We notice that an exchange class for $\M$ can be ``redundant''. 
+It may contains some unnecessary exchange set $b$, such that $M\oplus b \not\in \M$ for any $M \in \M$.
 These redundant exchange sets do not affect our analysis.
 But allowing them would simplify the construction and description of exchange classes for certain combinatorial problems.
 %On the other hand, this also means that, for a fixed combinatorial problem, there exist many exchange classes.
 %In particular, we are interested with the exchange classes with small widths.
+
+
+It is easy to see that, for a fixed combinatorial problem $\M$, the exchange classes for $\M$ are not unique.
+Let $\Exchange(\M)$ denote the collection of all exchange classes for $\M$.
+We are interested with the exchange class with small width.
+Formally, we define the width of a combinatorial problem $\M$ as the width of the thinnest exchange class
+$$
+\rank(\M) = \min_{\B \in \Exchange(\M)} \rank(\B).
+$$
+
 
 \junk{
 Next, we investigate the exchange classes for our running examples.
@@ -349,6 +369,7 @@ These exchange classes can be constructed as follows
 	\item $\B_{\Path}=\big\{ (P_1, P_2) \;|\;P_1,P_2\text{ are two disjoint paths of }G\text{ with same endpoints}\big\}$.
 \end{enumerate}
 In addition, we have $\rank(\B_{\MultiIdent})=2$, $\rank(\B_{\Matroid})=2$, $\rank(\B_{\Match})=|V|$ and $\rank(\B_{\Path})=|V|$.
+This means that $\rank(\MultiIdent)\le 2$, $\rank(\Matroid) \le 2$, $\rank(\Match) \le |V|$ and $\rank(\Path) \le |V|$.
 \label{lemma:example-exchange-class}
 \end{lemma}
 The  construction for \MultiIdent problem is straightforward.
@@ -389,21 +410,32 @@ green-solid elements constitute the set $b_+$, red-dotted elements constitute th
 
 \textbf{Main result.} 
 Our main result is a problem-dependent sample complexity bound of the \Algorithm algorithm.
-In particular, we show that \Algorithm returns the optimal set with high probability and uses at most $\tilde O\big(\rank(\B)^2 \mathbf H\big)$ samples.
-\begin{theorem}
+In particular, we show that \Algorithm returns the optimal set with high probability and uses at most $\tilde O\big(\rank(\M)^2 \mathbf H\big)$ samples.
+\begin{restatable}{theorem}{mainresult}
 Given any $\delta \in (0,1)$, any combinatorial problem $\M \subseteq 2^{[n]}$ and any vector $\vec w \in \RR^{n}$.
 Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ is  $R$-sub-Gaussian with mean $w(e)$.
-Let $\B$ be an exchange class for $\M$ and let $\{\Delta_e\}_{e\in [n]}$ be the gaps defined in Eq.~\eqref{eq:define-delta}.
+%Let $\B$ be an exchange class for $\M$ and let $\{\Delta_e\}_{e\in [n]}$ be the gaps defined in Eq.~\eqref{eq:define-delta}.
 
 Set $\rad_t(e) = R\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_e(t)}}$ for all $t > 0$ and $e\in[n]$.
 Then, with probability at least $1-\delta$, the \Algorithm algorithm (Algorithm~\ref{algo:pac}) returns the optimal set $\out=M_*$ and
 \begin{equation}
 \label{eq:sample-complexity}
-T \le O\left(R^2\rank(\B)^2\mathbf H\log\left(R^2\rank(\B)^2\mathbf H \cdot n/\delta\right)\right),
+T \le O\left(R^2\rank(\M)^2\mathbf H\log\left(R^2\rank(\M)^2\mathbf H \cdot n/\delta\right)\right),
 \end{equation}
 where $T$ denotes the number of samples used by Algorithm~\ref{algo:pac}.
 \label{theorem:main}
-\end{theorem}
+\end{restatable}
+\junk{
+By combining Lemma~\ref{lemma:example-exchange-class} and Theorem~\ref{theorem:main}, we can bound the sample complexity of \Algorithm for our running examples.
+\begin{corollary}
+\begin{itemize}
+	\item \MultiIdent. $T \le O\big(\mathbf H \log(n\mathbf H/\delta)\big)$.
+	\item \Matroid. $T \le O\big(\mathbf H \log(n\mathbf H/\delta)\big)$.
+	\item \Match. $T \le O\big(|V|^2 \mathbf H \log(n |V|^2 \mathbf H/\delta)\big)$.
+	\item \Path. $T \le O\big(|V|^2 \mathbf H \log(n |V|^2 \mathbf H/\delta)\big)$.
+\end{itemize}
+\end{corollary}
+}
 
 \textbf{Remarks.}
 %Theorem~\ref{theorem:main} upper bounds the sample complexity of \Algorithm for an arbitrary combinatorial problem $\M$.
@@ -411,11 +443,11 @@ where $T$ denotes the number of samples used by Algorithm~\ref{algo:pac}.
 %Therefore, the sample complexity Eq.~\eqref{eq:sample-complexity} is minimizes $\B$ 
 %Notice that $\B$ does not 
 %Theorem~\ref{theorem:main} is a general result which provides a sample complexity for any combinatorial problem $\M$.
-For the \MultiIdent problem, we see that Lemma~\ref{lemma:example-exchange-class} indicates that $\B_{\MultiIdent}$ is an exchange class for $\M_{\MultiIdent}$ and $\rank(\B_{\MultiIdent})=O(1)$.
+For the \MultiIdent problem, we see that Lemma~\ref{lemma:example-exchange-class} indicates that $\rank(\MultiIdent)=O(1)$.
 Therefore, the sample complexity bound of \Algorithm for the \MultiIdent problem is $O\big(\mathbf H \log(n\mathbf H/\delta)\big)$.
 This matches the previous known problem-dependent bounds for the \MultiIdent problem due to XXX [] within logarithmic factors.
 %And Theorem~\ref{algo:pac} establishes the first sample complexity bound for the pure exploration of other combinatorial bandits.
-For the \Matroid problem, we know that $\B_{\Matroid}=O(1)$ and hence the sample complexity is also $O\big(\mathbf H \log(n\mathbf H/\delta)\big)$.
+For the \Matroid problem, we know that $\rank(\Matroid)=O(1)$ and hence the sample complexity is also $O\big(\mathbf H \log(n\mathbf H/\delta)\big)$.
 Finally, for \Match and \Path problem, we see that the sample complexity is bounded by $\tilde O(|V|^2 \mathbf H)$.
 
 
@@ -435,7 +467,7 @@ To state our results, we first define the notion of \emph{$\delta$-correct algor
 For any $\delta \in (0,1)$, we call an algorithm $\mathbb A$ a $\delta$-correct algorithm if, for any expected reward $\vec w \in \RR^{n}$, the probability of error of $\mathbb A$ is at most $\delta$, i.e. $\Pr[M_*\not =\out] \le \delta$, where $\out$ is the output of algorithm $\mathbb A$.
 
 We show that, for any combinatorial problem $\M$ and any expected rewards $\vec w$, any $\delta$-correct algorithm $\mathbb A$ must use at least $\Omega\big(\mathbf H \log(1/\delta) \big)$ samples in expectation.
-\begin{theorem}
+\begin{restatable}{theorem}{lowerbound}
 Fix any $\M\subseteq 2^{[n]}$ and any vector $\vec w \in \RR^n$.
 Suppose that, for each arm $e\in [n]$, the reward distribution $\Rew_e$ is given by $\Rew_e=\mathcal N(w(e),1)$, where $\mathcal N(\mu, \sigma^2)$ denotes a Gaussian distribution with mean $\mu$ and variance $\sigma^2$. 
 Then, for any $\delta \in (0,e^{-16}/4)$ and any $\delta$-correct algorithm $\mathbb A$, we have
@@ -447,38 +479,40 @@ where
 $T$ denote the number of total samples used by algorithm $\mathbb A$ and
 $\Delta_e$ is defined in Eq.~\eqref{eq:define-delta}.
 \label{theorem:lower-bound}
-\end{theorem}
+\end{restatable}
 
 %Now we compare the sample complexity Eq.~\eqref{eq:sample-complexity} of \Algorithm to the lower bound provided in Theorem~\ref{theorem:lower-bound} on our running examples \MultiIdent, \Matroid, \Match and \Path.
 %For clarity, we consider the case that $\epsilon=0$ which corresponds to the learning problem of finding the optimal set.
 %We see that \Algorithm algorithm uses at most $\tilde O(\rank(\B)^2 \mathbf H)$ samples.
 %Recall that, for \MultiIdent and \Matroid, Lemma~\ref{lemma:example-exchange-class} shows that $\rank(\B)=2$.
-Recall that, for the \MultiIdent problem and the \Matroid problem, the sample complexity of \Algorithm is $O(\mathbf H\log(n\mathbf H/\delta))$.
+We have already shown that, for \MultiIdent and \Matroid, the sample complexity of \Algorithm is $O(\mathbf H\log(n\mathbf H/\delta))$.
 Hence, for these two problems, the \Algorithm algorithm achieves the optimal sample complexity within logarithmic factors.
 In addition, our result confirms the conjecture of XXX [] that the lower bound of sample complexity of \MultiIdent problem is $\Omega\big(\mathbf H\log(1/\delta)\big)$.
 
 %On the other hand, for $\Match(V,E)$ and $\Path(V,E)$, we see that the gap between the upper bound Eq.~\eqref{eq:sample-complexity} and this lower bound is a factor of $|V|^2$.
-On the other hand, for general combinatorial problems, we see that the gap between the upper bound Eq.~\eqref{eq:sample-complexity} and the lower bound Eq.~\eqref{eq:lower-bound} is $\rank(\B)^2$.
+On the other hand, for general combinatorial problems, we see that the gap between the upper bound Eq.~\eqref{eq:sample-complexity} and the lower bound Eq.~\eqref{eq:lower-bound} is $\rank(\M)^2$.
 Notice this gap only depends on the underlying combinatorial structure of $\M$ and is independent of expected rewards $\vec w$. 
 This suggests that  the sample complexity of \Algorithm has an optimal dependency on the gaps $\{\Delta_e\}_{e\in[n]}$ for general combinatorial problems.
 
-Next, we argue that the dependency on $\rank(\B)$ on the sample complexity might be intrinsic.
+Next, we argue that the dependency on $\rank(\M)$ of  the sample complexity might be intrinsic.
 To this end, we provide evidence showing that the sample complexity of any $\delta$-correct algorithm should be related to size of exchange sets.
 %Furthermore, the lower bound can be improved to be dependent on the size of exchange sets.
-In fact, we show that, for any optimal exchange set $b\in\Bopt$ and any $\delta$-correct algorithm, the algorithm  must spend $\tilde \Omega\left(|b|^2/w(b)^2\right)$ samples on the arms belonging to $b$.
+In fact, we show that, for any arm $e\in [n]$, there exists an exchange set $b$ which contains $e$ such that a $\delta$-correct algorithm must spend
+$\tilde \Omega\big(|b|^2 / \Delta_e^2 \big)$ samples on the arms belonging to $b$.
+%any optimal exchange set $b\in\Bopt$ and any $\delta$-correct algorithm, the algorithm  must spend $\tilde \Omega\left(|b|^2/w(b)^2\right)$ samples on the arms belonging to $b$.
 This result is formalized in the following theorem.
-\begin{theorem}
+\begin{restatable}{theorem}{lowerboundspecial}
 Fix any $\M\subseteq 2^{[n]}$ and any vector $\vec w \in \RR^n$.
 Suppose that, for each arm $e\in [n]$, the reward distribution $\Rew_e$ is given by $\Rew_e=\mathcal N(w(e),1)$, where $\mathcal N(\mu, \sigma^2)$ denotes a Gaussian distribution with mean $\mu$ and variance $\sigma^2$. 
 Fix any $\delta \in (0,e^{-16}/4)$
 and any $\delta$-correct algorithm $\mathbb A$.
 
-Then, for any $b \in \Bopt$, we have
+Then, for any $e\in [n]$, there exists an exchange set $b=(b_+,b_-)$, such that $e\in b_+ \cup b_-$ and
 $$
-\E[T_b] \ge \frac{|b|^2}{32w(b)^2}\log(1/4\delta),
+\E[T_b] \ge \frac{|b|^2}{32\Delta_e^2}\log(1/4\delta),
 $$
 where $T_b$ denotes the number of samples of arms belonging to $b$ used by algorithm $\mathbb A$.
-\end{theorem}
+\end{restatable}
 %Notice that 
 
 
@@ -490,8 +524,8 @@ We can extend the \Algorithm algorithm to the fixed budget setting using two sim
 The first modification ensures that \Algorithm uses at most $T$ samples, which meets the requirement of the fixed budget setting.
 And the second modification bounds the probability that the confidence intervals are valid for all arms in $T$ rounds.
 The following theorem shows that the probability of error of the modified \Algorithm is bounded by 
-$O\left(Tn\exp\left(\frac{-T}{\rank(\B)^2\mathbf H} \right)\right)$.
-\begin{theorem}
+$O\left(Tn\exp\left(\frac{-T}{\rank(\M)^2\mathbf H} \right)\right)$.
+\begin{restatable}{theorem}{resultbudget}
 %Given any $T>0$, any combinatorial problem $\M \subseteq 2^{[n]}$ and any vector $\vec w \in \RR^{n}$.
 %Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ is  $R$-sub-Gaussian with mean $w(e)$.
 %Let $\B$ be an exchange class for $\M$ and let $\{\Delta_e\}_{e\in [n]}$ be the gaps defined in Eq.~\eqref{eq:define-delta}.
@@ -504,11 +538,11 @@ Then, we have
 \label{eq:fix-budget}
 \Pr\big[\out\not=M_*\big] \le 2Tn\exp\left(-2\alpha\right),
 \end{equation}
-as long as $\alpha < 9T\left(R^2\rank(\B)^2 \mathbf H\right)^{-1}$.
+as long as $\alpha < 9T\left(R^2\rank(\M)^2 \mathbf H\right)^{-1}$.
 \label{theorem:main-budget}
-\end{theorem}
-The right-hand side of Eq.~\eqref{eq:fix-budget} equals to $O\left(Tn\exp\left(\frac{-T}{\rank(\B)^2\mathbf H} \right)\right)$
-when parameter $\alpha = O(T\mathbf H^{-1}\rank(\B)^{-2})$.
+\end{restatable}
+The right-hand side of Eq.~\eqref{eq:fix-budget} equals to $O\left(Tn\exp\left(\frac{-T}{\rank(\M)^2\mathbf H} \right)\right)$
+when parameter $\alpha = O(T\mathbf H^{-1}\rank(\M)^{-2})$.
 For \MultiIdent problem, we see that this matches the guarantees of previous fixed budget algorithm [], up to logarithmic factors.
 
 \subsection{PAC Learning}
@@ -520,7 +554,7 @@ We show that a simple modification on the \Algorithm algorithm gives an $(\epsil
 In fact, the only modification needed is to change the stopping condition from $\tilde w_t(\tilde M_t)\le \tilde w_t(M_t)$ to $w(\tilde M_t)-w(M_t) \le \epsilon$ on line~XXX of Algorithm~\ref{algo:pac}.
 We let  \AlgorithmPAC denote the modified algorithm.
 In the following theorem, we show that \AlgorithmPAC is indeed an $(\epsilon,\delta)$-PAC algorithm and has sample complexity similar to \Algorithm.
-\begin{theorem}
+\begin{restatable}{theorem}{resultpac}
 Use the same notations as in Theorem~\ref{theorem:main}.
 Fix $\delta\in(0,1)$ and $\epsilon \ge 0$.
 Then, with probability at least $1-\delta$, the output $\out$ of \AlgorithmPAC satisfies
@@ -530,12 +564,13 @@ $
 In addition, the number of samples $T$ used by the algorithm satisfies
 \begin{equation}
 T \le 
-O\left(R^2\sum_{e\in [n]} \min\left\{\frac{\rank(\B)^2}{\Delta_e^2}, \frac{K^2}{\epsilon^2}\right\} 
-\log\left(\frac{R^2n}\delta \sum_{e\in [n]} \min\left\{\frac{\rank(\B)^2}{\Delta_e^2}, \frac{K^2}{\epsilon^2}\right\}\right)\right),
+O\left(R^2\sum_{e\in [n]} \min\left\{\frac{\rank(\M)^2}{\Delta_e^2}, \frac{K^2}{\epsilon^2}\right\} 
+\log\left(\frac{R^2n}\delta \sum_{e\in [n]} \min\left\{\frac{\rank(\M)^2}{\Delta_e^2}, \frac{K^2}{\epsilon^2}\right\}\right)\right),
 \label{eq:pac}
 \end{equation}
 where $K=\max_{M\in \M} |M|$ is the size of the largest feasible solution.
-\end{theorem}
+\label{theorem:pac}
+\end{restatable}
 We see that the sample complexity of \AlgorithmPAC decreases when $\epsilon$ increases.
 And if $\epsilon=0$, the sample complexity Eq.~\eqref{eq:pac} of \AlgorithmPAC equals to that of \Algorithm. 
 (difference??)
@@ -856,10 +891,12 @@ However, this contradicts to the stopping condition of \Algorithm: $\tilde w_t(\
 \begin{lemma}
 \label{lemma:key-technical}
 Given any $t>0$ and suppose that event $\xi_t$ (defined in Eq.~\eqref{eq:define-xi})  occurs.
-For any $e\in [n]$, if $\rad_t(e) < \frac{\Delta_e}{3\rank(\B)}$, then, arm $e$ will not be pulled on round $t$, i.e. $p_t\not= e$.
+%Let $\B$ be an exchange class for $\M$.
+For any $e\in [n]$, if $\rad_t(e) < \frac{\Delta_e}{3\rank(\M)}$, then, arm $e$ will not be pulled on round $t$, i.e. $p_t\not= e$.
 \end{lemma}
 
 \begin{proof}
+Fix an exchange class $\B\in \argmin_{\B'\in \Exchange(\M)} \rank(\B')$.
 Suppose, in the contrary, that $p_t = e$.
 By Lemma~\ref{lemma:exchange}, there exists an exchange set $c=(c_+,c_-) \in \B$
 such that $e\in (c_+\cup c_-)$, $c_- \subseteq (M_t \del \tilde M_t)$, $c_+ \subseteq (\tilde M_t \del M_t)$, $(M_t\oplus c) \in \M$ and $(\tilde M_t \ominus c) \in \M$.
@@ -893,7 +930,7 @@ Then, we claim that $\nor{\vec \rad_t \odot (\vec d-\vec \chi_c)}_\infty < \frac
 Since $c_-\subseteq M_t$ and $c_+\cap M_t = \emptyset$, using standard set theoretical manipulations, we can show that $M_t \del \tilde M_t= (M_t \del M_t') \cup c_-$. 
 Similarly, one can show that $\tilde M_t \del M_t = (M_t' \del M_t) \cup c_+$. 
 This means that $\big((M_t \del M_t') \cup (M_t'\del M_t)\big) \subseteq \big((M_t \del \tilde M_t ) \cup (\tilde M_t \del M_t)\big)$.
-Then, applying Lemma~Y, we obtain
+Then, applying Lemma~\ref{lemma:max}, we obtain
 \begin{align}
    \nor{\vec \rad_t \odot (\vec d-\vec\chi_c)}_\infty 
    &= \nor{\vec \rad_t \odot (\vec \chi_{M_t'} - \vec\chi_{M_t})}_\infty \nonumber\\
@@ -994,7 +1031,7 @@ Rearranging the above inequality, we obtain
 &= \inn{\vec w, \vec \chi_b}-\Delta_e \ge 0,
 \end{align}
 where Eq.~\eqref{eq:u-c-1-7} uses Eq.~\eqref{eq:u-c-1-6}; 
-Eq.~\eqref{eq:u-c-1-8} follows from the assumption that event $\xi$ occurs and Lemma~X;
+Eq.~\eqref{eq:u-c-1-8} follows from the assumption that event $\xi_t$ occurs and Lemma~\ref{lemma:ci-property};
 and Eq.~\eqref{eq:u-c-1-8} holds since Eq.~\eqref{eq:u-c-1-0-1}.
 
 We have shown that $\inn{\vec {\bar w}_t,\vec \chi_c}>0$. Now we can bound $\bar w_t(M_t')$ as follows
@@ -1067,6 +1104,9 @@ This is a contradiction and therefore $p_t\not= e$.
 \subsection{Proof of Theorem~\ref{theorem:main}}
 
 Theorem~\ref{theorem:main} is now a straightforward corollary of Lemma~\ref{lemma:correct} and Lemma~\ref{lemma:key-technical}.
+For the readers' convenience, we first restate Theorem~\ref{theorem:main} in the following.
+\mainresult*
+
 \begin{proof}
 Lemma~\ref{lemma:ci} indicates that the event $\xi \triangleq \bigcap_{t=1}^\infty \xi_t$ occurs with probability at least $1-\delta$.
 In the rest of the proof, we shall assume that this event holds.
@@ -1080,10 +1120,10 @@ Let $t_e$ be the last round which arm $e$ is pulled, i.e. $p_{t_e} = e$.
 It is easy to see that 
 $T_e(t_e) = T_e - 1$.
 By Lemma~\ref{lemma:key-technical}, we see that 
-$\rad_{t_e}(e) \ge \frac{\Delta_e}{3\rank(\B)}$.
+$\rad_{t_e}(e) \ge \frac{\Delta_e}{3\rank(\M)}$.
 Plugging in the construction radius $\rad$, we have
 \begin{equation}
-\frac{\Delta_e}{3\rank(\B)} \le 
+\frac{\Delta_e}{3\rank(\M)} \le 
 R\sqrt{\frac{2\log\left(4n t_e^2/\delta\right)}{T_e-1}} \le
 R\sqrt{\frac{2\log\left(4n T^2/\delta\right)}{T_e-1}}.
 \label{eq:bound-te}
@@ -1091,7 +1131,7 @@ R\sqrt{\frac{2\log\left(4n T^2/\delta\right)}{T_e-1}}.
 Solving Eq.~\eqref{eq:bound-te} for $T_e$, we obtain
 \begin{equation}
 \label{eq:bound-te-2}
-T_e \le \frac{18 \rank(\B)^2 R^2}{\Delta_e^2} \log(4nT^2/\delta)+1.
+T_e \le \frac{18 \rank(\M)^2 R^2}{\Delta_e^2} \log(4nT^2/\delta)+1.
 \end{equation}
 
 Notice that $T=\sum_{i\in[n]} T_i$. 
@@ -1102,6 +1142,7 @@ Hence the theorem follows by summing up Eq.~\eqref{eq:bound-te-2} for all $e\in 
 
 
 \section{Proof of Lower Bounds}
+\lowerbound*
 
 \begin{proof}
 Fix $\delta >0$, $\vec w =\big(w(1),\ldots,w(n)\big)^T$ and a $\delta$-correct algorithm $\mathbb A$.
@@ -1295,6 +1336,7 @@ Hence, we must have $\E_0[T_e] > t_e^* = \frac{1}{16\Delta_e^2}\log(1/4\delta)$.
 
 \end{proof}
 
+\lowerboundspecial*
 \begin{proof}
 Fix $\delta >0$, $\vec w\in \RR^{n}$, diff-set $b=(b_+,b_-)$ and a $\delta$-correct algorithm $\mathbb A$.
 Assume that $\Rew_e(e)=\mathcal N(w(e),1)$ for all $e\in[n]$.
@@ -1547,8 +1589,8 @@ By a union bound over all arms $e\in[n]$, we see that $\Pr[\xi_t] \ge 1-2n\exp(-
 The lemma follows immediately by using union bound again over all round $t\in [T]$.
 \end{proof}
 
-Then, Theorem~\ref{theorem:main-budget} can be obtained from the key lemmas (Lemma~\ref{lemma:correct} and Lemma~\ref{lemma:key-technical}) and Lemma~\ref{lemma:ci-budget} as follows.
-
+Then, Theorem~\ref{theorem:main-budget} can be obtained from the key lemmas (Lemma~\ref{lemma:correct} and Lemma~\ref{lemma:key-technical}) and Lemma~\ref{lemma:ci-budget}.
+\resultbudget*
 \begin{proof}
 Define random event $\xi=\bigcap_{t=1}^T \xi_t$. 
 By Lemma~\ref{lemma:ci-budget}, we see that $\Pr[\xi] \ge 1-2nT\exp(-2\alpha)$.
@@ -1653,6 +1695,9 @@ By the stopping condition of \AlgorithmPAC, the algorithm must terminate on roun
 This contradicts to the assumption that $p_t = e$.
 \end{proof}
 
+
+Using Lemma~\ref{lemma:pac-key} and Lemma~\ref{lemma:pac-correct}, we are ready to prove Theorem~\ref{theorem:pac}.
+\resultpac*
 \begin{proof}
 Similar to the proof of Theorem~\ref{theorem:main}, we appeal to Lemma~\ref{lemma:ci}, which shows that the event $\xi \triangleq \bigcap_{t=1}^\infty \xi_t$ occurs with probability at least $1-\delta$.
 And we shall assume that $\xi$ occurs in the rest of the proof.
