@@ -381,7 +381,7 @@ A detailed proof of Lemma~\ref{lemma:example-exchange-class} is deferred to the 
 \end{subfigure}
 \caption{
 Examples of exchange sets belonging to the exchange classes $\B_{\MultiIdent}$, $\B_{\Matroid}$, $\B_{\Match}$ and $\B_{\Path}$:
-green elements constitute the set $b_+$, red elements constitute the set $b_-$ and the example exchange set is given by $b=(b_+,b_-)$. 
+green-solid elements constitute the set $b_+$, red-dotted elements constitute the set $b_-$ and the example exchange set is $b=(b_+,b_-)$. 
 (In \autoref{fig:exchange:matroid}, we consider spanning tree as a specific instance for the \Matroid problem.)
 }
 \label{fig:exchange}
@@ -486,7 +486,7 @@ where $T_b$ denotes the number of samples of arms belonging to $b$ used by algor
 \label{section:extensions}
 \subsection{Fixed Budget Setting}
 \label{section:fixed-budget}
-We can extend the \Algorithm algorithm to the fixed budget setting through two simple modifications: (1) requiring \Algorithm to terminate after $T$ rounds; and (2) using a different construction of confidence intervals.
+We can extend the \Algorithm algorithm to the fixed budget setting using two simple modifications: (1) requiring \Algorithm to terminate after $T$ rounds; and (2) using a different construction of confidence intervals.
 The first modification ensures that \Algorithm uses at most $T$ samples, which meets the requirement of the fixed budget setting.
 And the second modification bounds the probability that the confidence intervals are valid for all arms in $T$ rounds.
 The following theorem shows that the probability of error of the modified \Algorithm is bounded by 
@@ -519,7 +519,7 @@ Formally, an algorithm $\mathbb A$ is called an $(\epsilon,\delta)$-PAC algorith
 We show that a simple modification on the \Algorithm algorithm gives an $(\epsilon,\delta)$-PAC algorithm, with guarantees similar  to Theorem~\ref{theorem:main}.
 In fact, the only modification needed is to change the stopping condition from $\tilde w_t(\tilde M_t)\le \tilde w_t(M_t)$ to $w(\tilde M_t)-w(M_t) \le \epsilon$ on line~XXX of Algorithm~\ref{algo:pac}.
 We let  \AlgorithmPAC denote the modified algorithm.
-In the following theorem, we show that \AlgorithmPAC is indeed an $(\epsilon,\delta)$-PAC algorithm and has sample complexity similar to Theorem~\ref{theorem:main}.
+In the following theorem, we show that \AlgorithmPAC is indeed an $(\epsilon,\delta)$-PAC algorithm and has sample complexity similar to \Algorithm.
 \begin{theorem}
 Use the same notations as in Theorem~\ref{theorem:main}.
 Fix $\delta\in(0,1)$ and $\epsilon \ge 0$.
