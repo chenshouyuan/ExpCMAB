@@ -25,6 +25,8 @@
 \usepackage{theoremref}
 \usepackage{thmtools}
 \usepackage{thm-restate}
+\usepackage{cleveref}
+
 % In case you need to adjust margins:
 \topmargin=-0.45in
 \evensidemargin=0in
@@ -64,6 +66,7 @@
 \declaretheorem{corollary}
 \declaretheorem{define}
 \declaretheorem{example}
+\declaretheorem[name=Fact,Refname={Fact,Facts}]{fact}
 
 
 \newcommand{\Algorithm}{\texttt{CGapExp}\xspace}
@@ -188,10 +191,9 @@ We consider the following problems as examples.
 \end{itemize}
 
 We assume that all reward distributions have $R$-sub-Gaussian tails. 
-Formally, for each $e\in [n]$, let $X_e$ be an independent sample of $\Rew_e$. 
-Then, for all $t\in \RR$, we have $\exp\big(t (X_e-w(e) \big) \le \exp(R^2t^2/2)$.
-It is well known that all distributions that are supported on $[0,R]$ satisfy by this assumption [].
-Finally, for the sake of simplicity, we will assume that the optimal solution $M_*$ is unique.
+Formally, for all $t\in \RR$, we assume that $\mathbb E_{X\sim \Rew_e}\big[\exp(tX-tw(e))\big] \le \exp(R^2t^2/2)$.
+It is well known that all distributions that are supported on $[0,R]$ satisfy this property [].
+%Finally, for the sake of simplicity, we will assume that the optimal solution $M_*$ is unique.
 
 %\textbf{Useful notations.}
 %For any vector $\vec v\in \RR^n$ and any set $M \subseteq [n]$, we define $v(M) = \sum_{e\in M} v(e)$.
@@ -359,7 +361,7 @@ Figure~Y illustrates these exchanges classes.
 
 Next, we construct the exchange classes for our running examples. 
 Our constructions are summarized in Lemma~\ref{lemma:example-exchange-class}.
-\begin{lemma}
+\begin{fact}
 There exist exchange classes $\B_{\MultiIdent}$, $\B_{\Matroid}$, $\B_{\Match}$ and $\B_{\Path}$ for $\M_{\MultiIdent}$, $\M_{\Matroid}$, $\M_{\Match}$ and $\M_{\Path}$, respectively. 
 These exchange classes can be constructed as follows
 \begin{enumerate}
@@ -371,12 +373,12 @@ These exchange classes can be constructed as follows
 In addition, we have $\rank(\B_{\MultiIdent})=2$, $\rank(\B_{\Matroid})=2$, $\rank(\B_{\Match})=|V|$ and $\rank(\B_{\Path})=|V|$.
 This means that $\rank(\MultiIdent)\le 2$, $\rank(\Matroid) \le 2$, $\rank(\Match) \le |V|$ and $\rank(\Path) \le |V|$.
 \label{lemma:example-exchange-class}
-\end{lemma}
+\end{fact}
 The  construction for \MultiIdent problem is straightforward.
 For \Matroid problem, we leverage the basis exchange property of matroids (see Lemma~\ref{lemma:basis-exchange-matroid} in the appendix).
 And for \Match and \Path problems, we appeal to  graph-theoretical properties of matchings and paths.
 We illustrate elements of these  exchanges classes in \autoref{fig:exchange}.
-A detailed proof of Lemma~\ref{lemma:example-exchange-class} is deferred to the supplementary material.
+A detailed proof of \Cref{lemma:example-exchange-class} is deferred to the supplementary material.
 
 \begin{figure}
 \centering
@@ -412,7 +414,7 @@ green-solid elements constitute the set $b_+$, red-dotted elements constitute th
 Our main result is a problem-dependent sample complexity bound of the \Algorithm algorithm.
 In particular, we show that \Algorithm returns the optimal set with high probability and uses at most $\tilde O\big(\rank(\M)^2 \mathbf H\big)$ samples.
 \begin{restatable}{theorem}{mainresult}
-Given any $\delta \in (0,1)$, any combinatorial problem $\M \subseteq 2^{[n]}$ and any vector $\vec w \in \RR^{n}$.
+Given any $\delta \in (0,1)$, any $\M \subseteq 2^{[n]}$ and any $\vec w \in \RR^{n}$.
 Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ is  $R$-sub-Gaussian with mean $w(e)$.
 %Let $\B$ be an exchange class for $\M$ and let $\{\Delta_e\}_{e\in [n]}$ be the gaps defined in Eq.~\eqref{eq:define-delta}.
 
@@ -443,12 +445,12 @@ By combining Lemma~\ref{lemma:example-exchange-class} and Theorem~\ref{theorem:m
 %Therefore, the sample complexity Eq.~\eqref{eq:sample-complexity} is minimizes $\B$ 
 %Notice that $\B$ does not 
 %Theorem~\ref{theorem:main} is a general result which provides a sample complexity for any combinatorial problem $\M$.
-For the \MultiIdent problem, we see that Lemma~\ref{lemma:example-exchange-class} indicates that $\rank(\MultiIdent)=O(1)$.
-Therefore, the sample complexity bound of \Algorithm for the \MultiIdent problem is $O\big(\mathbf H \log(n\mathbf H/\delta)\big)$.
+For the \MultiIdent problem, we see that \Cref{lemma:example-exchange-class} shows that $\rank(\MultiIdent)=O(1)$.
+Therefore, the sample complexity bound of \Algorithm is $O\big(\mathbf H \log(n\mathbf H/\delta)\big)$ for the \MultiIdent problem .
 This matches the previous known problem-dependent bounds for the \MultiIdent problem due to XXX [] within logarithmic factors.
 %And Theorem~\ref{algo:pac} establishes the first sample complexity bound for the pure exploration of other combinatorial bandits.
 For the \Matroid problem, we know that $\rank(\Matroid)=O(1)$ and hence the sample complexity is also $O\big(\mathbf H \log(n\mathbf H/\delta)\big)$.
-Finally, for \Match and \Path problem, we see that the sample complexity is bounded by $\tilde O(|V|^2 \mathbf H)$.
+For \Match and \Path problem, we see that the sample complexity is bounded by $\tilde O(|V|^2 \mathbf H)$.
 
 
 
@@ -460,8 +462,7 @@ Finally, for \Match and \Path problem, we see that the sample complexity is boun
 
 
 
-\section{Lower Bounds}
-
+\section{Lower Bound}
 In this section, we prove a problem-dependent lower bound on the sample complexity of the \Problem problem. 
 To state our results, we first define the notion of \emph{$\delta$-correct algorithm} as follows.
 For any $\delta \in (0,1)$, we call an algorithm $\mathbb A$ a $\delta$-correct algorithm if, for any expected reward $\vec w \in \RR^{n}$, the probability of error of $\mathbb A$ is at most $\delta$, i.e. $\Pr[M_*\not =\out] \le \delta$, where $\out$ is the output of algorithm $\mathbb A$.
@@ -494,26 +495,8 @@ On the other hand, for general combinatorial problems, we see that the gap betwe
 Notice this gap only depends on the underlying combinatorial structure of $\M$ and is independent of expected rewards $\vec w$. 
 This suggests that  the sample complexity of \Algorithm has an optimal dependency on the gaps $\{\Delta_e\}_{e\in[n]}$ for general combinatorial problems.
 
-Next, we argue that the dependency on $\rank(\M)$ of  the sample complexity might be intrinsic.
-To this end, we provide evidence showing that the sample complexity of any $\delta$-correct algorithm should be related to size of exchange sets.
-%Furthermore, the lower bound can be improved to be dependent on the size of exchange sets.
-In fact, we show that, for any arm $e\in [n]$, there exists an exchange set $b$ which contains $e$ such that a $\delta$-correct algorithm must spend
-$\tilde \Omega\big(|b|^2 / \Delta_e^2 \big)$ samples on the arms belonging to $b$.
-%any optimal exchange set $b\in\Bopt$ and any $\delta$-correct algorithm, the algorithm  must spend $\tilde \Omega\left(|b|^2/w(b)^2\right)$ samples on the arms belonging to $b$.
-This result is formalized in the following theorem.
-\begin{restatable}{theorem}{lowerboundspecial}
-Fix any $\M\subseteq 2^{[n]}$ and any vector $\vec w \in \RR^n$.
-Suppose that, for each arm $e\in [n]$, the reward distribution $\Rew_e$ is given by $\Rew_e=\mathcal N(w(e),1)$, where $\mathcal N(\mu, \sigma^2)$ denotes a Gaussian distribution with mean $\mu$ and variance $\sigma^2$. 
-Fix any $\delta \in (0,e^{-16}/4)$
-and any $\delta$-correct algorithm $\mathbb A$.
-
-Then, for any $e\in [n]$, there exists an exchange set $b=(b_+,b_-)$, such that $e\in b_+ \cup b_-$ and
-$$
-\E[T_b] \ge \frac{|b|^2}{32\Delta_e^2}\log(1/4\delta),
-$$
-where $T_b$ denotes the number of samples of arms belonging to $b$ used by algorithm $\mathbb A$.
-\end{restatable}
-%Notice that 
+We conjecture that the dependency on $\rank(\M)$ of the sample complexity might be intrinsic. 
+In the supplementary material, we provide evidence showing that the sample complexity of any $\delta$-correct algorithm should be related to size of exchange sets. 
 
 
 \section{Extensions}
@@ -530,20 +513,20 @@ $O\left(Tn\exp\left(\frac{-T}{\rank(\M)^2\mathbf H} \right)\right)$.
 %Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ is  $R$-sub-Gaussian with mean $w(e)$.
 %Let $\B$ be an exchange class for $\M$ and let $\{\Delta_e\}_{e\in [n]}$ be the gaps defined in Eq.~\eqref{eq:define-delta}.
 Use the same notations as in Theorem~\ref{theorem:main}.
-Given $T>0$ and parameter $\alpha > 0$, set the confidence radius $\rad_t(e) = R\sqrt{\frac{\alpha}{T_e(t)}}$ for all arms $e\in[n]$ and all $t>0$.
+Given $T > n$ and parameter $\alpha > 0$, set the confidence radius $\rad_t(e) = R\sqrt{\frac{\alpha}{T_e(t)}}$ for all arms $e\in[n]$ and all $t>0$.
 Run \Algorithm algorithm for at most $T$ rounds.
-Then, we have
+Then, for $0 \le \alpha \le \frac19 (T-n)\left(R^2\rank(\M)^2 \mathbf H\right)^{-1}$, we have
 %the probability of error of \Algorithm is bounded as follows
 \begin{equation}
 \label{eq:fix-budget}
-\Pr\big[\out\not=M_*\big] \le 2Tn\exp\left(-2\alpha\right),
+\Pr\big[\out\not=M_*\big] \le 2Tn\exp\left(-2\alpha\right).
 \end{equation}
-as long as $\alpha < 9T\left(R^2\rank(\M)^2 \mathbf H\right)^{-1}$.
+%In particular, when $\alpha=\frac19 (T-n)\left(R^2\rank(\M)^2 \mathbf H\right)^{-1}$, the probability of error is at most $O\Big(Tn\exp\left(-\frac{T}{\rank(\M)^2 \mathbf H}\right)\Big)$.
 \label{theorem:main-budget}
 \end{restatable}
 The right-hand side of Eq.~\eqref{eq:fix-budget} equals to $O\left(Tn\exp\left(\frac{-T}{\rank(\M)^2\mathbf H} \right)\right)$
 when parameter $\alpha = O(T\mathbf H^{-1}\rank(\M)^{-2})$.
-For \MultiIdent problem, we see that this matches the guarantees of previous fixed budget algorithm [], up to logarithmic factors.
+For \MultiIdent problem, we see that this matches the guarantees of previous fixed budget algorithm [] up to logarithmic factors.
 
 \subsection{PAC Learning}
 Now we consider a setting where the learner is only required to report an approximately optimal set of arms. 
@@ -551,7 +534,7 @@ More specifically, we consider the notion of $(\epsilon,\delta)$-PAC algorithm.
 Formally, an algorithm $\mathbb A$ is called an $(\epsilon,\delta)$-PAC algorithm if its output $\out$ satisfies $\Pr\big[w(M_*)-w(\out) > \epsilon\big] \le \delta$.
 
 We show that a simple modification on the \Algorithm algorithm gives an $(\epsilon,\delta)$-PAC algorithm, with guarantees similar  to Theorem~\ref{theorem:main}.
-In fact, the only modification needed is to change the stopping condition from $\tilde w_t(\tilde M_t)\le \tilde w_t(M_t)$ to $w(\tilde M_t)-w(M_t) \le \epsilon$ on line~XXX of Algorithm~\ref{algo:pac}.
+In fact, the only modification needed is to change the stopping condition from $\tilde w_t(\tilde M_t)\le \tilde w_t(M_t)$ to $w(\tilde M_t)-w(M_t) \le \epsilon$ on line~\ref{algo:step:D} of Algorithm~\ref{algo:pac}.
 We let  \AlgorithmPAC denote the modified algorithm.
 In the following theorem, we show that \AlgorithmPAC is indeed an $(\epsilon,\delta)$-PAC algorithm and has sample complexity similar to \Algorithm.
 \begin{restatable}{theorem}{resultpac}
@@ -1141,7 +1124,7 @@ Hence the theorem follows by summing up Eq.~\eqref{eq:bound-te-2} for all $e\in 
 
 
 
-\section{Proof of Lower Bounds}
+\section{Proof of Lower Bound}
 \lowerbound*
 
 \begin{proof}
@@ -1171,6 +1154,8 @@ H_1:
 \end{cases} 
 \quad\text{and } \Rew_l=\mathcal N(w(l), 1) \quad\text{for all } l\not = e.
 $$
+For $l\in \{0,1\}$, we use $\E_l$ and $\Pr_l$ to denote the expectation and probability, respectively, under the hypothesis $H_l$.
+
 
 Define $M_e$ be the ``next-to-optimal'' set as follows 
 $$
@@ -1179,14 +1164,16 @@ M_e = \begin{cases}
 	     \argmax_{M\in \M: e \not\in M} w(M) & \text{if } e\in M_*.
 	  \end{cases}
 $$
-By definition of $\Delta_e$, we know that $w(M_*)-w(M_e)=\Delta_e$.
+By definition of $\Delta_e$ in Eq.~\eqref{eq:define-delta}, we know that $w(M_*)-w(M_e)=\Delta_e$.
 
 Let $\vec w_0$ and $\vec w_1$ be expected reward vectors under $H_0$ and $H_1$ respectively.
 Notice that $w_0(M_*)-w_0(M_e)=\Delta_e > 0$.
-On the other hand, 
-$w_1(M_*)-w_1(M_e) = -\Delta_e < 0$.
-This means that under $H_1$, $M_*$ is not the optimal set.
-For $l\in \{0,1\}$, we use $\E_l$ and $\Pr_l$ to denote the expectation and probability, respectively, under the hypothesis $H_l$.
+On the other hand, we have
+\begin{align*}
+w_1(M_*)-w_1(M_e) &= w(M_*)-w(M_e)-2\Delta_e \\
+								  &= -\Delta_e < 0.
+\end{align*}
+This means that under $H_1$, the set $M_*$ is not the optimal set.
 
 Define $\theta=4\delta$. Define
 \begin{equation}
@@ -1206,21 +1193,21 @@ This can be proved by Markov inequality as follows.
 \end{align*}
 
 Let $X_1,\ldots,X_{T_e}$ denote the sequence of reward outcomes of arm $e$.
-We define $K_t(e)$ as the sum of outcomes of arm $e$ up to round $t$, i.e. $K_t(e) = \sum_{i\in [t]} X_i. $
+For all $t>0$, we define $K_t= \sum_{i\in [t]} X_i$ as the sum of outcomes of arm $e$ up to round $t$.
 Next, we define the event 
 $$
-\mathcal C=\left\{\max_{1\le t \le 4t_e^*} \left|K_t(e)-t\cdot w(e)\right|  < \sqrt{t_e^*\log(1/\theta)} \right\}.
+\mathcal C=\left\{\max_{1\le t \le 4t_e^*} \left|K_t-t\cdot w(e)\right|  < \sqrt{t_e^*\log(1/\theta)} \right\}.
 $$
 We now show that $\Pr_0[\mathcal C] \ge 3/4$.
-First, notice that $K_t(e)-p_e t$ is a martingale under $H_0$.
+First, notice that $\{K_t-t\cdot w(e)\}_{t=1,\ldots}$ is a martingale under $H_0$.
 Then, by Kolmogorov's inequality, we have
 \begin{align*}
-\Pr_0\left[\max_{1\le t \le 4t_e^*} \left|K_t(e)-t\cdot w(e)\right| \ge \sqrt{t_e^*\log(1/\theta)} \right]
-&\le \frac{\E_0[ (K_{4t_e^*}(e)-4w(e)t_e^*)^2]}{t_e^*\log(1/\theta)}\\
+\Pr_0\left[\max_{1\le t \le 4t_e^*} \left|K_t-t\cdot w(e)\right| \ge \sqrt{t_e^*\log(1/\theta)} \right]
+&\le \frac{\E_0[ (K_{4t_e^*}-4w(e)t_e^*)^2]}{t_e^*\log(1/\theta)}\\
 &= \frac{4t_e^*}{t_e^*\log(1/\theta)}\\
 &< \frac14,
 \end{align*}
-where the second inequality follows from the fact that $\E_0[(K_{4t_e^*}(e)-4w(e)t_e^*)^2] = 4t_e^*$; the last inequality follows 
+where the second inequality follows from the fact that the variance of $\Rew_e$ equals to 1 and therefore $\E_0[(K_{4t_e^*}-4w(e)t_e^*)^2] = 4t_e^*$; the last inequality follows 
 since $\theta < e^{-16}$.
 
 Then, we define the event $\mathcal B$ as the event that the algorithm eventually returns $M_*$, i.e.
@@ -1238,14 +1225,14 @@ $$
 L_l(w) = p_l(W=w),
 $$
 where $p_l$ is the probability density function under hypothesis $H_l$.
-Let $K$ be the shorthand of $K_e(T_e)$.
+Let $K$ be the shorthand of $K_{T_e}$.
 
 Assume that the event $\mathcal S$ occurred.
 We will bound the likelihood ratio $L_1(W)/L_0(W)$ under this assumption. 
 To do this, we divide our analysis into two different cases.
 
 \textbf{Case (1): $e\not \in M_*$.}
-In this case, the reward distribution of arm $e$ under $H_1$ is a Gaussian distribution with mean $p_e+2\Delta_e$ and variance 1. 
+In this case, the reward distribution of arm $e$ under $H_1$ is a Gaussian distribution with mean $w(e)+2\Delta_e$ and variance 1. 
 Recall that the probability density function of a Gaussian distribution with mean $\mu$ and variance $\sigma^2$ is given by
 $\mathcal N(x | \mu,\sigma^2)=\frac{1}{\sigma\sqrt{2\pi}}\exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)$.
 Hence, we have
@@ -1268,7 +1255,7 @@ where Eq.~\eqref{eq:lower-bound-case-1-1.1} follows from the assumption that eve
 Then, we bound the first term on the right-hand side of Eq.~\eqref{eq:lower-bound-case-1} as follows
 \begin{align}
 	\exp\big(\Delta_e(2K-2w(e)T_e)\big) & \ge \exp\left(-2\Delta_e\sqrt{t_e^*\log(1/\theta)}\right) \label{eq:lower-bound-case-1-2.1}\\
-								       & = \exp\left(-\frac{2}{\sqrt{4}}\log(1/\theta)\right) \label{eq:lower-bound-case-1-2.2}\\
+								       & = \exp\left(-\frac{2}{4}\log(1/\theta)\right) \label{eq:lower-bound-case-1-2.2}\\
 								       &=\theta^{1/2},  \label{eq:lower-bound-case-1-2.3}
 \end{align}
 where Eq.~\eqref{eq:lower-bound-case-1-2.1} follows from the assumption that event $\mathcal S$ occurred, which implies that event $\mathcal C$ and therefore $|2K-2w(e)T_e| \le \sqrt{t_e^*\log(1/\theta)}$; 
@@ -1284,7 +1271,7 @@ Combining Eq.~\eqref{eq:lower-bound-case-1-1.3} and Eq.~\eqref{eq:lower-bound-ca
 \emph{(End of Case (1).)}
 
 \textbf{Case (2): $e\in M_*$.}
-In this case, we know that the mean reward of arm $e$ under $H_1$ is $p_e-2\Delta$.
+In this case, we know that the mean reward of arm $e$ under $H_1$ is $w(e)-2\Delta$.
 Therefore, the likelihood ratio $L_1(W)/L_0(W)$ is given by
 \begin{align}
   \frac{L_1(W)}{L_0(W)} &= \prod_{i=1}^{T_e} \exp\left(\frac{-(X_i-w(e)+2\Delta_e)^2+(X_i-w(e))^2}{2}\right) \nonumber \\
@@ -1295,7 +1282,7 @@ Therefore, the likelihood ratio $L_1(W)/L_0(W)$ is given by
 Notice that the right-hand side of Eq.~\eqref{eq:lower-bound-case-2} differs from Eq.~\eqref{eq:lower-bound-case-1} only in its first term.
 Now, we bound the first term as follows
 \begin{align}
-	\exp\big(\Delta_e(2K-2w(e)T_e)\big) & \ge \exp\left(-2\Delta_e\sqrt{t_e^*\log(1/\theta)}\right) \label{eq:lower-bound-case-2-2.1}\\
+	\exp\big(\Delta_e(2w(e)T_e-2K)\big) & \ge \exp\left(-2\Delta_e\sqrt{t_e^*\log(1/\theta)}\right) \label{eq:lower-bound-case-2-2.1}\\
 								       & = \exp\left(-\frac{2}{4}\log(1/\theta)\right) \label{eq:lower-bound-case-2-2.2}\\
 								       &=\theta^{1/2},  \label{eq:lower-bound-case-2-2.3}
 \end{align}
@@ -1333,10 +1320,29 @@ However, under $H_1$, we have shown that $M_*$ is not the optimal set since $w_1
 Therefore, algorithm $\mathbb A$ has a probability of error at least $\delta$ under $H_1$. 
 This contradicts to the assumption that algorithm $\mathbb A$ is a $\delta$-correct algorithm.
 Hence, we must have $\E_0[T_e] > t_e^* = \frac{1}{16\Delta_e^2}\log(1/4\delta)$.
-
 \end{proof}
 
-\lowerboundspecial*
+
+\subsection{Exchange set size dependent lower bound}
+We show that, for any arm $e\in [n]$, there exists an exchange set $b$ which contains $e$ such that a $\delta$-correct algorithm must spend
+$\tilde \Omega\Big(\big(|b_+|+|b_-|\big)^2 / \Delta_e^2 \Big)$ samples on the arms belonging to $b$.
+%any optimal exchange set $b\in\Bopt$ and any $\delta$-correct algorithm, the algorithm  must spend $\tilde \Omega\left(|b|^2/w(b)^2\right)$ samples on the arms belonging to $b$.
+This result is formalized in the following theorem.
+
+\begin{restatable}{theorem}{lowerboundspecial}
+Fix any $\M\subseteq 2^{[n]}$ and any vector $\vec w \in \RR^n$.
+Suppose that, for each arm $e\in [n]$, the reward distribution $\Rew_e$ is given by $\Rew_e=\mathcal N(w(e),1)$, where $\mathcal N(\mu, \sigma^2)$ denotes a Gaussian distribution with mean $\mu$ and variance $\sigma^2$. 
+Fix any $\delta \in (0,e^{-16}/4)$
+and any $\delta$-correct algorithm $\mathbb A$.
+
+Then, for any $e\in [n]$, there exists an exchange set $b=(b_+,b_-)$, such that $e\in b_+ \cup b_-$ and
+$$
+\E\left[\sum_{i\in b_+\cup b_-} T_i\right] \ge \frac{(|b_+|+|b_-|)^2}{32\Delta_e^2}\log(1/4\delta),
+$$
+where $T_i$ is the number of samples of arm $i$.
+\end{restatable}
+
+%\lowerboundspecial*
 \begin{proof}
 Fix $\delta >0$, $\vec w\in \RR^{n}$, diff-set $b=(b_+,b_-)$ and a $\delta$-correct algorithm $\mathbb A$.
 Assume that $\Rew_e(e)=\mathcal N(w(e),1)$ for all $e\in[n]$.
@@ -1596,26 +1602,38 @@ Define random event $\xi=\bigcap_{t=1}^T \xi_t$.
 By Lemma~\ref{lemma:ci-budget}, we see that $\Pr[\xi] \ge 1-2nT\exp(-2\alpha)$.
 In the rest of the proof, we assume that $\xi$ happens.
 
-We claim that Algorithm~\ref{algo:pac} stops before round $T$.
-If the claim is true, then there exists a round $t^* < T$ such that $\tilde M_{t^*} = M_{t^*}$ and $\out = M_{t^*}$.
-By assumption on $\xi$ and Lemma~\ref{lemma:correct}, we know that $M_{t^*} = M_*$.
+Let $T^*$ denote the round that the algorithm stops.
+We claim that the algorithm $T^* < T$.
+If the claim is true, then the algorithm stops since it meets the stopping condition on round $T^*$.
+Hence $\tilde M_{T^*} = M_{T^*}$ and $\out = M_{T^*}$.
+By assumption on $\xi$ and Lemma~\ref{lemma:correct}, we know that $M_{T^*} = M_*$.
 Therefore the theorem follows immediately from this claim and the bound of $\Pr[\xi]$.
 
 Next, we show that this claim is true.
-For any round $t \in [T]$ and any arm $e\in[n]$, 
-by Lemma~\ref{lemma:key-technical}, 
-we see that if $\rad_t(e) < \frac{\Delta_e}{3\rank(\B)}$, then arm $e$ will no longer be pulled.
-Also notice that, by construction in the fixed budget setting, the radius $\rad_t(e)$ is monotone decreasing with respect to $T_e(t)$.
-Therefore, plugging the definition of $\rad_t(e)$, we have
-$$
-T_e \le \frac{9R^2\rank(\B)^2}{\Delta_e^2}\cdot\alpha.
-$$
+%For any round $t \in [T]$ and any arm $e\in[n]$, 
+%by Lemma~\ref{lemma:key-technical}, 
+%we see that if $\rad_t(e) < \frac{\Delta_e}{3\rank(\B)}$, then arm $e$ will no longer be pulled.
+Let $t_e$ be the last round that arm $e$ is pulled.
+Hence $T_e(t_e) = T_e-1$.
+By Lemma~\ref{lemma:key-technical}, we see that $\rad_{t_e}(e) \ge \frac{\Delta}{3\rank(\B)}$.
+Now plugging in the definition of $\rad_{t_e}(e)$, we have
+\begin{align*}
+	\frac{\Delta}{3\rank(\B)} &\le \rad_{t_e}(e) \\
+										        &= R\sqrt{\frac{\alpha}{T_e(t_e)}} = R\sqrt{\frac{\alpha}{T_e -1}}.
+\end{align*}
+Hence we have
+%Also notice that, by construction in the fixed budget setting, the radius $\rad_t(e)$ is monotone decreasing with respect to $T_e(t)$.
+%Therefore, plugging the definition of $\rad_t(e)$, we have
+\begin{equation}
+\label{eq:budget-x}
+T_e \le \frac{9R^2\rank(\B)^2}{\Delta_e^2}\cdot\alpha+1.
+\end{equation}
 
-Summing up $T_e$ for all $e\in [n]$, we have
+By summing up Eq.~\eqref{eq:budget-x} for all $e\in [n]$, we have
 $$
-t^* = \sum_{e\in [n]} T_e \le \alpha \cdot 9R^2\rank(\B)^2 \left(\sum_{e\in[n]}\Delta_e^{-2}\right) < T,
+T^* = \sum_{e\in [n]} T_e \le \alpha \cdot 9R^2\rank(\B)^2 \left(\sum_{e\in[n]}\Delta_e^{-2}\right)+n < T,
 $$
-where we have used the assumption that $\alpha < 9 T \cdot \left(R^2\rank(\B)^2 \left(\sum_{e\in[n]}\Delta_e^{-2}\right)\right)^{-1}.$
+where we have used the assumption that $\alpha < \frac{1}9 (T-n) \cdot \left(R^2\rank(\B)^2 \left(\sum_{e\in[n]}\Delta_e^{-2}\right)\right)^{-1}.$
 
 \end{proof}
 
@@ -1630,7 +1648,7 @@ Then, we have $w(M_*)-w(\out) \le \epsilon$.
 \begin{proof}
 By definition, we know that $\out = M_t$.
 %Suppose that $M_t \not= M_*$, since otherwise $w(M_*)-w(\out) \le 0$ and the lemma trivially holds.
-Notice that the stopping condition of \AlgorithmPAC ensures that $\tilde w_t(\tilde M_t) \le \epsilon$.
+Notice that the stopping condition of \AlgorithmPAC ensures that $\tilde w_t(\tilde M_t) - \tilde w_t(M_t) \le \epsilon$.
 Therefore, we have
 \begin{align}
 	\epsilon &\ge \tilde w_t(\tilde M_t) - \tilde w_t(M_t) \nonumber \\
@@ -1644,20 +1662,19 @@ Eq.~\eqref{eq:lcp-2} follows from Lemma~\ref{lemma:tilde};
 Eq.~\eqref{eq:lcp-3} follows from the assumption that $\xi_t$ occurs and Lemma~\ref{lemma:ci-property}.
 \end{proof}
 
-The next lemma generalizes Lemma~\ref{lemma:key-technical} and shows that, with high probability, each arm $e\in [n]$ will not be played if .
-
-
-
+The next lemma generalizes Lemma~\ref{lemma:key-technical}.  
+It shows that, with high probability, each arm $e\in [n]$ will not be played on round $t$ if $\rad_t(e) \le \max\left\{\frac{\Delta_e}{3\rank(\M)}, \frac{\epsilon}{2K}\right\}$.
 \begin{lemma}
 \label{lemma:pac-key}
-For any arm $e \in [n]$ and any round $t > n$ after initialization, if $\rad_t(e) \le \max\left\{\frac{\Delta_e}{3\rank(\B)}, \frac{\epsilon}{2K}\right\}$,
+Let $K = \max_{M\in \M} |M|$.
+For any arm $e \in [n]$ and any round $t > n$ after initialization, if $\rad_t(e) \le \max\left\{\frac{\Delta_e}{3\rank(\M)}, \frac{\epsilon}{2K}\right\}$,
 then arm $e$ will not be played on round $t$, i.e. $p_t\not= e$.
 \end{lemma}
 
 
 \begin{proof}
-If $\rad_t(e) \le \frac{\Delta_e}{3\rank(\B)}$, then we can apply Lemma~\ref{lemma:key-technical} which immediately gives that $p_t\not= e$.
-Hence, we only need to prove the case that $\frac{\Delta_e}{3\rank(\B)} \le \rad_t(e) \le \frac{\epsilon}{2K}$.
+If $\rad_t(e) \le \frac{\Delta_e}{3\rank(\M)}$, then we can apply Lemma~\ref{lemma:key-technical} which immediately gives that $p_t\not= e$.
+Hence, we only need to prove the case that $\frac{\Delta_e}{3\rank(\M)} \le \rad_t(e) \le \frac{\epsilon}{2K}$.
 %We claim that, in this case, the algorithm stops on round $t$.
 
 Now suppose that $p_t = e$.
@@ -1673,9 +1690,7 @@ $|(M_t\del \tilde M_t) \cup (\tilde M_t \del M_t)| \le |M_t|+|\tilde M_t| \le 2K
 and Eq.~\eqref{eq:pac-key-2} uses the fact that
 $\vec \chi_{(M_t\del \tilde M_t) \cup (\tilde M_t \del M_t)} = |\vec \chi_{M_t}-\vec \chi_{\tilde M_t}|$.
 
-
-
-Then, using the fact that $\bar w_t(M_t) \ge \bar w_t(\tilde M_t)$, we have
+Then, we have
 \begin{align}
 \tilde w_t(\tilde M_t) - \tilde w_t(M_t) 
 &= \inn{\vec {\bar w}_t, \vec \chi_{\tilde M_t}-\vec\chi_{M_t}}+\inn{\vec \rad_t, |\vec \chi_{\tilde M_t}-\vec\chi_{M_t}|}
