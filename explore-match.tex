@@ -1,4 +1,6 @@
 \documentclass{article}
+\usepackage{nips14submit_e,times}
+
 \title{Pure Exploration of Combinatorial Bandits}
 \author{Shouyuan Chen}
 \date{\today}
@@ -16,8 +18,8 @@
 \usepackage{graphicx,float,wrapfig}
 \usepackage{afterpage}
 \usepackage{abstract}
-\usepackage{hyperref}
-\usepackage{natbib}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue]{hyperref}
+\usepackage[numbers]{natbib}
 \usepackage{algpseudocode}
 \usepackage{algorithm}
 \usepackage{xspace}
@@ -26,28 +28,8 @@
 \usepackage{thmtools}
 \usepackage{thm-restate}
 \usepackage{cleveref}
+%\usepackage{titling}
 
-% In case you need to adjust margins:
-\topmargin=-0.45in
-\evensidemargin=0in
-\oddsidemargin=0in
-\textwidth=6.5in
-\textheight=9.0in
-\headsep=0.25in
-
-\setlength\parindent{0pt}
-
-
-% Setup the header and footer
-\pagestyle{fancy}
-%\lhead{\LatexerName}
-%\chead{\LectureClassName: \LectureTitle}
-%\rhead{\LectureDate}
-%\lfoot{\lastxmark}
-%\cfoot{}
-\rfoot{Page\ \thepage\ of\ \pageref{LastPage}}
-\renewcommand\headrulewidth{0.4pt}
-\renewcommand\footrulewidth{0.4pt}
 
 \allowdisplaybreaks
 
@@ -68,10 +50,11 @@
 \declaretheorem{example}
 \declaretheorem[name=Fact,Refname={Fact,Facts}]{fact}
 
+%\def\ttdefault{blg}
 
-\newcommand{\Algorithm}{\texttt{CGapExp}\xspace}
-\newcommand{\AlgorithmPAC}{\texttt{CGapExpPAC}\xspace}
-\newcommand{\Problem}{\texttt{ExpCMAB}\xspace}
+\newcommand{\Algorithm}{{\small \textsf{CGapExp}}\xspace}
+\newcommand{\AlgorithmPAC}{{\small \textsf{CGapExpPAC}}\xspace}
+\newcommand{\Problem}{{\small \textsf{ExpCMAB}}\xspace}
 \newcommand{\Rew}{\varphi}
 \newcommand{\E}{\mathbb E}
 
@@ -109,10 +92,10 @@
 \let\Pr\undefined
 \DeclareMathOperator{\Pr}{Pr}
 
-\newcommand{\MultiIdent}{\texttt{Multi}\xspace}
-\newcommand{\Matroid}{\texttt{Matroid}\xspace}
-\newcommand{\Match}{\texttt{Match}\xspace}
-\newcommand{\Path}{\texttt{Path}\xspace}
+\newcommand{\MultiIdent}{\textsc{Multi}\xspace}
+\newcommand{\Matroid}{\textsc{Matroid}\xspace}
+\newcommand{\Match}{\textsc{Match}\xspace}
+\newcommand{\Path}{\textsc{Path}\xspace}
 
 \newcommand{\inn}[1]{\left\langle #1 \right\rangle}
 \newcommand{\nor}[1]{\left\|#1\right\|}
@@ -123,13 +106,35 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
-\begin{spacing}{1.1}
 \newpage
 
 \maketitle
 
+\begin{abstract}
+The abstract paragraph should be indented 1/2~inch (3~picas) on both left and
+right-hand margins. Use 10~point type, with a vertical spacing of 11~points.
+The word \textbf{Abstract} must be centered, bold, and in point size 12. Two
+line spaces precede the abstract. The abstract must be limited to one
+paragraph.
+\end{abstract}
 
 \section{Introduction}
+
+The pure exploration problem is about designing strategies that make the best use of the limited budget.
+
+\textbf{Motivation.}
+
+
+\textbf{Contributions.}
+
+
+Therefore, our results provide a complete characterization (within logarithmic factors) of the sample complexity for a large class of combinatorial problems, including \MultiIdent and \Matroid problem.
+%In particular, we show that \Algorithm achieves an optimal sample complexity for these problems within logarithmic factors.
+
+Our lower bound result also resolves the conjecture of \citet{kalyanakrishnan2012pac} on the lower bound sample complexity for the \MultiIdent problem.
+
+
+%For a large class of combinatorial problems, including \MultiIdent and \Matroid problem, we give a complete characterization of 
 
 \subsection{Related Work}
 
@@ -216,7 +221,7 @@ We will discuss these extensions in Section~\ref{section:extensions}.
 \textbf{Oracle.}
 We allow the \Algorithm algorithm to access a \emph{maximization oracle}. 
 A maximization oracle takes a weight vector $\vec v \in \RR^{n}$ as input and computes an optimal solution with respect to the weight vector $\vec v$.
-Formally, we call a function $\text{Oracle:}~\RR^{n} \rightarrow \M$ a maximization oracle if $\Oracle(\vec v) \in \argmax_{M\in \M} v(M)$ for all $\vec v\in \RR^{n}$.
+Formally, we call a function $\text{Oracle:}~\RR^{n} \rightarrow \M$ a maximization oracle if, for all $\vec v\in \RR^{n}$, we have $\Oracle(\vec v) \in \argmax_{M\in \M} v(M)$.
 It is clear that a very broad class of combinatorial problems admit such maximization oracles.
 Besides the access to the oracle, \Algorithm does not need \emph{any} additional knowledge of the combinatorial problem $\M$.
 
@@ -279,9 +284,12 @@ The pseudo-code of \Algorithm is shown in Algorithm~\ref{algo:pac}.
 
 \subsection{Analysis}
 %In this part, we analyze the performance of Algorithm~\ref{algo:pac} for both fixed confidence and fixed budget settings. 
+Now we prove a problem-dependent sample complexity bound of the \Algorithm algorithm. 
+Our sample complexity bound depends on several combinatorial properties of $\M$. 
+Therefore, to state our result, we first introduce notions to capture these properties.
+%To state our results, we need to define two quantities: gap and width.
 
-
-\textbf{Gap.} We begin with defining a natural complexity measure of the \Problem problem. 
+\textbf{Gap.} We begin with defining a hardness complexity measure of the \Problem problem. 
 For each arm $e \in [n]$, we define gap $\Delta_e$ as
 \begin{equation}
 \label{eq:define-delta}
@@ -290,21 +298,23 @@ For each arm $e \in [n]$, we define gap $\Delta_e$ as
 			   w(M_*)-\max_{M\in \M: e\not \in M} w(M) & \text{if } e\in M_*,
 			\end{cases}
 \end{equation}
-where we use the convention that the maximum value of an empty set is $-\infty$.
-We also define $\mathbf H$ as the sum of inverse squared gaps 
-$$
+where we use the convention that the maximum value of an empty set is $-\infty$. 
+%Therefore the gap $\Delta_e$ of a redundant arm $e\not \in M$ for all $M\in \M$ is $+\infty$.
+We also define the hardness $\mathbf H$ as the sum of inverse squared gaps 
+\begin{equation}
+\label{eq:hardness}
 \mathbf H =\sum_{e\in [n]} \Delta_e^{-2}.
-$$
+\end{equation}
 
 From Eq.~\eqref{eq:define-delta}, we see that, for each arm $e\not\in M_*$, $\Delta_e$ represents the gap between the optimal set $M_*$ and the best set that includes arm $e$; and, for each arm $e\in M_*$, $\Delta_e$ is the sub-optimality of the best set that does not include arm $e$.
 %We notice that, for many combinatorial problems, the definition Eq.~\eqref{eq:define-delta} naturally reflects the hardness of an arm.
 %().
 %Figure X illustrates these interpretations.
-We notice that this definition resembles the definition of gaps for \MultiIdent proposed by ().
+We notice that this definition resembles the previous definition of gaps for the \MultiIdent problem \citep{kalyanakrishnan2012pac,gabillon2012best}.
 
 
 
-\textbf{Exchange class.} 
+\textbf{Exchange class and the width of $\M$.} 
 The analysis of our algorithm depends on certain exchange properties of combinatorial structures.
 To capture these properties, we introduce notions of \emph{exchange set} and \emph{exchange class} as tools for our analysis.
 We present their definitions in the following.
@@ -312,14 +322,14 @@ We present their definitions in the following.
 %An exchange set is defined as a pair of disjoint sets.
 
 We begin with the definition of exchange set. 
-We define an exchange set $b$ as an ordered pair of disjoint sets $b=(b_+,b_-)$.
+We define an exchange set $b$ as an ordered pair of disjoint sets $b=(b_+,b_-)$ where $b_+\cap b_- = \emptyset$.
 Then, we define operator $\oplus$ such that, for any set $M$ and any exchange set $b=(b_+,b_-)$, we have $M\oplus b \triangleq M\del b_- \cup b_+$.
 Similarly, we also define operator $\ominus$ such that $M\ominus b \triangleq M\del b_+\cup b_-$.
 
 We call a family of exchange sets $\B$ an \emph{exchange class for $\M$} if $\B$ satisfies the following property.
 Let $M$ and $M'$ be two  elements of $\M$.
 Then, for any $e \in (M\del M')$, there exists an exchange set $(b_+,b_-)\in \B$ which satisfies $e\in b_-$, $b_+ \subseteq M'\del M$, $b_- \subseteq M \del M'$, $(M\oplus b) \in \M$ and $(M'\ominus b) \in \M$.
-We define the \emph{width} of exchange class $\B$ as follows
+We define the \emph{width} of exchange class $\B$ to be the size of largest exchange set as follows
 \begin{equation}
 \label{eq:width}
 \rank(\B) = \max_{(b_+,b_-) \in \B} |b_+|+|b_-|.
@@ -328,7 +338,7 @@ We define the \emph{width} of exchange class $\B$ as follows
 %An exchange class can be seen as a set operations that transform one feasible set to another.
 Intuitively, for any feasible sets $M$ and $M'$, there exists an exchange set $(b_+,b_-)\in \B$ belonging to the exchange class $\B$ which can be seen as an ``operation'' that transforms $M$ one step towards $M'$: this operation generates a new feasible set $M\oplus b$ by removing elements (including $e$) from $M$ and adding elements which belongs to $M'$.
 %Therefore, for any two elements $M,M'$ of $\M$, one can sequentially apply a finite number of these operations of $\B$ to transform $M$ to $M'$.it
-One can chain these operations together such that, for any $M\not= M'$, there exists a sequence of exchange sets $b_1,\ldots, b_k$ of $\B$ such that $M'=M\oplus b_1 \oplus \ldots \oplus b_k$.
+One can chain these operations together: for any $M\not= M'$, there exists a sequence of exchange sets $b_1,\ldots, b_k$ of $\B$ such that $M'=M\oplus b_1 \oplus \ldots \oplus b_k$.
 
 We notice that an exchange class for $\M$ can be ``redundant''. 
 It may contains some unnecessary exchange set $b$, such that $M\oplus b \not\in \M$ for any $M \in \M$.
@@ -338,10 +348,10 @@ But allowing them would simplify the construction and description of exchange cl
 %In particular, we are interested with the exchange classes with small widths.
 
 
-It is easy to see that, for a fixed combinatorial problem $\M$, the exchange classes for $\M$ are not unique.
-Let $\Exchange(\M)$ denote the collection of all exchange classes for $\M$.
-We are interested with the exchange class with small width.
-Formally, we define the width of a combinatorial problem $\M$ as the width of the thinnest exchange class
+%For a fixed combinatorial problem $\M$, the exchange classes for $\M$ are not unique.
+Finally, let $\Exchange(\M)$ denote the collection of all possible exchange classes for $\M$.
+%We are interested with the exchange class with small width.
+We define the width of a combinatorial problem $\M$ as the width of the thinnest exchange class
 $$
 \rank(\M) = \min_{\B \in \Exchange(\M)} \rank(\B).
 $$
@@ -359,8 +369,9 @@ These cycles are known to be augmenting cycles in combinatorial optimization lit
 Figure~Y illustrates these exchanges classes.
 }
 
-Next, we construct the exchange classes for our running examples. 
-Our constructions are summarized in Lemma~\ref{lemma:example-exchange-class}.
+For many problems, the exchange classes with small widths corresponding to natural combinatorial structures. 
+To see this, we construct the exchange classes for our running examples.
+Our constructions are summarized in \Cref{lemma:example-exchange-class}.
 \begin{fact}
 There exist exchange classes $\B_{\MultiIdent}$, $\B_{\Matroid}$, $\B_{\Match}$ and $\B_{\Path}$ for $\M_{\MultiIdent}$, $\M_{\Matroid}$, $\M_{\Match}$ and $\M_{\Path}$, respectively. 
 These exchange classes can be constructed as follows
@@ -371,13 +382,13 @@ These exchange classes can be constructed as follows
 	\item $\B_{\Path}=\big\{ (P_1, P_2) \;|\;P_1,P_2\text{ are two disjoint paths of }G\text{ with same endpoints}\big\}$.
 \end{enumerate}
 In addition, we have $\rank(\B_{\MultiIdent})=2$, $\rank(\B_{\Matroid})=2$, $\rank(\B_{\Match})=|V|$ and $\rank(\B_{\Path})=|V|$.
-This means that $\rank(\MultiIdent)\le 2$, $\rank(\Matroid) \le 2$, $\rank(\Match) \le |V|$ and $\rank(\Path) \le |V|$.
+This means that $\rank(\M_\MultiIdent)\le 2$, $\rank(\M_\Matroid) \le 2$, $\rank(\M_\Match) \le |V|$ and $\rank(\M_\Path) \le |V|$.
 \label{lemma:example-exchange-class}
 \end{fact}
-The  construction for \MultiIdent problem is straightforward.
-For \Matroid problem, we leverage the basis exchange property of matroids (see Lemma~\ref{lemma:basis-exchange-matroid} in the appendix).
-And for \Match and \Path problems, we appeal to  graph-theoretical properties of matchings and paths.
-We illustrate elements of these  exchanges classes in \autoref{fig:exchange}.
+We illustrate these  exchanges classes in \Cref{fig:exchange}.
+The construction for \MultiIdent problem is straightforward.
+For \Matroid problem, we leverage the basis exchange property of matroids (see Lemma~\ref{lemma:basis-exchange-matroid} in the supplementary material).
+And for \Match and \Path problems, we use standard graph-theoretical properties of matchings and paths.
 A detailed proof of \Cref{lemma:example-exchange-class} is deferred to the supplementary material.
 
 \begin{figure}
@@ -405,7 +416,7 @@ A detailed proof of \Cref{lemma:example-exchange-class} is deferred to the suppl
 \caption{
 Examples of exchange sets belonging to the exchange classes $\B_{\MultiIdent}$, $\B_{\Matroid}$, $\B_{\Match}$ and $\B_{\Path}$:
 green-solid elements constitute the set $b_+$, red-dotted elements constitute the set $b_-$ and the example exchange set is $b=(b_+,b_-)$. 
-(In \autoref{fig:exchange:matroid}, we consider spanning tree as a specific instance for the \Matroid problem.)
+(In \Cref{fig:exchange:matroid}, we consider spanning tree as a specific instance for the \Matroid problem.)
 }
 \label{fig:exchange}
 \end{figure}
@@ -417,14 +428,13 @@ In particular, we show that \Algorithm returns the optimal set with high probabi
 Given any $\delta \in (0,1)$, any $\M \subseteq 2^{[n]}$ and any $\vec w \in \RR^{n}$.
 Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ is  $R$-sub-Gaussian with mean $w(e)$.
 %Let $\B$ be an exchange class for $\M$ and let $\{\Delta_e\}_{e\in [n]}$ be the gaps defined in Eq.~\eqref{eq:define-delta}.
-
 Set $\rad_t(e) = R\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_e(t)}}$ for all $t > 0$ and $e\in[n]$.
 Then, with probability at least $1-\delta$, the \Algorithm algorithm (Algorithm~\ref{algo:pac}) returns the optimal set $\out=M_*$ and
 \begin{equation}
 \label{eq:sample-complexity}
 T \le O\left(R^2\rank(\M)^2\mathbf H\log\left(R^2\rank(\M)^2\mathbf H \cdot n/\delta\right)\right),
 \end{equation}
-where $T$ denotes the number of samples used by Algorithm~\ref{algo:pac}.
+where $T$ denotes the number of samples used by Algorithm~\ref{algo:pac} and $\mathbf H$ is defined in Eq.~\eqref{eq:hardness}.
 \label{theorem:main}
 \end{restatable}
 \junk{
@@ -446,8 +456,8 @@ By combining Lemma~\ref{lemma:example-exchange-class} and Theorem~\ref{theorem:m
 %Notice that $\B$ does not 
 %Theorem~\ref{theorem:main} is a general result which provides a sample complexity for any combinatorial problem $\M$.
 For the \MultiIdent problem, we see that \Cref{lemma:example-exchange-class} shows that $\rank(\MultiIdent)=O(1)$.
-Therefore, the sample complexity bound of \Algorithm is $O\big(\mathbf H \log(n\mathbf H/\delta)\big)$ for the \MultiIdent problem .
-This matches the previous known problem-dependent bounds for the \MultiIdent problem due to XXX [] within logarithmic factors.
+Therefore, the sample complexity bound of \Algorithm is $O\big(\mathbf H \log(n\mathbf H/\delta)\big)$ for this problem.
+This matches the previous problem-dependent bounds for the \MultiIdent problem \citep{kalyanakrishnan2012pac,gabillon2012best}.
 %And Theorem~\ref{algo:pac} establishes the first sample complexity bound for the pure exploration of other combinatorial bandits.
 For the \Matroid problem, we know that $\rank(\Matroid)=O(1)$ and hence the sample complexity is also $O\big(\mathbf H \log(n\mathbf H/\delta)\big)$.
 For \Match and \Path problem, we see that the sample complexity is bounded by $\tilde O(|V|^2 \mathbf H)$.
@@ -463,11 +473,11 @@ For \Match and \Path problem, we see that the sample complexity is bounded by $\
 
 
 \section{Lower Bound}
-In this section, we prove a problem-dependent lower bound on the sample complexity of the \Problem problem. 
+In this section, we present a problem-dependent lower bound on the sample complexity of the \Problem problem. 
 To state our results, we first define the notion of \emph{$\delta$-correct algorithm} as follows.
 For any $\delta \in (0,1)$, we call an algorithm $\mathbb A$ a $\delta$-correct algorithm if, for any expected reward $\vec w \in \RR^{n}$, the probability of error of $\mathbb A$ is at most $\delta$, i.e. $\Pr[M_*\not =\out] \le \delta$, where $\out$ is the output of algorithm $\mathbb A$.
 
-We show that, for any combinatorial problem $\M$ and any expected rewards $\vec w$, any $\delta$-correct algorithm $\mathbb A$ must use at least $\Omega\big(\mathbf H \log(1/\delta) \big)$ samples in expectation.
+We show that, for any family of feasible solutions $\M$ and any expected rewards $\vec w$, any $\delta$-correct algorithm $\mathbb A$ must use at least $\Omega\big(\mathbf H \log(1/\delta) \big)$ samples in expectation.
 \begin{restatable}{theorem}{lowerbound}
 Fix any $\M\subseteq 2^{[n]}$ and any vector $\vec w \in \RR^n$.
 Suppose that, for each arm $e\in [n]$, the reward distribution $\Rew_e$ is given by $\Rew_e=\mathcal N(w(e),1)$, where $\mathcal N(\mu, \sigma^2)$ denotes a Gaussian distribution with mean $\mu$ and variance $\sigma^2$. 
@@ -478,7 +488,7 @@ Then, for any $\delta \in (0,e^{-16}/4)$ and any $\delta$-correct algorithm $\ma
 \end{equation}
 where 
 $T$ denote the number of total samples used by algorithm $\mathbb A$ and
-$\Delta_e$ is defined in Eq.~\eqref{eq:define-delta}.
+$\mathbf H$ is defined in Eq.~\eqref{eq:hardness}.
 \label{theorem:lower-bound}
 \end{restatable}
 
@@ -486,21 +496,26 @@ $\Delta_e$ is defined in Eq.~\eqref{eq:define-delta}.
 %For clarity, we consider the case that $\epsilon=0$ which corresponds to the learning problem of finding the optimal set.
 %We see that \Algorithm algorithm uses at most $\tilde O(\rank(\B)^2 \mathbf H)$ samples.
 %Recall that, for \MultiIdent and \Matroid, Lemma~\ref{lemma:example-exchange-class} shows that $\rank(\B)=2$.
-We have already shown that, for \MultiIdent and \Matroid, the sample complexity of \Algorithm is $O(\mathbf H\log(n\mathbf H/\delta))$.
-Hence, for these two problems, the \Algorithm algorithm achieves the optimal sample complexity within logarithmic factors.
-In addition, our result confirms the conjecture of XXX [] that the lower bound of sample complexity of \MultiIdent problem is $\Omega\big(\mathbf H\log(1/\delta)\big)$.
+Theorem~\ref{theorem:lower-bound} resolves  the conjecture of \citet{kalyanakrishnan2012pac} that the lower bound of sample complexity of \MultiIdent problem is $\Omega\big(\mathbf H\log(1/\delta)\big)$.
+In addition, our upper bound Theorem~\ref{theorem:main} shows that, for \MultiIdent and \Matroid, the sample complexity of \Algorithm is $O(\mathbf H\log(n\mathbf H/\delta))$.
+Hence,  we see that the \Algorithm algorithm achieves the optimal sample complexity within logarithmic factors for these two problems.
 
 %On the other hand, for $\Match(V,E)$ and $\Path(V,E)$, we see that the gap between the upper bound Eq.~\eqref{eq:sample-complexity} and this lower bound is a factor of $|V|^2$.
-On the other hand, for general combinatorial problems, we see that the gap between the upper bound Eq.~\eqref{eq:sample-complexity} and the lower bound Eq.~\eqref{eq:lower-bound} is $\rank(\M)^2$.
-Notice this gap only depends on the underlying combinatorial structure of $\M$ and is independent of expected rewards $\vec w$. 
-This suggests that  the sample complexity of \Algorithm has an optimal dependency on the gaps $\{\Delta_e\}_{e\in[n]}$ for general combinatorial problems.
-
-We conjecture that the dependency on $\rank(\M)$ of the sample complexity might be intrinsic. 
-In the supplementary material, we provide evidence showing that the sample complexity of any $\delta$-correct algorithm should be related to size of exchange sets. 
+On the other hand, for general combinatorial problems with non-constant widths, we see that there is a gap of $\tilde \Theta(\rank(\M)^2)$ between the upper bound Eq.~\eqref{eq:sample-complexity} and the lower bound Eq.~\eqref{eq:lower-bound}.
+Ignoring the logarithmic factors, this gap only depends on the underlying combinatorial structure of $\M$.
+This suggests that the sample complexity of \Algorithm has an optimal dependency on the hardness $\mathbf H$ up to logarithmic factors for general combinatorial problems.
+Furthermore, we conjecture that the sample complexity lower bound might intrinsically depend on the size of exchange sets which is bounded by $\rank(\M)$. 
+We provide evidence on this conjecture which lower bounds the sample complexity of exploration on exchange sets in the supplementary material.
+ %dependency on $\rank(\M)$ of the sample complexity might be intrinsic. 
+%In the supplementary material, we provide evidence showing that the sample complexity of any $\delta$-correct algorithm should be related to size of exchange sets. 
 
 
 \section{Extensions}
 \label{section:extensions}
+
+\Algorithm is a general and flexible learning algorithm for the \Problem problem.
+In this section, we present two extensions to \Algorithm that allow it to work in the fixed budget setting and PAC learning setting.
+
 \subsection{Fixed Budget Setting}
 \label{section:fixed-budget}
 We can extend the \Algorithm algorithm to the fixed budget setting using two simple modifications: (1) requiring \Algorithm to terminate after $T$ rounds; and (2) using a different construction of confidence intervals.
@@ -526,7 +541,7 @@ Then, for $0 \le \alpha \le \frac19 (T-n)\left(R^2\rank(\M)^2 \mathbf H\right)^{
 \end{restatable}
 The right-hand side of Eq.~\eqref{eq:fix-budget} equals to $O\left(Tn\exp\left(\frac{-T}{\rank(\M)^2\mathbf H} \right)\right)$
 when parameter $\alpha = O(T\mathbf H^{-1}\rank(\M)^{-2})$.
-For \MultiIdent problem, we see that this matches the guarantees of previous fixed budget algorithm [] up to logarithmic factors.
+For \MultiIdent problem, we see that this matches the guarantees of the previous fixed budget algorithm due to \citet{gabillon2012best}.
 
 \subsection{PAC Learning}
 Now we consider a setting where the learner is only required to report an approximately optimal set of arms. 
@@ -556,10 +571,32 @@ where $K=\max_{M\in \M} |M|$ is the size of the largest feasible solution.
 \end{restatable}
 We see that the sample complexity of \AlgorithmPAC decreases when $\epsilon$ increases.
 And if $\epsilon=0$, the sample complexity Eq.~\eqref{eq:pac} of \AlgorithmPAC equals to that of \Algorithm. 
-(difference??)
+
+There are several PAC algorithms for the \MultiIdent problem in the literature with different guarantees \citep{kalyanakrishnan2012pac,zhou2014optimal,gabillon2012best}.
+\citet{zhou2014optimal} proposed an $(\epsilon,\delta)$-PAC algorithm for the \MultiIdent problem with a problem-independent sample complexity bound of $O(\frac{K^2n}{\epsilon^2}+\frac{Kn\log(1/\delta)}{\epsilon^2})$.\footnote{We notice that \citet{zhou2014optimal} allow an $(\epsilon',\delta)$-PAC algorithm to produce an output with \emph{average} sub-optimality of $\epsilon'$. This is equivalent to our definition of $(\epsilon,\delta)$-PAC algorithm with $\epsilon=K\epsilon'$.}
+% which is $\tilde O(\frac{K^2n}{\epsilon^2})$ after ignoring logarithmic factors.
+If we ignore logarithmic factors, then the sample complexity bound of \AlgorithmPAC for the \MultiIdent problem is better than theirs $\tilde O(\sum_{e\in[n]}\min\{\Delta_e^{-2}, K^2\epsilon^{-2}\}) \le  \tilde O(nK^2\epsilon^{-2})$.
+%Our bound is always smaller than or equal to the sample complexity bound $\tilde O(nK^2\epsilon^{-2})$ of \citet{zhou2014optimal}, regardless the value of gaps $\Delta_1,\ldots,\Delta_n$ and $\epsilon$.
+On the other hand, the algorithms of \citet{kalyanakrishnan2012pac} and \citet{gabillon2012best} guarantee to find $K$ arms such that each of them is better than the $K$-th optimal arm within a factor of $\epsilon$ with probability $1-\delta$.
+Unless $\epsilon=0$, their guarantee is different from ours which concerns the optimality of the sum of $K$ arms.
+%though the bounds are similar, our definition of $(\epsilon,\delta)$-PAC algorithm is different from that of \citet{kalyanakrishnan2012pac,gabillon2012best}, where these work aim to 
+ %$(\epsilon, \delta)$
+
+%Our definitions of 
+%For the \MultiIdent problem, 
+
 
 %Notice that our sample complexity bound of PAC learning is not comparable to that of XXX. 
 %Since their objective is to find $K$
+
+\newpage
+\bibliography{bandit}
+\bibliographystyle{plainnat}
+
+\newpage
+\appendix
+
+\maketitle
 
 
 \section{Proof of Main Result}
@@ -991,13 +1028,13 @@ Eq.~\eqref{eq:u-c-1-3} and Eq.~\eqref{eq:u-c-1-4} follow from Lemma~\ref{lemma:v
 Eq.~\eqref{eq:u-c-1-5} follows from Eq.~\eqref{eq:u-c-1-0};
 and Eq.~\eqref{eq:u-c-1-6} holds since $b\in\B$ and $\nor{\vec\chi_b}_1 = |b_+|+|b_-| \le \rank(\B)$.
 
-Applying Lemma~\ref{lemma:tilde} by setting $M' = M_t' \oplus b$ and using the fact that $\tilde w_t(\tilde M_t) \ge \tilde w_t(M_t')$, we have 
+Applying Lemma~\ref{lemma:tilde} by setting $M' = M_t' \oplus b$ and using the fact that $\tilde w_t(\tilde M_t) \ge \tilde w_t(M_t' \oplus b)$, we have 
 \begin{align*}
 \inn{\vec {\bar w}_t, \vec d}+\inn{\vec \rad_t, |\vec d|}
 & = \inn{\vec {\bar w}_t, \vec \chi_{\tilde M_t}-\vec\chi_{M_t}}+\inn{\vec \rad_t, |\vec \chi_{\tilde M_t}-\vec\chi_{M_t}|}\\
 & = \tilde w_t(\tilde M_t)- \tilde w_t(M_t)\\
-& \ge \tilde w_t(M_t') - \tilde w_t(M_t)\\
-&= \inn{\vec {\bar w}_t, \vec \chi_{M_t'}-\vec\chi_{M_t}}+\inn{\vec \rad_t, |\vec \chi_{M_t'}-\vec\chi_{M_t}|}\\
+& \ge \tilde w_t(M_t'\oplus b) - \tilde w_t(M_t)\\
+&= \inn{\vec {\bar w}_t, \vec \chi_{M_t' \oplus b}-\vec\chi_{M_t}}+\inn{\vec \rad_t, |\vec \chi_{M_t' \oplus b}-\vec\chi_{M_t}|}\\
 &= \inn{\vec {\bar w}_t, \vec d_2}+\inn{\vec \rad_t, |\vec d_2|} \\
 									  &= \inn{\vec {\bar w}_t, \vec d}-\inn{\vec {\bar w}_t, \vec \chi_c}+\inn{\vec {\bar w}_t,\vec\chi_b}+\inn{\vec \rad_t, |\vec d_2|},
 \end{align*}
@@ -1010,7 +1047,7 @@ Rearranging the above inequality, we obtain
   -\left\langle \vec \rad_t, |\vec\chi_c| \right\rangle
   -\frac{2\Delta_e}{3} \label{eq:u-c-1-7}\\
 &> \inn{\vec w, \vec \chi_b}-\inn{\vec \rad_t, \vec \chi_c}-\frac{2\Delta_e}{3} \label{eq:u-c-1-8}\\
-&> \inn{\vec w, \vec \chi_b}-\frac{\Delta_e}{3}-\frac{2\Delta}{3} \label{eq:u-c-1-9}\\
+&> \inn{\vec w, \vec \chi_b}-\frac{\Delta_e}{3}-\frac{2\Delta_e}{3} \label{eq:u-c-1-9}\\
 &= \inn{\vec w, \vec \chi_b}-\Delta_e \ge 0,
 \end{align}
 where Eq.~\eqref{eq:u-c-1-7} uses Eq.~\eqref{eq:u-c-1-6}; 
@@ -1104,7 +1141,7 @@ It is easy to see that
 $T_e(t_e) = T_e - 1$.
 By Lemma~\ref{lemma:key-technical}, we see that 
 $\rad_{t_e}(e) \ge \frac{\Delta_e}{3\rank(\M)}$.
-Plugging in the construction radius $\rad$, we have
+By plugging the definition of $\rad_{t_e}$, we have
 \begin{equation}
 \frac{\Delta_e}{3\rank(\M)} \le 
 R\sqrt{\frac{2\log\left(4n t_e^2/\delta\right)}{T_e-1}} \le
@@ -1762,6 +1799,5 @@ $$
 $$
 \end{lemma}
 \bibliography{bandit}
-\bibliographystyle{plain}
-\end{spacing}
+\bibliographystyle{plainnat}
 \end{document}
