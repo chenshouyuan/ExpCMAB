@@ -54,6 +54,7 @@
 
 \newcommand{\Algorithm}{{\small \textsf{CGapExp}}\xspace}
 \newcommand{\AlgorithmPAC}{{\small \textsf{CGapExpPAC}}\xspace}
+\newcommand{\AlgorithmBud}{{\small \textsf{CGapKill}}\xspace}
 \newcommand{\Problem}{{\small \textsf{ExpCMAB}}\xspace}
 \newcommand{\Rew}{\varphi}
 \newcommand{\E}{\mathbb E}
@@ -78,16 +79,19 @@
 \newcommand{\Btop}{\mathcal B_{\mathsf{TOP}m}}
 \newcommand{\Bbandit}{\mathcal B_{\mathsf{BANDIT}m}}
 
+\DeclareMathOperator{\supp}{supp}
+
 \DeclareMathOperator{\rank}{width}
 \DeclareMathOperator{\rad}{rad}
 \DeclareMathOperator{\decomp}{decomp}
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator{\Oracle}{Oracle}
+\DeclareMathOperator{\COracle}{COracle}
 \DeclareMathOperator{\Exchange}{Exchange}
 
 \newcommand{\out}{\mathsf{Out}}
-
+\newcommand{\barlog}{\tilde{\log}}
 
 \let\Pr\undefined
 \DeclareMathOperator{\Pr}{Pr}
@@ -120,7 +124,7 @@ paragraph.
 
 \section{Introduction}
 
-The pure exploration problem is about designing strategies that make the best use of the limited budget.
+\junk{The pure exploration problem is about designing strategies that make the best use of the limited budget.
 
 \textbf{Motivation.}
 
@@ -135,6 +139,7 @@ Our lower bound result also resolves the conjecture of \citet{kalyanakrishnan201
 
 
 %For a large class of combinatorial problems, including \MultiIdent and \Matroid problem, we give a complete characterization of 
+}
 
 \subsection{Related Work}
 
@@ -204,7 +209,7 @@ It is well known that all distributions that are supported on $[0,R]$ satisfy th
 %For any vector $\vec v\in \RR^n$ and any set $M \subseteq [n]$, we define $v(M) = \sum_{e\in M} v(e)$.
 
 
-\section{Algorithm and Main Result}
+\section{Algorithm, Exchange Class and Main Result}
 %Our main contribution is an algorithm for solving the \Problem problem.
 %Our algorithm 
 
@@ -212,9 +217,13 @@ It is well known that all distributions that are supported on $[0,R]$ satisfy th
 %Then, we analyze the sample complexity and the probability of error of our algorithm.
 
 In this section, we present \Algorithm, a learning algorithm for the \Problem problem in the fixed confidence setting, and analyze its sample complexity. 
+En route to our main result, we propose the notions of exchange class and width of combinatorial problems, which characterize the exchange properties of combinatorial structures.
+%Our analysis uses tools developed using exchange classes.
 %Then, we analyze the sample complexity of \Algorithm algorithm.
+
 The \Algorithm algorithm can be extended to the fixed budget and PAC learning settings. 
 We will discuss these extensions in Section~\ref{section:extensions}.
+
 
 %Many common combinatorial problems admit computationally efficient oracles.
 
@@ -259,7 +268,7 @@ The pseudo-code of \Algorithm is shown in Algorithm~\ref{algo:pac}.
 \Statex \textbf{Initialize:} Play each arm $e \in [n]$ once. Initialize empirical means $\vec {\bar w}_n$ and set $T_{n}(e) \gets 1$ for all $e$.
 \For{$t=n,n+1,\ldots$}
 	\State $M_t \gets \Oracle(\vec {\bar w}_t)$
-	\For{$e\in [n]$}
+	\For{$e = 1,\ldots,n$}
 		\If {$e\in M_t$}
 			\State $\tilde w_t(e) \gets \bar w_t(e)-\rad_t(e)$
 		\Else
@@ -286,7 +295,7 @@ The pseudo-code of \Algorithm is shown in Algorithm~\ref{algo:pac}.
 %In this part, we analyze the performance of Algorithm~\ref{algo:pac} for both fixed confidence and fixed budget settings. 
 Now we prove a problem-dependent sample complexity bound of the \Algorithm algorithm. 
 Our sample complexity bound depends on several combinatorial properties of $\M$. 
-Therefore, to state our result, we first introduce notions to capture these properties.
+Therefore, to formally state our result, we need to introduce several definitions.
 %To state our results, we need to define two quantities: gap and width.
 
 \textbf{Gap.} We begin with defining a hardness complexity measure of the \Problem problem. 
@@ -310,7 +319,7 @@ From Eq.~\eqref{eq:define-delta}, we see that, for each arm $e\not\in M_*$, $\De
 %We notice that, for many combinatorial problems, the definition Eq.~\eqref{eq:define-delta} naturally reflects the hardness of an arm.
 %().
 %Figure X illustrates these interpretations.
-We notice that this definition resembles the previous definition of gaps for the \MultiIdent problem \citep{kalyanakrishnan2012pac,gabillon2012best}.
+When specializing to \MultiIdent problem, our definition resembles the previous definition of gaps due to \citet{kalyanakrishnan2012pac} and \citet{gabillon2012best}.
 
 
 
@@ -369,7 +378,7 @@ These cycles are known to be augmenting cycles in combinatorial optimization lit
 Figure~Y illustrates these exchanges classes.
 }
 
-For many problems, the exchange classes with small widths corresponding to natural combinatorial structures. 
+For many problems, there are exchange classes with small widths that correspond to natural combinatorial structures. 
 To see this, we construct the exchange classes for our running examples.
 Our constructions are summarized in \Cref{lemma:example-exchange-class}.
 \begin{fact}
@@ -502,10 +511,11 @@ Hence,  we see that the \Algorithm algorithm achieves the optimal sample complex
 
 %On the other hand, for $\Match(V,E)$ and $\Path(V,E)$, we see that the gap between the upper bound Eq.~\eqref{eq:sample-complexity} and this lower bound is a factor of $|V|^2$.
 On the other hand, for general combinatorial problems with non-constant widths, we see that there is a gap of $\tilde \Theta(\rank(\M)^2)$ between the upper bound Eq.~\eqref{eq:sample-complexity} and the lower bound Eq.~\eqref{eq:lower-bound}.
+Notice that we have $\rank(\M) \le n$ for any $\M$ and therefore the gap is relatively benign.
 Ignoring the logarithmic factors, this gap only depends on the underlying combinatorial structure of $\M$.
-This suggests that the sample complexity of \Algorithm has an optimal dependency on the hardness $\mathbf H$ up to logarithmic factors for general combinatorial problems.
-Furthermore, we conjecture that the sample complexity lower bound might intrinsically depend on the size of exchange sets which is bounded by $\rank(\M)$. 
-We provide evidence on this conjecture which lower bounds the sample complexity of exploration on exchange sets in the supplementary material.
+This suggests that the dependency on $\mathbf H$ of the sample complexity of \Algorithm cannot be improved up to logarithmic factors for general combinatorial problems.
+Furthermore, we conjecture that the sample complexity lower bound might intrinsically depend on the size of exchange sets (a quantity which is bounded by $\rank(\M)$). 
+In the supplementary material, we provide evidence on this conjecture which is a lower bound on the sample complexity of exploration on exchange sets.
  %dependency on $\rank(\M)$ of the sample complexity might be intrinsic. 
 %In the supplementary material, we provide evidence showing that the sample complexity of any $\delta$-correct algorithm should be related to size of exchange sets. 
 
@@ -573,9 +583,9 @@ We see that the sample complexity of \AlgorithmPAC decreases when $\epsilon$ inc
 And if $\epsilon=0$, the sample complexity Eq.~\eqref{eq:pac} of \AlgorithmPAC equals to that of \Algorithm. 
 
 There are several PAC algorithms for the \MultiIdent problem in the literature with different guarantees \citep{kalyanakrishnan2012pac,zhou2014optimal,gabillon2012best}.
-\citet{zhou2014optimal} proposed an $(\epsilon,\delta)$-PAC algorithm for the \MultiIdent problem with a problem-independent sample complexity bound of $O(\frac{K^2n}{\epsilon^2}+\frac{Kn\log(1/\delta)}{\epsilon^2})$.\footnote{We notice that \citet{zhou2014optimal} allow an $(\epsilon',\delta)$-PAC algorithm to produce an output with \emph{average} sub-optimality of $\epsilon'$. This is equivalent to our definition of $(\epsilon,\delta)$-PAC algorithm with $\epsilon=K\epsilon'$.}
+\citet{zhou2014optimal} proposed an $(\epsilon,\delta)$-PAC algorithm for the \MultiIdent problem with a problem-independent sample complexity bound of $O(\frac{K^2n}{\epsilon^2}+\frac{Kn\log(1/\delta)}{\epsilon^2})$.\footnote{We notice that \citet{zhou2014optimal} allow an $(\epsilon',\delta)$-PAC algorithm to produce an output with \emph{average} sub-optimality of $\epsilon'$ in their exposition. This is equivalent to our definition of $(\epsilon,\delta)$-PAC algorithm with $\epsilon=K\epsilon'$ for the \MultiIdent problem.}
 % which is $\tilde O(\frac{K^2n}{\epsilon^2})$ after ignoring logarithmic factors.
-If we ignore logarithmic factors, then the sample complexity bound of \AlgorithmPAC for the \MultiIdent problem is better than theirs $\tilde O(\sum_{e\in[n]}\min\{\Delta_e^{-2}, K^2\epsilon^{-2}\}) \le  \tilde O(nK^2\epsilon^{-2})$.
+If we ignore logarithmic factors, then the sample complexity bound of \AlgorithmPAC for the \MultiIdent problem is better than theirs since $\tilde O(\sum_{e\in[n]}\min\{\Delta_e^{-2}, K^2\epsilon^{-2}\}) \le  \tilde O(nK^2\epsilon^{-2})$.
 %Our bound is always smaller than or equal to the sample complexity bound $\tilde O(nK^2\epsilon^{-2})$ of \citet{zhou2014optimal}, regardless the value of gaps $\Delta_1,\ldots,\Delta_n$ and $\epsilon$.
 On the other hand, the algorithms of \citet{kalyanakrishnan2012pac} and \citet{gabillon2012best} guarantee to find $K$ arms such that each of them is better than the $K$-th optimal arm within a factor of $\epsilon$ with probability $1-\delta$.
 Unless $\epsilon=0$, their guarantee is different from ours which concerns the optimality of the sum of $K$ arms.
@@ -588,6 +598,529 @@ Unless $\epsilon=0$, their guarantee is different from ours which concerns the o
 
 %Notice that our sample complexity bound of PAC learning is not comparable to that of XXX. 
 %Since their objective is to find $K$
+
+
+\section{Agnostic Fixed Budget Algorithm}
+In this section, we present \AlgorithmBud, a parameter-free learning algorithm for the \Problem problem in the fixed budget setting.
+We analyze the probability of error \AlgorithmBud using the tools of exchange classes.
+Recall that, in the fixed budget setting, an algorithm is given a budget $T>0$ such that the algorithm can use at most $T$ pulls.
+The goal of the algorithm is to minimize the probability of error. 
+
+\textbf{Constrained oracle.} 
+The \AlgorithmBud algorithm requires access to a stronger oracle which is referred as \emph{constrained oracle}.
+A constrained oracle for $\M$ is a function denoted as $\COracle: \RR^{n}\times 2^{[n]} \times 2^{[n]} \rightarrow \M$.
+The function $\COracle$ takes three inputs: (1) a weight vector $\vec v$, (2) a set $A$ of positive constraints and (3) a set $B$ of negative constraints and returns a solution such that
+\begin{equation}
+\COracle(\vec v, A, B) \in \argmax_{M: M\in \M, A\subseteq M, B\cap M =\emptyset} v(M).
+\end{equation}
+Hence we see that $\COracle(\vec v, A, B)$ computes an optimal solution that includes all elements of $A$ while exclude all elements of $B$.
+%It is clear that constrained oracles exist for many combinatorial problems including the four examples we considered in this paper.
+In the supplementary, we show that constrained oracles can be easily reduced to maximization oracles. 
+In addition, similar to \Algorithm, \AlgorithmBud does not need any additional knowledge of $\M$ other than accesses to a constrained oracle for $\M$.
+
+
+\textbf{\AlgorithmBud algorithm.}
+The idea of the \AlgorithmBud algorithm is as follows.
+The \AlgorithmBud algorithm divides the budget of $T$ pulls into $n$ phases. 
+In the end of each phase, \AlgorithmBud either accepts or rejects a single arm. 
+If an arm is accepted, then it is included into the final output. 
+Conversely, if an arm is rejected, then it is excluded from the final output.
+The arms that are neither accepted nor rejected are sampled for a equal number of times in the next phase.
+Therefore the major challenge here is to choose a correct arm to accept/reject. 
+Clearly, for problems with non-trivial combinatorial structures, one cannot simply accept/reject arms according to their empirical means, since an arm with small expected reward may belong to the optimal solution.
+We resolve this challenge by using a novel gap estimation method for decision making and demonstrate that \AlgorithmBud can achieve a small probability of error.
+
+Now we describe the procedure of the \AlgorithmBud algorithm for choosing an arm to accept/reject.
+Let $A_t$ denote the set of accepted arms before phase $t$ and let $B_t$ denote the set of rejected arms before phase $t$.
+We call an arm $e$ active if $e\not\in A_t\cup B_t$.
+Then, in phase $t$, \AlgorithmBud samples each active arm for $\tilde T_t -\tilde T_{t-1}$ times, where the definition of $\tilde T_t$ is given in Algorithm~\ref{algo:budget}.
+Next, \AlgorithmBud calls the constrained oracle to compute an optimal solution $M_t$ with respect to the empirical means $\bar w_t$, accepted arms $A_t$ and rejected arms $B_t$, i.e. let $M_t = \COracle(\vec {\bar w}_t, A_t,B_t)$.
+Then, for each arm active arm $e$, \AlgorithmBud estimate the gap of $e$ in the following way.
+If $e\in M_t$, then \AlgorithmBud computes an optimal solution $\tilde M_{t,e}$ that does not include $e$, i.e. $\tilde M_{t,e} = \COracle(\vec {\bar w}_t, A_t, B_t \cup \{e\})$.
+Conversely, if $e\not\in M_t$, then \AlgorithmBud computes an optimal $\tilde M_{t,e}$ which includes $e$, i.e. $\tilde M_{t,e} = \COracle(\vec {\bar w}_t, A_t \cup \{e\}, B_t)$.
+Then, the gap of $e$ is calculated as $\bar w_t(M_t)-\bar w_t(\tilde M_{t,e})$.
+Finally, \AlgorithmBud chooses the  arm $p_t$ with the largest gap.
+If $p_t\in M_t$ then $p_t$ is accepted otherwise $p_t$ is rejected.
+The pseudo-code of \AlgorithmBud is shown in Algorithm~\ref{algo:budget}.
+
+\begin{algorithm}[htbp]
+\begin{algorithmic}[1]
+\Require Budget: $T>0$; Constrained oracle: $\COracle: \RR^n\times 2^{[n]} \times 2^{[n]} \rightarrow \M$.
+\State Define $\barlog(n) \triangleq \sum_{i=1}^n \frac1i$
+\State $\tilde T_0 \gets 0, A_1 \gets \emptyset, B_1\gets \emptyset$
+\For{$t=1,\ldots,n$}
+	\State $\tilde T_t \gets \left\lceil \frac{T-n}{\barlog(n)(n-t+1)} \right\rceil$
+	\State Pull each arm $e\in [n]\del (A_t\cup B_t)$ for $\tilde T_t - \tilde T_{t-1}$ times
+	\State Update the empirical means $\vec {\bar w}_t\in \RR^n$ of each arm
+	\State $M_t \gets \COracle(\vec {\bar w}_t, A_t, B_t)$
+	\For{\textbf{each} $e \in [n]\del (A_t\cup B_t)$}
+		\If {$e\in M_t$}
+			\State $\tilde M_{t,e} \gets \COracle(\vec {\bar w}_t, A_t, B_t \cup \{e\})$
+	  \Else
+	    \State $\tilde M_{t,e} \gets \COracle(\vec {\bar w}_t, A_t \cup \{e\}, B_t)$
+	  \EndIf
+	\EndFor
+	\State $p_t \gets \argmax_{i\in[n]\del (A_t\cup B_t)} \bar w_t(M_t) - \bar w_t(\tilde M_{t,i})$
+	\If {$p_t\in M_t$}
+		\State $A_{t+1} \gets A_t \cup \{p_t\}, B_{t+1} \gets B_t$
+	\Else
+		\State $A_{t+1} \gets A_t , B_{t+1} \gets B_t \cup \{p_t\}$
+	\EndIf
+\EndFor
+\State $\out\gets A_{n+1}$
+\State \textbf{return} $\out$
+\end{algorithmic}
+\caption{\AlgorithmBud: Combinatorial Gap-based Elimination}
+\label{algo:budget}
+\end{algorithm}
+
+
+\textbf{Analysis.}
+We show that the \AlgorithmBud algorithm guarantees a probability of error upper bounded by $\tilde O(\exp(-T\rank(\M)^{-2} \mathbf H^{-1}))$ in the following theorem.
+\begin{restatable}{theorem}{realfixbudget}
+Use the same notations as in Theorem~\ref{theorem:main}.
+Let $\Delta_{(1)},\ldots,\Delta_{(n)}$ be a permutation of $\Delta_1,\ldots,\Delta_n$ such that
+$\Delta_{(1)} \le \ldots \ldots \Delta_{(n)}$. 
+Define $\mathbf H_2 \triangleq \max_{i\in[n]} i\Delta_{(i)}^{-2}$.
+
+Given budget $T > n$, there exists an algorithm (in particular, Algorithm~\ref{algo:budget}) which uses at most $T$ samples and outputs a solution $\out \in \M$ such that
+\begin{equation}
+\Pr[\out\not=M_*] \le n^2  \exp\left(-\frac{2(T-n)}{9R^2 \barlog(n) \rank(\M)^2 \mathbf H_2} \right),
+\label{eq:fbudget:prob-error}
+\end{equation}
+where $\barlog(n)\triangleq \sum_{i=1}^n \frac1i$.
+\label{theorem:budget}
+\end{restatable}
+The quantity $\mathbf H_2$ defined in Theorem~\ref{theorem:budget} can be considered as a surrogate of $\mathbf H$ since these two quantities are equivalent up to a logarithmic factor: $\mathbf H_2 \le \mathbf H_1 \le \log(2n) \mathbf H_2$.
+For the \MultiIdent problem, we see that this matches previous fixed budget algorithm due to \citet{bubeck2013multiple}.
+
+We see that $\rank(\M)^2$ also appears in the probability of error Eq.~\eqref{eq:fbudget:prob-error} in Theorem~\ref{theorem:budget}, which indicates that $\rank(\M)$ may reflect the inherent hardness associate with a combinatorial problem $\M$ for the \Problem problem.
+Moreover, the analysis of \AlgorithmBud re-uses many tools and ideas within the framework of exchange classes which are developed for the analysis of our main algorithm \Algorithm.
+We use these tools to design gadgets in order to bound the estimations of gaps.
+This suggests that the framework of exchange class may be of interest for the analysis of other similar on-line combinatorial optimization problems.
+
+We notice that the \AlgorithmBud algorithm uses solely the empirical means of arms to support its decision making; while our main algorithm \Algorithm also need to use explicitly constructed confidence intervals of the arms.
+From this viewpoint, the \AlgorithmBud algorithm is very different from our main algorithm \Algorithm. 
+This actually leads to an argument substantially different from the proof of Theorem~\ref{theorem:main}. 
+And we have to build different gadgets using the exchange classes.
+
+
+
+
+\subsection{Analysis of \AlgorithmBud}
+
+
+\textbf{Notations.}
+For convenience, we will use the following notations in the rest of this section.
+Let $\vec w \in \RR^n$ be the vector expected rewards of arms.
+Let $M_* = \argmax_{M\in \M} w(M)$ be the optimal solution.
+Let $T$ be the budget of samples.
+Let $\Delta_{(1)},\ldots,\Delta_{(n)}$ be a permutation of $\Delta_1,\ldots,\Delta_n$ such that
+$\Delta_{(1)} \le \ldots \ldots \Delta_{(n)}$.
+Let $A_1,\ldots,A_n$ and $B_1,\ldots, B_n$ be two sequence of sets which are defined in Algorithm~X.
+
+\junk{
+\begin{lemma}
+For each phase $t>0$ and each active arm $e\in [n] \del (A_t \cup B_t)$ of phase $t$, 
+the arm $e$ must be pulled for at least $\tilde T_t$ times by Algorithm~X during phases $1,\ldots,t$, where $\tilde T$ is given by
+\begin{equation}
+\label{eq:define-tilde-t}
+\tilde T_t = \left\lceil \frac{T-n}{\barlog(n)(n-t+1)} \right\rceil.
+\end{equation}
+\label{lemma:fbudget:samples}
+\end{lemma}
+
+\begin{proof}
+Consider an arbitrary phase $t\in [n]$ and an arbitrary active arm $e\in [n] \del (A_t\cup B_t)$ of phase $t$.
+Then, we can compute the number of pulls of arm $e$ as follows
+\begin{equation}
+\end{equation}
+\end{proof}
+}
+
+\subsubsection{Confidence Intervals}
+
+\begin{lemma}
+\label{lemma:fbudget:ci}
+
+Given a phase $t\in[n]$, we define random event $\tau_t$ as follows
+\begin{equation}
+\label{eq:define-tau}
+\tau_t = \left\{\forall i\in[n] \del (A_t\cup B_t) \quad \big|\bar w_t(i)-w(i)\big| < \frac{\Delta_{(n-t+1)}}{3\rank(\M)} \right\}.
+\end{equation}
+
+Then, we have
+\begin{equation}
+\Pr\left[\bigcap_{t=1}^T \tau_t \right] \ge 1- n^2  \exp\left(-\frac{2(T-n)}{9R^2 \barlog(n) \rank(\M)^2 \mathbf H_2} \right).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Let us consider an arbitrary phase $t\in [n]$ and an arbitrary active arm $i\in [n]\del (A_t\cup B_t)$ of phase $t$.
+
+Notice that the arm $e$ has been pulled for $\tilde T_t$ times during phases $1,\ldots, t$. 
+Therefore,
+by Hoeffding's inequality, we have
+\begin{align}
+	\Pr\left[ \big|\bar w_t(i)-w(i)\big| \ge \frac{\Delta_{(n-t+1)}}{3\rank(\M)} \right] \le
+	2\exp\left(-\frac{2\tilde T_t \Delta_{(n-t+1)}^2}{9R^2\rank(\M)^2} \right).
+	\label{eq:lci-1}
+\end{align}
+By plugging the definition of $\tilde T_t$, the quantity $\tilde T_t\Delta_{(n-t+1)}^2$ on the right-hand side of Eq.~\eqref{eq:lci-1} can be further bounded by
+\begin{align*}
+\tilde T_t\Delta_{(n-t+1)}^2 
+&\ge \frac{T-n}{\barlog(n)(n-t+1)}\Delta_{(n-t+1)}^2\\
+&\ge \frac{T-n}{\barlog(n) \mathbf H_2},
+\end{align*}
+where the last inequality follows from the definition of $\mathbf H_2$.
+By plugging the last inequality into Eq.~\eqref{eq:lci-1}, we have
+\begin{equation}
+\label{eq:lci-2}
+	\Pr\left[ \big|\bar w_t(i)-w(i)\big| \ge \frac{\Delta_{(n-t+1)}}{3\rank(\M)} \right] \le
+	2\exp\left(-\frac{2(T-n)}{9R^2 \barlog(n) \rank(\M)^2 \mathbf H_2} \right).
+\end{equation}
+
+Now using Eq.~\eqref{eq:lci-2} and a union bound for all $t \in [n]$ and all $i\in[n]\del (A_t\cup B_t)$, we have
+\begin{align*}
+\Pr\left[\bigcap_{t=1}^n \tau_t\right] &
+\ge 1-2\sum_{t=1}^n (n-t+1)\exp\left(-\frac{2(T-n)}{9R^2 \barlog(n) \rank(\M)^2 \mathbf H_2} \right)\\
+&\ge 1-n^2  \exp\left(-\frac{2(T-n)}{9R^2 \barlog(n) \rank(\M)^2 \mathbf H_2} \right).
+\end{align*}
+
+\end{proof}
+
+
+\begin{lemma}
+Fix a phase $t\in[n]$, suppose that random event $\tau_t$ occurs.
+For any vector $\vec a \in \RR^n$, suppose that $\supp(\vec a) \cap (A_t\cup B_t) = \emptyset$, where 
+$\supp(\vec a) \triangleq \{i\;|\; a(i) \not=0\}$ is support of $\vec a$.
+Then, we have
+$$
+\left| \inn{\vec{\bar w}_t, \vec a} - \inn{\vec w, \vec a} \right|
+\le \frac{\Delta_{(n-t+1)}}{3\rank(\M)} \nor{\vec a}_1.
+$$
+\label{lemma:fbudget:ciproerty}
+\end{lemma}
+
+\begin{proof}
+Suppose that $\tau_t$ occurs. 
+Then, similar to the proof of \Cref{lemma:ci-property}, we have
+\begin{align}
+\left| \inn{\vec{\bar w}_t, \vec a} - \inn{\vec w, \vec a} \right|
+&= \left| \inn{\vec{\bar w}_t-\vec w, \vec a} \right|  \nonumber \\
+&= \left|\sum_{i=1}^n \big(\bar w_t(i)-w(i)\big) a(i) \right| \nonumber \\
+&\le \left|\sum_{i\in[n]\del (A_t\cup B_t)} \big(\bar w_t(i)-w(i)\big) a(i) \right| \label{eq:fcip-0} \\
+&\le \sum_{i\in[n]\del (A_t\cup B_t)} \left| \big(\bar w_t(i)-w(i)\big) a(i)\right| \nonumber\\
+&\le \sum_{i\in[n]\del (A_t\cup B_t)} \left|\bar w_t(i)-w(i)\right| |a(i)| \nonumber\\
+&\le \frac{\Delta_{(n-t+1)}}{3\rank(\M)} \sum_{i\in[n]\del (A_t\cup B_t)} |a(i)| \label{eq:fcip-1}\\
+&= \frac{\Delta_{(n-t+1)}}{3\rank(\M)} \nor{\vec a}_1, \nonumber
+\end{align}
+where Eq.~\eqref{eq:fcip-0} follows from the assumption that $\vec a$ supported on $[n] \del (A_t\cup B_t)$;
+Eq.~\eqref{eq:fcip-1} follows from the definition of $\tau_t$ (Eq.~\eqref{eq:define-tau}).
+\end{proof}
+
+\subsubsection{Main Lemmas}
+
+
+\begin{lemma}
+Fix a phase $t\in[n]$. Suppose that $A_t\subseteq M_*$ and $B_t \cap M_* = \emptyset$.
+Let $M$ be a set such that $A_t \subseteq M$ and $B_t \cap M = \emptyset$.
+Let $a$ and $b$ be two sets satisfying that $a \subseteq M\del M_*$, $b \subseteq M_* \del M$ and $a\cap b = \emptyset$.
+Then, we have
+$$
+A_t \subseteq (M \del a \cup b) \quad\text{and}\quad B_t \cap (M \del a \cup b) = \emptyset
+\quad\text{and}\quad (a\cup b)\cap (A_t\cup B_t) = \emptyset.
+$$
+\label{lemma:set-tech}
+\end{lemma}
+
+\begin{proof}
+We prove the first part as follows
+\begin{align}
+A_t \cap (M \del a \cup b) &= 
+(A_t \cap (M \del a)) \cup (A_t \cap b) \nonumber \\
+&= A_t \cap (M \del a) \label{eq:settech-1}\\
+&= (A_t \cap M) \del a \nonumber \\
+&= A_t \del a \label{eq:settech-2} \\
+&= A_t\label{eq:settech-3},
+\end{align}
+where Eq.~\eqref{eq:settech-1} holds since we have $A_t\cap b \subseteq A_t \cap (M_* \del M) \subseteq M \cap (M_*\del M) = \emptyset$;
+Eq.~\eqref{eq:settech-2} follows from $A_t \subseteq M$;
+and Eq.~\eqref{eq:settech-3} follows from $a\subseteq M\del M_*$ and $A_t \subseteq M_*$ which imply that $a\cap A_t = \emptyset$.
+Notice that Eq.~\eqref{eq:settech-3} is equivalent to $A_t \subseteq (M \del a \cup b)$.
+
+Then, we proceed to prove the second part in the following
+\begin{align}
+B_t \cap (M \del a \cup b )
+&= 
+(B_t \cap (M \del a)) \cup (B_t \cap b) \nonumber\\
+&=
+B_t \cap (M \del a) \label{eq:settech-4}\\
+&=
+(B_t \cap M) \del a \nonumber\\
+&= \emptyset \del a = \emptyset,\label{eq:settech-6}
+\end{align}
+where Eq.~\eqref{eq:settech-4} follows from the fact that $B_t\cap b \subseteq B_t \cap (M_*\del M) \subseteq \neg M_* \cap (M_* \del M) = \emptyset$; and 
+Eq.~\eqref{eq:settech-6} follows from the fact that $B_t\cap M =\emptyset$.
+
+Last, we prove the third part. 
+By combining the assumptions that $A_t\subseteq M_*$ and $A_t\subseteq M$,
+we see that $A_t \subseteq M \cap M_*$.
+Therefore, we have 
+\begin{equation}
+\label{eq:settech-7}
+(a \cap A_t) \cup (b\cap A_t) \subseteq ( (M\del M_*) \cap (M \cap M_*)) \cup ((M_* \del M) \cap (M \cap M_*)) = \emptyset.
+\end{equation}
+Similarly, we have $B_t \subseteq \neg M \cap \neg M_*$. Hence, we derive
+\begin{equation}
+\label{eq:settech-8}
+(a \cap B_t) \cup (b\cap B_t) \subseteq ( (M\del M_*) \cap (\neg M \cap  \neg M_*)) \cup ((M_* \del M) \cap (\neg M \cap \neg M_*)) = \emptyset.
+\end{equation}
+By combining Eq.~\eqref{eq:settech-7} and Eq.~\eqref{eq:settech-8}, we obtain
+$$
+(a\cup b) \cap (A_t \cup B_t) = (a\cap A_t) \cup (b\cap A_t) \cup (a \cap B_t) \cup (b\cap B_t) = \emptyset.
+$$
+\end{proof}
+
+\begin{lemma}
+Fix any round $t>0$. 
+Suppose that event $\tau_t$ occurs. 
+Also assume that $A_t \subseteq M_*$ and $B_t \cap M_* = \emptyset$.
+Let $e\in [n] \del (A_t \cup B_t)$ be an active arm.
+Suppose that $\Delta_{(t-n+1)} \le \Delta_e$.
+Then, we have $e\in (M_* \cap M_t) \cup ( \neg M_* \cap \neg M_t)$.
+\label{lemma:budget:correct}
+\end{lemma}
+
+\begin{proof}
+
+Fix an exchange class $\B\in \argmin_{\B'\in \Exchange(\M)} \rank(\B')$.
+Suppose that $e\not\in (M_* \cap M_t) \cup ( \neg M_* \cap \neg M_t)$. 
+This is equivalent to the following 
+\begin{equation}
+\label{eq:lbc-0}
+e\in (M_* \cap \neg M_t) \cup (\neg M_* \cap M_t).
+\end{equation}
+Eq.~\eqref{eq:lbc-0} can be further rewritten as 
+$$
+e\in (M_* \del M_t) \cup (M_t \del M_*).
+$$
+
+From this assumption, it is easy to see that $M_t \not= M_*$.
+Therefore we can apply Lemma~\ref{lemma:exchange}.
+Then we know that there exists $b=(b_+,b_-)\in \B$ such that 
+$e\in b_- \cup b_+$, $b_-\subseteq M_t \del M_*$, $b_+\subseteq M_* \del M_t$, $M_t\oplus b \in \M$ and $\inn{\vec w, \vec \chi_b} \ge \Delta_e \ge 0$.
+
+Using Lemma~\ref{lemma:set-tech}, we see that
+$(M_t \oplus b) \cap B_t = \emptyset$, $A_t \subseteq (M_t \oplus b)$ and $(b_+\cup b_-) \cap (A_t \cup B_t) = \emptyset$.
+Now recall the definition $M_t \in \argmax_{M\in \M, A_t\subseteq M, B_t \cap M = \emptyset} \bar w_t(M)$ and also recall that $M_t \oplus b \in \M$.
+Therefore, we obtain that 
+\begin{equation}
+\label{eq:lbc-1}
+\bar w_t(M_t) \ge \bar w_t(M_t \oplus b).
+\end{equation}
+
+On the other hand, we have
+\begin{align}
+\bar w_t(M_t\oplus b) &= \inn{\vec{\bar w}_t, \vec \chi_{M_t} + \vec \chi_b} \label{eq:lbc-2}\\
+									    &= \inn{\vec{\bar w}_t, \vec \chi_{M_t}} + \inn{\vec{\bar w}_t, \vec \chi_b}\nonumber\\
+									    &> \inn{\vec{\bar w}_t, \vec \chi_{M_t}} + \inn{\vec w,\vec\chi_b} - \frac{\Delta_{(n-t+1)}}{3\rank(\M)} \nor{\vec\chi_b}_1 \label{eq:lbc-3} \\
+										  &> \inn{\vec{\bar w}_t, \vec \chi_{M_t}} + \inn{\vec w,\vec\chi_b} - \frac{\Delta_{e}}{3\rank(\M)} \nor{\vec\chi_b}_1
+										  \nonumber\\
+										  &\ge \inn{\vec{\bar w}_t, \vec \chi_{M_t}} + \inn{\vec w,\vec\chi_b} - \frac{\Delta_e}{3}
+										  \label{eq:lbc-4}\\
+										  &\ge \inn{\vec{\bar w}_t, \vec \chi_{M_t}} + \frac{2}3 \Delta_e \label{eq:lbc-5}\\
+										  &\ge \inn{\vec{\bar w}_t, \vec \chi_{M_t}} = \bar w_t(M_t), \label{eq:lbc-6}
+\end{align}
+where Eq.~\eqref{eq:lbc-2} follows from Lemma~\ref{lemma:exchange-char};
+Eq.~\eqref{eq:lbc-3} follows from Lemma~\ref{lemma:fbudget:ciproerty} and the fact that $(b_+\cup b_-)\cap (A_t\cup B_t)=\emptyset$;
+Eq.~\eqref{eq:lbc-4} holds since $b\in \B$ which implies that $\nor{\vec\chi_b}_1 = |b_+|+|b_-|\le\rank(\B)=\rank(\M)$;
+and Eq.~\eqref{eq:lbc-5} and Eq.~\eqref{eq:lbc-6} hold since we have shown that $\inn{\vec w, \vec \chi_b} \ge \Delta_e \ge 0$.
+
+This means that $\bar w_t(M_t \oplus b) > \bar w_t(M_t)$. 
+This contradicts to Eq.~\eqref{eq:lbc-1}.
+Therefore we have $e\in (M_* \cap M_t) \cup ( \neg M_* \cap \neg M_t)$.
+%Therefore we proved that $e\in M_t$ in this case.
+
+%\textbf{Case (2) $e\not \in M_*$.}
+%Suppose that $e\in M_t$.
+%This means that $M_t \not= M_*$.
+%Therefore, by Lemma~\ref{lemma:exchange}
+
+\end{proof}
+
+\begin{lemma}
+\label{lemma-budget-c}
+Fix any round $t>0$. Suppose that event $\tau_t$ occurs.
+Also assume that $A_t \subseteq M_*$ and $B_t \cap M_* = \emptyset$.
+Let $e \in [n] \del (A_t\cup B_t)$ be an active arm such that $\Delta_{(t-n+1)} \le \Delta_e$.
+Then, we have 
+$$
+\bar w_t(M_t) - \bar w_t(\tilde M_{t,e}) \ge \frac23 \Delta_{(t-n+1)}.
+$$
+\end{lemma}
+
+\begin{proof}
+By Lemma~\ref{lemma:budget:correct}, we see that 
+\begin{equation}
+\label{eq:lbcx-0}
+e \in (M_* \cap M_t) \cup ( \neg M_* \cap \neg M_t).
+\end{equation}
+
+We claim that $e\in (\tilde M_{t,e} \del M_*) \cup (M_* \del \tilde M_{t,e})$ and therefore $M_* \not= \tilde M_{t,e}$.
+By Eq.~\eqref{eq:lbcx-0}, we see that either $e\in (M_* \cap M_t)$ or $e\in (\neg M_* \cap \neg M_t)$.
+First let us assume that $e\in M_*\cap M_t$.
+Then, by definition of $\tilde M_{t,e}$, we see that $e\not\in \tilde M_{t,e}$. Therefore $e\in M_t \del \tilde M_{t,e}$.
+On the other hand, suppose that $e\in \neg M_* \cap \neg M_t$.
+Then, we see that $e\in \tilde M_{t,e}$. This means that $e \in \tilde M_{t,e}\del M_*$.
+%Suppose that $c\in M_* \cap M_t$.
+
+Hence we can apply Lemma~\ref{lemma:exchange}. Then we obtain that there exists $b=(b_+,b_-)\in \B$ such that 
+$e\in b_+\cup b_-$, $b_+\subseteq M_* \del \tilde M_{t,e}$, $b_- \subseteq \tilde M_{t,e} \del M_*$, $\tilde M_{t,e} \oplus b \in \M$ and 
+$\inn{\vec w, \vec\chi_b} \ge \Delta_e$.
+
+Define $M_{t,e}' \triangleq \tilde M_{t,e}\oplus b$. 
+Using Lemma~\ref{lemma:set-tech}, we have 
+$A_t \subseteq M_{t,e}'$, $B_t \cap M_{t,e}' = \emptyset$ and $(b_+\cup b_-) \cap (A_t \cup B_t) = \emptyset$.
+Since $M_{t,e}'\in \M$ and by definition $M_t \in \argmax_{M\in \M, A_t\subseteq M, B_t \cap M = \emptyset} \bar w_t(M)$, we have
+\begin{equation}
+\label{eq:lbcx-1}
+\bar w_t(M_t) \ge \bar w_t(M_{t,e}').
+\end{equation}
+
+Hence, we have
+\begin{align}
+\bar w_t(M_t) - \bar w_t(\tilde M_{t,e}) &\ge 
+\bar w_t(M_{t,e}') - \bar w_t(\tilde M_{t,e}) \nonumber \\
+&= \bar w_t(\tilde M_{t,e} \oplus b ) - \bar w_t(\tilde M_{t,e}) \nonumber \\
+&= \inn{\vec {\bar w}_t, \vec\chi_{\tilde M_{t,e}}+\vec\chi_b}-\inn{\vec {\bar w}_t, \vec\chi_{\tilde M_{t,e}}} \label{eq:lbcx-2}\\
+&= \inn{\vec {\bar w}_t, \vec\chi_b} \nonumber\\
+&> \inn{\vec w, \vec\chi_b}-\frac{\Delta_{(n-t+1)}}{3\rank(\B)}\nor{\vec\chi_b}_1 \label{eq:lbcx-3}\\
+&\ge \inn{\vec w, \vec\chi_b}-\frac{\Delta_e}{3\rank(\B)}\nor{\vec\chi_b}_1 \label{eq:lbcx-4}\\
+&\ge \inn{\vec w, \vec\chi_b}-\frac{\Delta_e}{3}\label{eq:lbcx-5}\\
+&\ge \frac{2}{3}\Delta_e \ge \frac{2}{3}\Delta_{(n-t+1)},\label{eq:lbcx-6}
+\end{align}
+where Eq.~\eqref{eq:lbcx-2} follows from Lemma~\ref{lemma:exchange-char};
+Eq.~\eqref{eq:lbcx-3} follows from Lemma~\ref{lemma:fbudget:ciproerty}, the assumption on event $\tau_t$ and the fact $(b_+\cup b_-) \cap (A_t \cup B_t) = \emptyset$;
+Eq.~\eqref{eq:lbcx-4} follows from the assumption that $\Delta_e \ge \Delta_{(n-t+1)}$;
+Eq.~\eqref{eq:lbcx-5} holds since $b\in \B$ and therefore $\nor{\vec\chi_b}_1  \le \rank(\M)$;
+and Eq.~\eqref{eq:lbcx-6} follows from the fact that $\inn{\vec w, \vec\chi_b} \ge \Delta_e$.
+
+\end{proof}
+
+\begin{lemma}
+\label{lemma-budget-e}
+Fix any phase $t>0$. Suppose that event $\xi_t$ occurs.
+Suppose an active arm $e\in [n] \del (A_t\cup B_t)$  satisfies that $e\in (M_*\cap \neg M_t) \cup (\neg M_* \cap M_t)$. 
+Then, we have
+$$
+\bar w_t(M_t) - \bar w_t(\tilde M_{t,e}) \le \frac{1}{3} \Delta_{(n-t+1)}.
+$$
+\end{lemma}
+
+\begin{proof}
+Fix an exchange class $\B\in \argmin_{\B'\in \Exchange(\M)} \rank(\B')$.
+
+The assumption that $e\in (M_*\cap \neg M_t) \cup (\neg M_* \cap M_t)$ can be rewritten as 
+$e \in (M_* \del M_t) \cup (M_t\del M_*)$.
+This shows that $M_t\not=M_*$
+Hence \Cref{lemma:exchange} applies here. 
+Therefore we know that there exists $b=(b_+,b_-)\in \B$ such that
+$e\in (b_+\cup b_-)$, $b_+\subseteq M_* \del M_t$, $b_- \subseteq M_t \del M_*$, $M_t \oplus b \in \M$ and $\inn{\vec w,\vec\chi_b}\ge \Delta_e \ge 0$.
+
+Define $M_{t,e}' \triangleq M_t \oplus b$.
+We claim that
+\begin{equation}
+\label{eq:lbe-0}
+\bar w_t(\tilde M_{t,e}) \ge \bar w_t(M_{t,e}').
+\end{equation}
+By definition of $\tilde M_{t,e}$, we only need to show that \textbf{(a):} $e\in (M_{t,e}' \del M_t) \cup (M_t \del M_{t,e}')$ and \textbf{(b):} $A_t \subseteq M_{t,e}'$ and $B_t \cap M_{t,e}' = \emptyset$.
+First we prove \textbf{(a)}. Notice that $b_+\cap b_- = \emptyset$ and $b_- \subseteq M_t$. 
+Hence we see that $M_{t,e}' \del M_t = (M_t\del b_-\cup b_+) \del M_t = b_+$ and
+$M_t \del M_{t,e}' = M_t \del (M_t \del b_-\cup b_+) = b_-$. 
+In addition, we have that $e\in (b_-\cup b_+)$. Therefore we see that \textbf{(a)} holds by combining these relations. 
+Next, we notice that \textbf{(b)} follows directly from Lemma~\ref{lemma:set-tech}.
+Hence we have shown that Eq.~\eqref{eq:lbe-0} holds.
+
+Hence, we have
+\begin{align}
+	\bar w_t(M_t)-\bar w_t(\tilde M_{t,e}) 
+	&\le \bar w_t(M_t)-\bar w_t(M_{t,e}') \nonumber\\
+	&= \inn{\vec{\bar w}_t, \vec \chi_{M_t}}-\inn{\vec{\bar w}_t, \vec \chi_{M_t}+\vec\chi_b} \label{eq:lbe-1} \\
+	&= -\inn{\vec{\bar w}_t, \vec\chi_b} \nonumber\\
+	&\le -\inn{\vec w, \vec\chi_b}+ \frac{\Delta_{(n-t+1)}}{3\rank(\M)}\nor{\vec\chi_b}_1 \label{eq:lbe-2}\\
+	&\le \frac{\Delta_{(n-t+1)}}{3\rank(\M)}\nor{\vec\chi_b}_1 \le \frac{\Delta_{(n-t+1)}}{3}, \label{eq:lbe-3}
+\end{align}
+where Eq.~\eqref{eq:lbe-1} follows from Lemma~\ref{lemma:exchange-char};
+Eq.~\eqref{eq:lbe-2} follows from Lemma~\ref{lemma:fbudget:ciproerty}, the assumption on $\tau_t$ and $(b_+\cup b_-) \cap (A_t \cup B_t) = \emptyset$ (by Lemma~\ref{lemma:set-tech});
+and Eq.~\eqref{eq:lbe-3} follows from the fact $\nor{\vec\chi_b}_1 \le \rank(\M)$ (since $b\in \B$) and that $\inn{\vec w, \vec\chi_b} \ge \Delta_e \ge 0$.
+\end{proof}
+
+\subsubsection{Proof of Theorem~\ref{theorem:budget}}
+
+For reader's convenience, we first restate Theorem~\ref{theorem:budget} in the following.
+\realfixbudget*
+
+\begin{proof}
+First, we show that the algorithm at most $T$ samples.
+It is easy to see that exactly one arm is pulled for $\tilde T_1$ times, one arm is pulled for $\tilde T_2$ times, \ldots, and one arm is pulled for $\tilde T_n$ times. 
+Therefore, the total number samples used by the algorithm is bounded by
+\begin{align*}
+\sum_{t=1}^n \tilde T_t 
+&\le \sum_{t=1}^n \left(\frac{T-n}{\barlog(n)(n-t+1)} +1\right)\\
+&= \frac{T-n}{\barlog(n)}\barlog(n)+n = T.
+\end{align*}
+
+
+
+By Lemma~\ref{lemma:fbudget:ci}, we know that the event $\tau \triangleq \bigcap_{t=1}^T \tau_t$ occurs with probability at least
+$1-n^2  \exp\left(-\frac{2(T-n)}{9R^2 \barlog(n) \rank(\M)^2 \mathbf H_2} \right)$.
+%This equals to the claimed probability of error of the theorem.
+Therefore, we only need to prove that, under event $\tau$, the algorithm outputs $M_*$.
+We will assume that event $\tau$ occurs in the rest of the proof.
+
+
+We prove by induction. Fix a phase $t \in [t]$.
+Suppose that the algorithm does not make any error before phase $t$, i.e. $A_t \subseteq M_*$ and $B_t \cap M_* = \emptyset$.
+We show that the algorithm does not err at phase $t$.
+
+In the beginning phase $t$, there are only $t-1$ inactive arms $|A_t \cup B_t| = t-1$. 
+Therefore there must exists an active arm $e_1 \in [n]\del (A_t\cup B_t)$ such that 
+$\Delta_{e_1} \ge \Delta_{(n-t+1)}$.
+Hence, by Lemma~\ref{lemma-budget-c}, we have
+\begin{equation}
+\label{eq-fbdg-upper}
+\bar w_t(M_t)- \bar w_t(M_{t,e_1}) \ge \frac23\Delta_{(n-t+1)}.
+\end{equation}
+
+Notice that the algorithm makes an error on phase $t$ if and only if it accepts an arm $p_t \not\in M_*$ or rejects an arm $p_t \in M_*$.
+On the other hand, by design, arm $p_t$ is accepted when $p_t\in M_t$ and  is rejected when $p_t \not \in M_t$.
+Therefore, we see that the algorithm makes an error on phase $t$ if and only if
+$p_t \in (M_* \cap \neg M_t) \cup (\neg M_* \cap M_t)$.
+
+Suppose that $p_t \in (M_* \cap \neg M_t) \cup (\neg M_* \cap M_t)$.
+Now appeal to Lemma~\ref{lemma-budget-e}, we see that
+\begin{equation}
+\label{eq-fbdg-lower}
+\bar w_t(M_t) - \bar w_t(\tilde M_{t,p_t}) \le \frac{1}{3} \Delta_{(n-t+1)}.
+\end{equation}
+By combining Eq.~\eqref{eq-fbdg-upper} and Eq.~\eqref{eq-fbdg-lower}, we see that
+\begin{equation}
+\bar w_t(M_t) - \bar w_t(\tilde M_{t,p_t}) \le \frac{1}{3} \Delta_{(n-t+1)} < \frac{2}3 \Delta_{(n-t+1)} \le \bar w_t(M_t)- \bar w_t(M_{t,e_1}).
+\label{eq-fdbg-contract}
+\end{equation}
+However Eq.~\eqref{eq-fdbg-contract} is contradictory to the definition of $p_t \triangleq \argmax_{i\in [n]\del (A_t\cup B_t)} \bar w_t(M_t)- \bar w_t(\tilde M_{t,i})$.
+Therefore we have proved that $p_t \not\in (M_* \cap \neg M_t) \cup (\neg M_* \cap M_t)$.
+This means that the algorithm does not err at phase $t$, or equivalently $A_{t+1} \subseteq M_*$ and $B_{t+1}\cap M_* = \emptyset$.
+By induction, we have proved that the algorithm does not err at any phase $t\in[n]$.
+
+Hence we have $A_{n+1} \subseteq M_*$ and $B_{n+1}\subseteq  \neg M_*$.
+Notice that $|A_{n+1}| + |B_{n+1}| = n$ and $A_{n+1}\cap B_{n+1}=\emptyset$. This means that $A_{n+1} = M_*$ and $B_{n+1} = \neg M_*$.
+Therefore the algorithm outputs $\out=A_{n+1}=M_*$ after phase $n$.
+\end{proof}
+
+%We claim that $e\in (M_{t,e}' \cap \neg M_t) \cup (\neg M_{t,e}' \cap M_t)$.
+%Therefore it is easy to see that $$
 
 \newpage
 \bibliography{bandit}
@@ -823,7 +1356,7 @@ $$
 \end{lemma}
 
 \begin{proof}
-Suppose that $\xi$ occurs. Then, we have
+Suppose that $\xi_t$ occurs. Then, we have
 \begin{align}
 \big|\inn{\vec w,\vec a} - \inn{\vec {\bar w}_t, \vec a}\big| 
 &=\big|\inn{\vec w-\vec {\bar w}_t,\vec a}\big| \nonumber \\
@@ -1609,7 +2142,7 @@ We obtain
 
 \section{Proof of Extension Results}
 
-\subsection{Fixed Budget Setting}
+\subsection{Fixed Budget Setting (Theorem~\ref{theorem:main-budget})}
 In this part, we analyze the probability of error of the modified \Algorithm algorithm in the fixed budget setting and prove Theorem~\ref{theorem:main-budget}. 
 First, we prove a lemma which characterizes the confidence intervals constructed in Theorem~\ref{theorem:main-budget}.
 \begin{lemma}
@@ -1674,7 +2207,7 @@ where we have used the assumption that $\alpha < \frac{1}9 (T-n) \cdot \left(R^2
 
 \end{proof}
 
-\subsection{PAC Learning}
+\subsection{PAC Learning (Theorem~\ref{theorem:pac})}
 First, we prove a $(\epsilon,\delta)$-PAC counterpart of Lemma~\ref{lemma:correct}.
 \begin{lemma}
 \label{lemma:pac-correct}
