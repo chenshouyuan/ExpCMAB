@@ -28,6 +28,7 @@
 \usepackage{thmtools}
 \usepackage{thm-restate}
 \usepackage{cleveref}
+
 %\usepackage{titling}
 
 
@@ -47,8 +48,11 @@
 \declaretheorem{lemma}
 \declaretheorem{corollary}
 \declaretheorem{define}
-\declaretheorem{example}
 \declaretheorem[name=Fact,Refname={Fact,Facts}]{fact}
+
+\declaretheorem{example}
+%\declaretheoremstyle[bodyfont=normalfont]{mystyle}
+%\declaretheorem[style=mystyle]{example}
 
 %\def\ttdefault{blg}
 
@@ -600,6 +604,44 @@ For the \Matroid problem, we know that $\rank(\Matroid)=O(1)$ and hence the samp
 For \Match and \Path problem, we see that the sample complexity is bounded by $\tilde O(|V|^2 \mathbf H)$.
 }
 
+
+\subsection{Examples}
+
+\begin{example}[\MultiIdent and \MultiBandit]
+For any $K\in[n]$, the problem of finding the top $K$ arms with the largest expected reward can be modeled by decision class $\M_{\MultiIdent(K)}=\{M\subseteq [n] \mid \big|M\big| = K\}$.
+
+Let $\mathcal A=\{A_1,\ldots,A_m\}$ be a partition of $[n]$. 
+The problem of identifying the best arms from each group of arms $A_1,\ldots,A_m$ can be modeled by decision class
+$\M_{\MultiBandit(\mathcal A)} = \{M \subseteq [n] \mid \forall i\in [m], |M\cap A_i| = 1\}$.
+
+We have $\rank(\M_{\MultiIdent(K)}) \le 2$ and $\rank(\M_{\MultiBandit(\mathcal A)}) \le 2$
+(\Cref{lemma:example-exchange-class} in the appendix) and therefore the sample complexity of \Algorithm for solving \MultiIdent and \MultiBandit is $O\big(\mathbf H \log(n\mathbf H/\delta)\big)$, which recovers previous results \citep{kalyanakrishnan2012pac,gabillon2012best}.
+\end{example}
+
+\begin{example}[Matchings and Paths]
+Let $G(V,E)$ be a graph with $n$ edges and assume there is a one-to-one mapping between $E$ and $[n]$.
+(1) Suppose that $G$ is a bipartite graph. 
+Let $\M_{\Match(G)}$ denote the set of all matchings in $G$.
+We have $\rank(\M_{\Match(G)}) \le |V|$ (\Cref{lemma:example-exchange-class}).
+(2) Suppose that $G$ is a direct acyclic graph and let $s,t\in V$ be two vertices.
+Let $\M_{\Path(G,s,t)}$ denote the set of all paths from $s$ to $t$.
+We have $\rank(\M_{\Path(G,s,t)}) \le |V|$ (\Cref{lemma:example-exchange-class}).
+Therefore the sample complexity bounds of \Algorithm for decision classes $\M_{\Match(G)}$ and $\M_{\Path(G,s,t)}$ are $O\big(|V|^2 \mathbf H \log (n\mathbf H/\delta)\big)$.
+\end{example}
+
+\begin{example}[Matroids]
+\label{example:matroid}
+Let $T=(E,\mathcal I)$ be a finite matroid, where $E$ is a set of size $n$ (called ground set) and $\mathcal I$ is a family of subsets of $E$ (called independent sets) which satisfies the axioms of matroids\footnote{The three axioms of matroid are (1) $\emptyset\in \mathcal I$ and $\mathcal I\not=\{\emptyset\}$; (2) Every subsets of an independent set are independent (heredity property); (3) For all $A,B\in \mathcal I$ such that $|B|=|A|+1$ there exists an element $e\in B\del A$ such that $A\cup \{e\} \in \mathcal I$ (augmentation property). We refer interested readers to \citep{oxley2006matroid} for a general introduction to the matroid theory.}.
+Assume that there is a one-to-one mapping between $E$ and [n].
+%A maximal independent set is referred as a basis of $T$.
+And recall that a basis of matroid $T$ is a maximal independent set.
+Let $\M_{\Matroid(T)}$ denote the set of all bases of $T$.
+Then we have $\rank(\M_{\Matroid(T)}) \le 2$ and sample complexity of \Algorithm for $\M_{\Matroid(T)}$ is $O\big(\mathbf H \log(n\mathbf H/\delta)\big)$.
+\end{example}
+
+The last example is an abstract type of decision class which encompasses \MultiIdent and \MultiBandit as special cases, where \MultiIdent corresponds to uniform matroids of rank $K$ and \MultiBandit corresponds to partition matroids.
+The decision class that contains all spanning trees of a graph is also covered by \Cref{example:matroid} (cf. \citep{oxley2006matroid}).
+%On the other hand  and \Path cannot be formulated as matroids and in fact these problems are equivalent to matroid intersections (cf. \citep{oxley2006matroid}).
 
 %Many combinatorial problem $\M$ is associated with an exchange class with small width.
 
