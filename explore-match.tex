@@ -218,7 +218,7 @@ This suggests that exchange class may be useful for the analysis of similar prob
 In addition, when applying the algorithm to \MultiIdent and \MultiBandit, our bound recovers a recent result due to \citet{bubeck2013multiple}. 
 
 
-\textbf{Notations.} 
+%\textbf{Notations.} 
 
 \section{Problem Formulation}
 %Let $\vec u \in \RR^{n}$ be a vector. 
@@ -716,19 +716,21 @@ The pseudo-code of \AlgorithmBud is shown in Algorithm~\ref{algo:budget}.
 \end{algorithm}
 
 
-\subsection{Analysis}
+\subsection{Results}
 In the following theorem, we show that the probability of error of the \AlgorithmBud algorithm is at most $\tilde O(\exp(-T\rank(\M)^{-2} \mathbf H^{-1}))$.
 \begin{restatable}{theorem}{realfixbudget}
-Use the same notations as in Theorem~\ref{theorem:main}.
-Let $\Delta_{(1)},\ldots,\Delta_{(n)}$ be a permutation of $\Delta_1,\ldots,\Delta_n$ such that
+Given any $T>n$, any decision class $\M \subseteq 2^{[n]}$ and any expected rewards $\vec w \in \RR^{n}$.
+Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ is  $R$-sub-Gaussian with mean $w(e)$.
+%Use the same notations as in Theorem~\ref{theorem:main}.
+Let $\Delta_{(1)},\ldots,\Delta_{(n)}$ be a permutation of $\Delta_1,\ldots,\Delta_n$ (defined in Eq.~\eqref{eq:define-delta}) such that
 $\Delta_{(1)} \le \ldots \ldots \Delta_{(n)}$. 
 Define $\mathbf H_2 \triangleq \max_{i\in[n]} i\Delta_{(i)}^{-2}$.
-Then, given any budget $T > n$, the \AlgorithmBud algorithm uses at most $T$ samples and outputs a solution $\out \in \M$ such that
+Then, the \AlgorithmBud algorithm uses at most $T$ samples and outputs a solution $\out \in \M$ such that
 \begin{equation}
 \Pr[\out\not=M_*] \le n^2  \exp\left(-\frac{2(T-n)}{9R^2 \barlog(n) \rank(\M)^2 \mathbf H_2} \right),
 \label{eq:fbudget:prob-error}
 \end{equation}
-where $\barlog(n)\triangleq \sum_{i=1}^n \frac1i$.
+where $\barlog(n)\triangleq \sum_{i=1}^n \frac1i$ and $M_* = \argmax_{M\in \M} w(M)$.
 \label{theorem:budget}
 \end{restatable}
 The quantity $\mathbf H_2$ defined in Theorem~\ref{theorem:budget} can be considered as a surrogate of $\mathbf H$ since these two quantities are equivalent up to a logarithmic factor: $\mathbf H_2 \le \mathbf H \le \log(2n) \mathbf H_2$.
@@ -747,7 +749,7 @@ This actually leads to an argument substantially different from the proof of The
 
 The multi-armed bandit problem has been extensively studied in both stochastic and adversarial settings \citep{lai1985asymptotically,auer2002nonstochastic,auer2002nonstochastic}.
 We refer readers to \citep{bubeck2012regret} for a survey on recent results.
-Many work on MABs focus on minimizing the cumulative regret, which is an objective known to be fundamentally different from the objective of pure exploration MABs \citep{bubeck2010pure}.
+Many work in MABs focus on minimizing the cumulative regret, which is an objective known to be fundamentally different from the objective of pure exploration MABs \citep{bubeck2010pure}.
 Among these work, a recent line of research considers a generalized setting called combinatorial bandits in which a set of arms (satisfying certain combinatorial constraint) is played on each round \citep{cesa2012combinatorial,chen2013combinatorial,kale2010non,neu2010online,audibert2009minimax,Bubeck12towardsminimax}.
 Note that the objective of these work is to minimize the cumulative regret, which differs from ours.
 
@@ -2056,7 +2058,7 @@ Let $M_* = \argmax_{M\in \M} w(M)$ be the optimal solution.
 Let $T$ be the budget of samples.
 Let $\Delta_{(1)},\ldots,\Delta_{(n)}$ be a permutation of $\Delta_1,\ldots,\Delta_n$ such that
 $\Delta_{(1)} \le \ldots \ldots \Delta_{(n)}$.
-Let $A_1,\ldots,A_n$ and $B_1,\ldots, B_n$ be two sequence of sets which are defined in Algorithm~X.
+Let $A_1,\ldots,A_n$ and $B_1,\ldots, B_n$ be two sequence of sets which are defined in Algorithm~\ref{algo:budget}.
 
 \junk{
 \begin{lemma}
@@ -2290,7 +2292,8 @@ Therefore we have $e\in (M_* \cap M_t) \cup ( \neg M_* \cap \neg M_t)$.
 
 \begin{lemma}
 \label{lemma-budget-c}
-Fix any round $t>0$. Suppose that event $\tau_t$ occurs.
+Fix any round $t>0$. 
+Suppose that event $\tau_t$ occurs.
 Also assume that $A_t \subseteq M_*$ and $B_t \cap M_* = \emptyset$.
 Let $e \in [n] \del (A_t\cup B_t)$ be an active arm such that $\Delta_{(t-n+1)} \le \Delta_e$.
 Then, we have 
@@ -2349,7 +2352,9 @@ and Eq.~\eqref{eq:lbcx-6} follows from the fact that $\inn{\vec w, \vec\chi_b} \
 
 \begin{lemma}
 \label{lemma-budget-e}
-Fix any phase $t>0$. Suppose that event $\xi_t$ occurs.
+Fix any phase $t>0$. 
+Suppose that event $\tau_t$ occurs.
+Also assume that $A_t \subseteq M_*$ and $B_t \cap M_* = \emptyset$.
 Suppose an active arm $e\in [n] \del (A_t\cup B_t)$  satisfies that $e\in (M_*\cap \neg M_t) \cup (\neg M_* \cap M_t)$. 
 Then, we have
 $$
