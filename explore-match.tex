@@ -20,7 +20,7 @@
 \usepackage{abstract}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue]{hyperref}
 \usepackage[numbers]{natbib}
-\usepackage{algpseudocode}
+\usepackage[noend]{algpseudocode}
 \usepackage{algorithm}
 \usepackage{xspace}
 \usepackage{subcaption}
@@ -33,7 +33,7 @@
 
 
 \allowdisplaybreaks
-
+\frenchspacing
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Some tools
 \newcommand{\junk}[1]{}
@@ -129,7 +129,7 @@ We prove problem-dependent upper bounds of our algorithms.
 Our analysis exploits the combinatorial structures of the decision classes and introduces a new analytic tool.
 We also establish a general problem-dependent lower bound for the \Problem problem.
 Our results show that the proposed algorithms achieve optimal sample complexity (within logarithmic factors) for many decision classes. 
-In addition, applying our results back to top-$K$ arms identification and multiple bandit best arms identification, we recover the best known upper bounds and settles two open conjectures on the lower bounds.
+In addition, applying our results back to problems of top-$K$ arms identification and multiple bandit best arms identification, we recover the best known upper bounds and settles two open conjectures on the lower bounds.
 
 
 % objective is to identify the optimal set of arms from a collection of sets of arms called decision class.
@@ -160,7 +160,7 @@ In the end, the learner is asked to output a member of the decision class which 
 
 The \Problem framework represents a rich class of pure exploration problems.
 The conventional pure exploration problem in MAB, where the objective is to find the single best arm, clearly fits into this framework, in which the decision class is the collection of all singletons. 
-This framework also naturally encompasses several recent extensions, including the problem of finding the top $K$ arms (henceforth, \MultiIdent) \citep{kalyanakrishnan2010efficient,kalyanakrishnan2012pac,bubeck2013multiple,zhou2014optimal} and the problem of finding the best arms simultaneously from several disjoint sets of arms (henceforth, \MultiBandit) \citep{NIPS2011_4478,bubeck2013multiple}, by constructing proper decision classes. 
+This framework also naturally encompasses several recent extensions, including the problem of finding the top $K$ arms (henceforth \MultiIdent) \citep{kalyanakrishnan2010efficient,kalyanakrishnan2012pac,bubeck2013multiple,zhou2014optimal} and the problem of finding the best arms simultaneously from several disjoint sets of arms (henceforth \MultiBandit) \citep{NIPS2011_4478,bubeck2013multiple}, by constructing proper decision classes. 
 %The decision classes associated with these problems are relatively flat. 
 Furthermore, this framework also covers many more interesting cases where the decision classes correspond to non-trivial combinatorial structures.
 %By allowing general decision classes, this framework represents a rich class of pure exploration problems including many interesting cases where the decision classes correspond to non-trivial combinatorial structures.
@@ -197,8 +197,8 @@ Both algorithms support a wide range of decision classes in a unifying way.
 In the fixed confidence setting, we present Combinatorial Gap Exploration (\Algorithm) algorithm.
 The proposed \Algorithm algorithm does not need to know anything about the details of the decision class's definition, as long as it has access to the decision class through a maximization oracle.
 %Algorithm is an efficient and practical algorithm that works for a very wide range of decision classes. 
-We prove a sample complexity bound of \Algorithm. 
-The sample complexity bound depends on both expected reward and the structure of decision class. 
+We upper bound the number of samples used by \Algorithm. 
+This sample complexity bound depends on both expected reward and the structure of decision class. 
 When specializing our result into \MultiIdent and \MultiBandit, we recover previous sample complexity bounds due to \citet{kalyanakrishnan2012pac} and \citet{gabillon2012best}.
 % with a small improvement in the logarithmic factors. 
 While for other decision classes in general, our result establishes the first sample complexity upper bound. 
@@ -220,7 +220,9 @@ This suggests that exchange class may be useful for the analysis of similar prob
 In addition, when applying the algorithm to back \MultiIdent and \MultiBandit, our bound recovers a recent result due to \citet{bubeck2013multiple}. 
 
 
-%\textbf{Notations.} 
+\textbf{Notations.} Let $[n]$ denote the set $\{1,\ldots,n\}$. Suppose that $\vec w\in \RR^{n}$ is a vector and $E\subseteq[n]$ is a set. 
+Let $w(i)$ denote the $i$-th entry of $\vec w$. 
+We define $w(E) \triangleq  \sum_{i\in E} w(i)$ to be the sum of entries indexed by $E$.
 
 \section{Problem Formulation}
 %Let $\vec u \in \RR^{n}$ be a vector. 
@@ -341,10 +343,12 @@ The pseudo-code of \Algorithm is shown in Algorithm~\ref{algo:pac}.
 {
 \small
 \begin{algorithmic}[1]
-\Require Confidence parameter: $\delta \in (0,1)$; Maximization oracle: $\Oracle(\cdot): \RR^n \rightarrow \M$.
+\Require Confidence $\delta \in (0,1)$; Maximization oracle: $\Oracle(\cdot): \RR^n \rightarrow \M$
 \Statex \textbf{Initialize:} Play each arm $e \in [n]$ once. Initialize empirical means $\vec {\bar w}_n$ and set $T_{n}(e) \gets 1$ for all $e$.
 \For{$t=n,n+1,\ldots$}
 	\State $M_t \gets \Oracle(\vec {\bar w}_t)$
+  \State Compute confidence radius $\rad_{t}(e)$ for all $e\in[n]$
+  \Comment{$\rad_t(e)$ is defined in Theorem~\ref{theorem:main}}
 	\For{$e = 1,\ldots,n$}
 		\If {$e\in M_t$}
 			\State $\tilde w_t(e) \gets \bar w_t(e)-\rad_t(e)$
@@ -369,7 +373,7 @@ The pseudo-code of \Algorithm is shown in Algorithm~\ref{algo:pac}.
 \end{algorithm}
 
 
-\subsection{Exchange class and sample complexity}
+\subsection{Sample complexity}
 %In this part, we analyze the performance of Algorithm~\ref{algo:pac} for both fixed confidence and fixed budget settings. 
 Now we prove a problem-dependent sample complexity bound of the \Algorithm algorithm. 
 Our sample complexity bound depends on the combinatorial properties of $\M$. 
@@ -484,12 +488,12 @@ Given any $\delta \in (0,1)$, any decision class $\M \subseteq 2^{[n]}$ and any 
 Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ is  $R$-sub-Gaussian with mean $w(e)$.
 %Let $\B$ be an exchange class for $\M$ and let $\{\Delta_e\}_{e\in [n]}$ be the gaps defined in Eq.~\eqref{eq:define-delta}.
 Set $\rad_t(e) = R\sqrt{2\log\left(\frac{4n t^2}\delta\right)/ T_t(e) }$ for all $t > 0$ and $e\in[n]$.
-Then, with probability at least $1-\delta$, the \Algorithm algorithm (Algorithm~\ref{algo:pac}) returns the optimal set $\out=M_*$ and
+Then, with probability at least $1-\delta$, the \Algorithm algorithm (Algorithm~\ref{algo:pac}) returns the optimal set $\out=\argmax_{M\in \M} w(M)$ and
 \begin{equation}
 \label{eq:sample-complexity}
 T \le O\left(R^2\rank(\M)^2\mathbf H\log\left(R^2\rank(\M)^2\mathbf H \cdot n/\delta\right)\right),
 \end{equation}
-where $T$ denotes the number of samples used by Algorithm~\ref{algo:pac} and $\mathbf H$ is defined in Eq.~\eqref{eq:hardness}.
+where $T$ denotes the number of samples used by Algorithm~\ref{algo:pac}; $\mathbf H$ is defined in Eq.~\eqref{eq:hardness}; and $\rank(\M)$ is defined in Eq.~\eqref{eq:width-class}.
 \label{theorem:main}
 \end{restatable}
 \junk{
@@ -540,7 +544,9 @@ Then we have $\rank(\M_{\Path(G,s,t)}) \le |V|$ (see \Cref{fact:path}).
 Therefore the sample complexity bounds of \Algorithm for decision classes $\M_{\Match(G)}$ and $\M_{\Path(G,s,t)}$ are $O\big(|V|^2 \mathbf H \log (n\mathbf H/\delta)\big)$.
 \end{example}
 
-Last, we investigate the general problem of identifying the maximum-weight basis of a matroid, which encompasses a wide range of pure exploration problems.
+Last, we investigate the general problem of identifying the maximum-weight basis of a matroid.
+%, which covers a wide range of pure exploration problems. 
+Again, Theorem~\ref{theorem:main} is the first sample complexity upper bound for this pure exploration problem.
 \begin{example}[Matroids]
 \label{example:matroid}
 Let $T=(E,\mathcal I)$ be a finite matroid, where $E$ is a set of size $n$ (called ground set) and $\mathcal I$ is a family of subsets of $E$ (called independent sets) which satisfies the axioms of matroids\footnote{The three axioms of matroid are (1) $\emptyset\in \mathcal I$ and $\mathcal I\not=\{\emptyset\}$; (2) Every subsets of an independent set are independent (heredity property); (3) For all $A,B\in \mathcal I$ such that $|B|=|A|+1$ there exists an element $e\in B\del A$ such that $A\cup \{e\} \in \mathcal I$ (augmentation property). We refer interested readers to \citep{oxley2006matroid} for a general introduction to the matroid theory.}.
@@ -550,9 +556,9 @@ And recall that a basis of matroid $T$ is a maximal independent set.
 Let $\M_{\Matroid(T)}$ correspond to the set of all bases of $T$.
 Then we have $\rank(\M_{\Matroid(T)}) \le 2$ (see \Cref{fact:matroid}) and the sample complexity of \Algorithm for $\M_{\Matroid(T)}$ is $O\big(\mathbf H \log(n\mathbf H/\delta)\big)$.
 \end{example}
-In our last example, we see that $\M_{\Matroid(T)}$ is a general type of decision class which encompasses \MultiIdent and \MultiBandit as special cases, where \MultiIdent corresponds to uniform matroids of rank $K$ and \MultiBandit corresponds to partition matroids.
+In our last example, we see that $\M_{\Matroid(T)}$ is a general type of decision class which encompasses many pure exploration problems including \MultiIdent and \MultiBandit as special cases, where \MultiIdent corresponds to uniform matroids of rank $K$ and \MultiBandit corresponds to partition matroids.
 It is easy to see that $\M_{\Matroid(T)}$ also covers the decision class that contains all spanning trees of a graph.
-On the other hand, the family of matchings and paths cannot be formulated as matroids and in fact they are matroid intersections (cf. \citep{oxley2006matroid}).
+On the other hand, it is well-known that the family of matchings and paths cannot be formulated as matroids since they are matroid intersections \citep{oxley2006matroid}.
 
 \junk{
 The bounds on the width of our examples decision classes are proven by constructing the exchange classes. 
@@ -628,7 +634,7 @@ $\mathbf H$ is defined in Eq.~\eqref{eq:hardness}.
 %We see that \Algorithm algorithm uses at most $\tilde O(\rank(\B)^2 \mathbf H)$ samples.
 %Recall that, for \MultiIdent and \Matroid, Lemma~\ref{lemma:example-exchange-class} shows that $\rank(\B)=2$.
 Theorem~\ref{theorem:lower-bound} resolves  the open conjectures of \citet{kalyanakrishnan2012pac} and \citet{bubeck2013multiple} that the lower bounds of sample complexity of \MultiIdent and \MultiBandit problem are $\Omega\big(\mathbf H\log(1/\delta)\big)$.
-In addition, in \Cref{example:topk} and \Cref{example:matroid}, we have shown that the sample complexity of \Algorithm is $O(\mathbf H\log(n\mathbf H/\delta))$ for \MultiIdent, \MultiBandit and more generally the decision classes derived from matroids $\M_{\Matroid(T)}$ (including spanning trees).
+Moreover, in \Cref{example:topk} and \Cref{example:matroid}, we have shown that the sample complexity of \Algorithm is $O(\mathbf H\log(n\mathbf H/\delta))$ for \MultiIdent, \MultiBandit and more generally the decision classes derived from matroids $\M_{\Matroid(T)}$ (including spanning trees).
 Hence, we see that the \Algorithm algorithm achieves the optimal sample complexity within logarithmic factors for these pure exploration problems.
 
 %On the other hand, for $\Match(V,E)$ and $\Path(V,E)$, we see that the gap between the upper bound Eq.~\eqref{eq:sample-complexity} and this lower bound is a factor of $|V|^2$.
@@ -673,9 +679,9 @@ Now we describe the procedure of the \AlgorithmBud algorithm for choosing an arm
 Let $A_t$ denote the set of accepted arms before phase $t$ and let $B_t$ denote the set of rejected arms before phase $t$.
 We call an arm $e$ to be active if $e\not\in A_t\cup B_t$.
 Then, in phase $t$, \AlgorithmBud samples each active arm for $\tilde T_t -\tilde T_{t-1}$ times, where the definition of $\tilde T_t$ is given in Algorithm~\ref{algo:budget}.
-Next, \AlgorithmBud calls the constrained oracle to compute an optimal solution $M_t$ with respect to the empirical means $\bar w_t$, accepted arms $A_t$ and rejected arms $B_t$, i.e. let $M_t = \COracle(\vec {\bar w}_t, A_t,B_t)$.
+Next, \AlgorithmBud calls the constrained oracle to compute an optimal set $M_t$ with respect to the empirical means $\bar w_t$, accepted arms $A_t$ and rejected arms $B_t$, i.e. let $M_t = \COracle(\vec {\bar w}_t, A_t,B_t)$.
 Then, for each arm active arm $e$, \AlgorithmBud estimate the gap of $e$ in the following way.
-If $e\in M_t$, then \AlgorithmBud computes an optimal solution $\tilde M_{t,e}$ that does not include $e$, i.e. $\tilde M_{t,e} = \COracle(\vec {\bar w}_t, A_t, B_t \cup \{e\})$.
+If $e\in M_t$, then \AlgorithmBud computes an optimal set $\tilde M_{t,e}$ that does not include $e$, i.e. $\tilde M_{t,e} = \COracle(\vec {\bar w}_t, A_t, B_t \cup \{e\})$.
 Conversely, if $e\not\in M_t$, then \AlgorithmBud computes an optimal $\tilde M_{t,e}$ which includes $e$, i.e. $\tilde M_{t,e} = \COracle(\vec {\bar w}_t, A_t \cup \{e\}, B_t)$.
 Then, the gap of $e$ is calculated as $\bar w_t(M_t)-\bar w_t(\tilde M_{t,e})$.
 Finally, \AlgorithmBud chooses the  arm $p_t$ with the largest gap.
@@ -692,7 +698,7 @@ The pseudo-code of \AlgorithmBud is shown in Algorithm~\ref{algo:budget}.
 \For{$t=1,\ldots,n$}
 	\State $\tilde T_t \gets \left\lceil \frac{T-n}{\barlog(n)(n-t+1)} \right\rceil$
 	\State Pull each arm $e\in [n]\del (A_t\cup B_t)$ for $\tilde T_t - \tilde T_{t-1}$ times
-	\State Update the empirical means $\vec {\bar w}_t\in \RR^n$ of each arm
+	\State Update the empirical means $\vec {\bar w}_t\in \RR^n$ of each active arm
 	\State $M_t \gets \COracle(\vec {\bar w}_t, A_t, B_t)$
 	\For{\textbf{each} $e \in [n]\del (A_t\cup B_t)$}
 		\If {$e\in M_t$}
@@ -731,7 +737,7 @@ Then, the \AlgorithmBud algorithm uses at most $T$ samples and outputs a solutio
 \Pr[\out\not=M_*] \le n^2  \exp\left(-\frac{2(T-n)}{9R^2 \barlog(n) \rank(\M)^2 \mathbf H_2} \right),
 \label{eq:fbudget:prob-error}
 \end{equation}
-where $\barlog(n)\triangleq \sum_{i=1}^n \frac1i$ and $M_* = \argmax_{M\in \M} w(M)$.
+where $\barlog(n)\triangleq \sum_{i=1}^n \frac1i$, $M_* = \argmax_{M\in \M} w(M)$ and $\rank(M)$ is defined in Eq.~\eqref{eq:width-class}.
 \label{theorem:budget}
 \end{restatable}
 The quantity $\mathbf H_2$ defined in Theorem~\ref{theorem:budget} can be considered as a surrogate of $\mathbf H$ since these two quantities are equivalent up to a logarithmic factor: $\mathbf H_2 \le \mathbf H \le \log(2n) \mathbf H_2$.
@@ -2662,7 +2668,7 @@ Therefore we have $b_+ \subseteq M'\del M$ and $b_- \subseteq M\del M'$.
 %Consider the induced graph from $M \del C_- \cup C_+$.
 Since $C$ is an $A$-augmenting path/cycle, therefore it immediately holds that $A\del C_-\cup C_+$ is a matching for $G$.
 Therefore, we have $M\del b_- \cup b_+ \in \M_{\Match(G)}$.
-Similarly, one can show that $M'\del b_+ \cup bs_-\in \M_{\Match(G)}$.
+Similarly, one can show that $M'\del b_+ \cup b_-\in \M_{\Match(G)}$.
 Hence we have shown that $\B_{\Match(G)}$ is an exchange class for $\M_{\Match(G)}$.
 
 Observe that $\rank(\B_{\Match(G)}) \le |V|$. We conclude that $\rank(\M_{\Match(G)}) \le |V|$.
