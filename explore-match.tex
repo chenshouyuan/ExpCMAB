@@ -650,7 +650,7 @@ The goal of the algorithm is to minimize the probability of error.
 
 \textbf{Constrained oracle.} 
 The \AlgorithmBud algorithm requires access to a \emph{constrained oracle}, which is a function denoted as $\COracle: \RR^{n}\times 2^{[n]} \times 2^{[n]} \rightarrow \M$.
-The function $\COracle$ takes three inputs: (1) a weight vector $\vec v$, (2) a set $A$ of positive constraints and (3) a set $B$ of negative constraints and returns a solution such that
+The function $\COracle$ takes three inputs: (1) a weight vector $\vec v$, (2) a set $A$ of positive constraints and (3) a set $B$ of negative constraints and returns a set such that
 $\COracle(\vec v, A, B) \in \argmax_{M: M\in \M, A\subseteq M, B\cap M =\emptyset} v(M).$
 Hence we see that $\COracle(\vec v, A, B)$ computes an optimal set that includes all elements of $A$ while excluding all elements of $B$.
 %It is clear that constrained oracles exist for many combinatorial problems including the four examples we considered in this paper.
