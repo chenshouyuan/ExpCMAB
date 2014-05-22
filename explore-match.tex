@@ -265,8 +265,8 @@ After the game finishes, the learner need to output a set $\out \in \M$.
 
 
 %\textbf{Fixed confidence and fixed budget.} 
-We consider two different stopping conditions of the game, which are known as \emph{fixed confidence} setting and \emph{fixed budget} setting.
-In the fixed confidence setting, the learner can stop the game at any point. 
+We consider two different stopping conditions of the game, which are known as \emph{fixed confidence} setting and \emph{fixed budget} setting in the literature.
+In the fixed confidence setting, the learner can stop the game at any round. 
 The learner need to guarantee that $\Pr[\out = M_*] \ge 1-\delta$ for a given confidence parameter $\delta$.
 %and her goal is to achieve a fixed confidence about the optimality of the returned set while uses a small number of pulls.
 %Specifically, given a confidence parameter $\delta$, the learner 
@@ -398,10 +398,11 @@ We also define the hardness $\mathbf H$ as the sum of inverse squared gaps
 \end{equation}
 
 From Eq.~\eqref{eq:define-delta}, we see that, for each arm $e\not\in M_*$, the gap $\Delta_e$ represents sub-optimality of the best set that includes arm $e$; and, for each arm $e\in M_*$, the gap $\Delta_e$ is the sub-optimality of the best set that does not include arm $e$.
+This naturally generalizes previous definitions of gaps \citep{audibert2010best,NIPS2011_4478,kalyanakrishnan2010efficient}.
 %We notice that, for many combinatorial problems, the definition Eq.~\eqref{eq:define-delta} naturally reflects the hardness of an arm.
 %().
 %Figure X illustrates these interpretations.
-When specializing to \MultiIdent and \MultiBandit, our definition resembles the previous definition of gaps due to \citet{kalyanakrishnan2012pac} and \citet{gabillon2012best}.
+%When specializing to \MultiIdent and \MultiBandit, our definition resembles the previous definition of gaps \citep{kalyanakrishnan2012pac,NIPS2011_4478,gabillon2012best,kalyanakrishnan2010efficient,bubeck2013multiple}.
 
 
 
@@ -526,8 +527,10 @@ Let $\mathcal A=\{A_1,\ldots,A_m\}$ be a partition of $[n]$.
 The problem of identifying the best arms from each group of arms $A_1,\ldots,A_m$ can be modeled by decision class
 $\M_{\MultiBandit(\mathcal A)} = \{M \subseteq [n] \mid \forall i\in [m], |M\cap A_i| = 1\}$.
 
+
 Then we have $\rank(\M_{\MultiIdent(K)}) \le 2$ and $\rank(\M_{\MultiBandit(\mathcal A)}) \le 2$
-(see Fact~\ref{fact:topk} and \ref{fact:multibandit} in the supplementary material) and therefore the sample complexity of \Algorithm for solving \MultiIdent and \MultiBandit is $O\big(\mathbf H \log(n\mathbf H/\delta)\big)$, which matches previous results in the fixed confidence setting \citep{kalyanakrishnan2012pac,gabillon2012best}.
+(see Fact~\ref{fact:topk} and \ref{fact:multibandit} in the supplementary material) and therefore the sample complexity of \Algorithm for solving \MultiIdent and \MultiBandit is $O\big(\mathbf H \log(n\mathbf H/\delta)\big)$,  which matches previous results in the fixed confidence setting \citep{kalyanakrishnan2012pac,gabillon2012best}.
+%In addition, for the two problems, our definition of gaps $\Delta_e$ and $\mathbf H$ resembles the previous definitions \citep{kalyanakrishnan2012pac,gabillon2012best}.
 \end{example}
 
 Next we consider the problem of identifying the maximum matching or the shortest path in a setting where arms correspond to edges.
