@@ -1,7 +1,8 @@
 \documentclass{article}
 \usepackage{nips14submit_e,times}
 
-\title{Pure Exploration of Combinatorial Bandits}
+%\title{Pure Exploration of Combinatorial Bandits}
+\title{Combinatorial Pure Exploration of \\ Multi-Armed Bandits}
 \author{Shouyuan Chen}
 \date{\today}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -30,6 +31,21 @@
 \usepackage{cleveref}
 
 %\usepackage{titling}
+
+\newcommand{\compilehidecomments}{false}
+
+% Macro for comments:
+\ifthenelse{ \equal{\compilehidecomments}{true} }{%
+	\newcommand{\wei}[1]{}
+	\newcommand{\tian}[1]{}
+	\newcommand{\shouyuan}[1]{}
+}{
+	\newcommand{\wei}[1]{{\color{blue!50!black}  [\text{Wei:} #1]}}
+	\newcommand{\tian}[1]{{\color{brown!60!black} [\text{Tian:} #1]}}
+	\newcommand{\shouyuan}[1]{{\color{green!50!black} [\text{Shouyuan:} #1]}}
+}
+
+
 
 
 \allowdisplaybreaks
@@ -60,7 +76,8 @@
 \newcommand{\AlgorithmPAC}{{\small \textsf{CGapExpPAC}}\xspace}
 \newcommand{\AlgorithmBud}{{\small \textsf{CGapKill}}\xspace}
 \newcommand{\Uniform}{{\small \textsf{Uniform}}\xspace}
-\newcommand{\Problem}{{\small \textsf{ExpCMAB}}\xspace}
+%\newcommand{\Problem}{{\small \textsf{ExpCMAB}}\xspace}
+\newcommand{\Problem}{{CPE}\xspace}
 \newcommand{\Rew}{\varphi}
 \newcommand{\E}{\mathbb E}
 
@@ -121,16 +138,33 @@
 \maketitle
 
 \begin{abstract}
-We study the structured pure exploration problem in the stochastic multi-armed bandit setting.
-In particular, we formulate the \Problem problem where a learner's objective is to identify the optimal set of arms from a collection of sets of arms which we called decision class.
-The decision class could be a collection of size $K$ subsets, matchings, spanning trees or paths. 
-The generality of decision classes allows \Problem to represent a rich class of structured pure exploration problems.
-We present two algorithms for the \Problem problem: one for the fixed confidence setting and one for the fixed budget setting.
+We study {\em combinatorial pure exploration (\Problem)} in the stochastic multi-armed bandit setting,
+	where a learner explores a set of arms with the objective of identifying the optimal set of arms
+	satisfying certain combinatorial constraints, such as size-$K$ subsets, matchings, spanning trees,
+	shortest paths, etc.
+A collection of subsets of arms satisfying a combinatorial constraint is referred to as a {\em decision class}.	
+Instead of solving each \Problem task in an ad-hoc way, we provide a general framework
+	and solutions that work for all decision classes with linear reward functions and exact offline maximization oracles.  
+In particular, We present two algorithms for the general \Problem task: 
+	one for the fixed confidence setting and one for the fixed budget setting.
 We prove problem-dependent upper bounds of our algorithms. 
 Our analysis exploits the combinatorial structures of the decision classes and introduces a new analytic tool.
 We also establish a general problem-dependent lower bound for the \Problem problem.
 Our results show that the proposed algorithms achieve optimal sample complexity (within logarithmic factors) for many decision classes. 
 In addition, applying our results back to problems of top-$K$ arms identification and multiple bandit best arms identification, we recover the best known upper bounds and settles two open conjectures on the lower bounds.
+
+\wei{Currently not mentioning PAC result extension. Perhaps OK as long as we mention it in the intro.}
+
+%We study the structured pure exploration problem in the stochastic multi-armed bandit setting.
+%In particular, we formulate the \Problem problem where a learner's objective is to identify the optimal set of arms from a collection of sets of arms which we called decision class.
+%The decision class could be a collection of size $K$ subsets, matchings, spanning trees or paths. 
+%The generality of decision classes allows \Problem to represent a rich class of structured pure exploration problems.
+%We present two algorithms for the \Problem problem: one for the fixed confidence setting and one for the fixed budget setting.
+%We prove problem-dependent upper bounds of our algorithms. 
+%Our analysis exploits the combinatorial structures of the decision classes and introduces a new analytic tool.
+%We also establish a general problem-dependent lower bound for the \Problem problem.
+%Our results show that the proposed algorithms achieve optimal sample complexity (within logarithmic factors) for many decision classes. 
+%In addition, applying our results back to problems of top-$K$ arms identification and multiple bandit best arms identification, we recover the best known upper bounds and settles two open conjectures on the lower bounds.
 
 
 % objective is to identify the optimal set of arms from a collection of sets of arms called decision class.
@@ -2538,7 +2572,7 @@ Given any $T>n$, any decision class $\M \subseteq 2^{[n]}$ and any expected rewa
 Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ is  $R$-sub-Gaussian with mean $w(e)$.
 %Use the same notations as in Theorem~\ref{theorem:main}.
 Define $\Delta_{(1)}=\min_{i\in[n]}\Delta_i$ and $\mathbf H_3 = n\Delta_{(1)}^{-2}$.
-Then, the output $\Out$ of the \Uniform algorithm satisfies
+Then, the output $\out$ of the \Uniform algorithm satisfies
 \begin{equation}
 \label{eq:uniform}
 \Pr[\out\not=M_*] \le 2n^2\exp\left(- \frac{2T}{9R^2\rank(\M)^2 \mathbf H_{3}}\right),
