@@ -1,7 +1,8 @@
 \documentclass{article}
 \usepackage{nips14submit_e,times}
 
-\title{Pure Exploration of Combinatorial Bandits}
+%\title{Pure Exploration of Combinatorial Bandits}
+\title{Combinatorial Pure Exploration of \\ Multi-Armed Bandits}
 \author{Shouyuan Chen}
 \date{\today}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -30,6 +31,21 @@
 \usepackage{cleveref}
 
 %\usepackage{titling}
+
+\newcommand{\compilehidecomments}{false}
+
+% Macro for comments:
+\ifthenelse{ \equal{\compilehidecomments}{true} }{%
+	\newcommand{\wei}[1]{}
+	\newcommand{\tian}[1]{}
+	\newcommand{\shouyuan}[1]{}
+}{
+	\newcommand{\wei}[1]{{\color{blue!50!black}  [\text{Wei:} #1]}}
+	\newcommand{\tian}[1]{{\color{brown!60!black} [\text{Tian:} #1]}}
+	\newcommand{\shouyuan}[1]{{\color{green!50!black} [\text{Shouyuan:} #1]}}
+}
+
+
 
 
 \allowdisplaybreaks
@@ -60,7 +76,8 @@
 \newcommand{\AlgorithmPAC}{{\small \textsf{CGapExpPAC}}\xspace}
 \newcommand{\AlgorithmBud}{{\small \textsf{CGapKill}}\xspace}
 \newcommand{\Uniform}{{\small \textsf{Uniform}}\xspace}
-\newcommand{\Problem}{{\small \textsf{ExpCMAB}}\xspace}
+%\newcommand{\Problem}{{\small \textsf{ExpCMAB}}\xspace}
+\newcommand{\Problem}{{CPE}\xspace}
 \newcommand{\Rew}{\varphi}
 \newcommand{\E}{\mathbb E}
 
@@ -121,16 +138,33 @@
 \maketitle
 
 \begin{abstract}
-We study the structured pure exploration problem in the stochastic multi-armed bandit setting.
-In particular, we formulate the \Problem problem where a learner's objective is to identify the optimal set of arms from a collection of sets of arms which we called decision class.
-The decision class could be a collection of size $K$ subsets, matchings, spanning trees or paths. 
-The generality of decision classes allows \Problem to represent a rich class of structured pure exploration problems.
-We present two algorithms for the \Problem problem: one for the fixed confidence setting and one for the fixed budget setting.
+We study {\em combinatorial pure exploration (\Problem)} in the stochastic multi-armed bandit setting,
+	where a learner explores a set of arms with the objective of identifying the optimal set of arms
+	satisfying certain combinatorial constraints, such as size-$K$ subsets, matchings, spanning trees,
+	paths, etc.
+A collection of subsets of arms satisfying a combinatorial constraint is referred to as a {\em decision class}.	
+Instead of solving each \Problem task in an ad-hoc way, we provide a general framework
+	and solutions that work for all decision classes with linear reward functions and exact offline maximization oracles.  
+In particular, We present two algorithms for the general \Problem task: 
+	one for the fixed confidence setting and one for the fixed budget setting.
 We prove problem-dependent upper bounds of our algorithms. 
 Our analysis exploits the combinatorial structures of the decision classes and introduces a new analytic tool.
 We also establish a general problem-dependent lower bound for the \Problem problem.
 Our results show that the proposed algorithms achieve optimal sample complexity (within logarithmic factors) for many decision classes. 
 In addition, applying our results back to problems of top-$K$ arms identification and multiple bandit best arms identification, we recover the best known upper bounds and settles two open conjectures on the lower bounds.
+
+%\wei{Currently not mentioning PAC result extension. Perhaps OK as long as we mention it in the intro.}
+
+%We study the structured pure exploration problem in the stochastic multi-armed bandit setting.
+%In particular, we formulate the \Problem problem where a learner's objective is to identify the optimal set of arms from a collection of sets of arms which we called decision class.
+%The decision class could be a collection of size $K$ subsets, matchings, spanning trees or paths. 
+%The generality of decision classes allows \Problem to represent a rich class of structured pure exploration problems.
+%We present two algorithms for the \Problem problem: one for the fixed confidence setting and one for the fixed budget setting.
+%We prove problem-dependent upper bounds of our algorithms. 
+%Our analysis exploits the combinatorial structures of the decision classes and introduces a new analytic tool.
+%We also establish a general problem-dependent lower bound for the \Problem problem.
+%Our results show that the proposed algorithms achieve optimal sample complexity (within logarithmic factors) for many decision classes. 
+%In addition, applying our results back to problems of top-$K$ arms identification and multiple bandit best arms identification, we recover the best known upper bounds and settles two open conjectures on the lower bounds.
 
 
 % objective is to identify the optimal set of arms from a collection of sets of arms called decision class.
@@ -140,28 +174,32 @@ In addition, applying our results back to problems of top-$K$ arms identificatio
 \section{Introduction}
 
 For more than fifty years, multi-armed bandit (MAB) has been a predominant model for characterizing the tradeoff between exploration and exploitation in decision-making problems. 
-Although this kind of tradeoff is intrinsic in many tasks, some application domains prefer a dedicated exploration procedure in which the goal is to identify an optimal object among several candidates and the profit/cost incurred during exploration is irrelevant.
+Although this tradeoff is intrinsic in many tasks, some application domains prefer a dedicated exploration procedure in which the goal is to identify an optimal object among a set of candidates and the reward or loss incurred during exploration is irrelevant.
 In light of these applications, the related learning problem, called pure exploration in MABs, has received much attention.
 Recent results of pure exploration MABs have found potential applications in many domains including crowdsourcing, communication network and online advertising.
 
 In many  of these application domains, a recurring problem is to identify an optimal object with certain \emph{combinatorial structures}. 
 For example, a crowdsourcing application may want to find the best assignment from workers to tasks such that overall productivity of workers are maximized. 
-A network routing system during an initialize phase may tries to build a spanning tree that minimizes the delay of links, or attempts to identify the shortest path between two sites.  
-An online advertising system may be interested to find the best matching between ads and displaying slots. 
+A network routing system during the initialization phase may try to build a spanning tree that minimizes the delay of links, or attempts to identify the shortest path between two sites.  
+An online advertising system may be interested to find the best matching between ads and display slots. 
 The literature of pure exploration MAB problems lacks a framework that encompasses these kinds of problems where the object of interest has a non-trivial combinatorial structure.  
 Our paper contributes such a framework which accounts for general combinatorial structures, and develops a series of results, including algorithms, upper bounds and lower bounds for the framework.
 
-In this paper, we formulate the Pure Exploration in Combinatorial Bandits (\Problem) problem.  
-In an \Problem problem, a learner has a fixed set of arms and each arm is associated with an unknown reward distribution. 
-The learner is also given a collection of sets of arms called \emph{decision class}. 
-The objective is to find the optimal set of arms, which maximizes the sum of expected reward, from the given decision class. 
-Over a sequence of rounds, the learner chooses an arm and observes a random reward sampled from the associated distribution. 
-In the end, the learner is asked to output a member of the decision class which she believes to be optimal.
+In this paper, we formulate the {\em combinatorial pure exploration (\Problem)} problem for stochastic multi-armed bandits.  
+In the \Problem problem, a learner has a fixed set of arms and each arm is associated with an unknown reward distribution. 
+The learner is also given a collection of sets of arms called \emph{decision class}, which
+	satisfy certain combinatorial constraints. 
+During the exploration period, in each round the learner chooses an arm to play
+	and observes a random reward sampled from the associated distribution. 
+The objective is when the exploration period ends, the learner output a member of the decision
+	class that she believes to be optimal, in the sense that the sum of expected rewards of all arms
+	in the output set is maximized among all members in the decision class.
 
 
 The \Problem framework represents a rich class of pure exploration problems.
 The conventional pure exploration problem in MAB, where the objective is to find the single best arm, clearly fits into this framework, in which the decision class is the collection of all singletons. 
-This framework also naturally encompasses several recent extensions, including the problem of finding the top $K$ arms (henceforth \MultiIdent) \citep{kalyanakrishnan2010efficient,kalyanakrishnan2012pac,bubeck2013multiple,zhou2014optimal} and the problem of finding the best arms simultaneously from several disjoint sets of arms (henceforth \MultiBandit) \citep{NIPS2011_4478,bubeck2013multiple}.
+This framework also naturally encompasses several recent extensions, including the problem of finding the top $K$ arms (henceforth \MultiIdent) \citep{kalyanakrishnan2010efficient,kalyanakrishnan2012pac,bubeck2013multiple,zhou2014optimal} and the
+multi-bandit problem of finding the best arms simultaneously from several disjoint sets of arms (henceforth \MultiBandit) \citep{NIPS2011_4478,bubeck2013multiple}.
 % by constructing proper decision classes. 
 %The decision classes associated with these problems are relatively flat. 
 Furthermore, this framework also covers many more interesting cases where the decision classes correspond to collections of non-trivial combinatorial structures.
@@ -172,7 +210,7 @@ Furthermore, this framework also covers many more interesting cases where the de
 For example, suppose that the arms represent the edges in a graph.
 Then a decision class could be the set of all paths between two vertices, all spanning trees or all matchings of the graph. 
 And, in these cases, the objectives of \Problem correspond to identifying the optimal paths, spanning trees and matchings, respectively.
-As we have explained earlier, these kind of structured pure exploration problems admit potential applications in diverse domains.% including crowdsourcing, network routing and online advertising.
+As we have explained earlier, these types of combinatorial pure exploration problems admit potential applications in diverse domains.% including crowdsourcing, network routing and online advertising.
 %Therefore, due to its generality, our framework admits applications in diverse domains including the examples we previously explained.
 
 %More importantly, our framework covers a substantially larger class of pure exploration problems including many interesting cases where the decision classes correspond to non-trivial combinatorial structures. 
@@ -194,25 +232,25 @@ In the fixed budget setting, the learner uses at most a fixed number of samples 
 
 \textbf{Our results.}
 In this paper, we propose two general learning algorithms for the \Problem problem: one for the fixed confidence setting and one for the fixed budget setting.
-Both algorithms support a wide range of decision classes in a unifying way. 
+Both algorithms support a wide range of decision classes in a unified way. 
 %In this paper, we develop a learning algorithm for the \Problem problem in the fixed confidence setting that supports a very wide range of decision classes, which is referred as Combinatorial Gap Exploration (\Algorithm) algorithm.%
 In the fixed confidence setting, we present Combinatorial Gap Exploration (\Algorithm) algorithm.
-The proposed \Algorithm algorithm does not need to know anything about the details of the decision class's definition, as long as it has access to the decision class through a maximization oracle.
+The \Algorithm algorithm does not need to know the definition of the decision class, as long as it has access to the decision class through a maximization oracle.
 %Algorithm is an efficient and practical algorithm that works for a very wide range of decision classes. 
 We upper bound the number of samples used by \Algorithm. 
 This sample complexity bound depends on both expected reward and the structure of decision class. 
 When specializing our result into \MultiIdent and \MultiBandit, we recover previous sample complexity bounds due to \citet{kalyanakrishnan2012pac} and \citet{gabillon2012best}.
 % with a small improvement in the logarithmic factors. 
 While for other decision classes in general, our result establishes the first sample complexity upper bound. 
-Our analysis relies on a novel combinatorial construction called \emph{exchange class} which we believed may be of independent interest for other combinatorial optimization problems. 
-We further show that \Algorithm can be easily extended to the fixed budget setting and PAC learning setting and we provide related theoretical guarantees.  
+Our analysis relies on a novel combinatorial construction called \emph{exchange class} which we believe may be of independent interest for other combinatorial optimization problems. 
+We further show that \Algorithm can be easily extended to the fixed budget setting and PAC learning setting and we provide related theoretical guarantees in the supplementary material.  
 
 Moreover, we prove a problem-dependent sample complexity lower bound for the \Problem problem.  
 Our lower bound shows that the sample complexity of the proposed \Algorithm algorithm is optimal (to within logarithmic factors) for a large class of decision classes, including \MultiIdent, \MultiBandit and the decision classes derived from matroids (e.g. spanning tree). 
-Therefore our upper and lower bounds  provide a near full characterization of the sample complexity of these pure exploration problems. 
-In addition, for general decision classes, our results find our the upper and lower bounds are within a relatively benign factor. 
+Therefore our upper and lower bounds  provide a near full characterization of the sample complexity of these \Problem problems. 
+For more general decision classes, our results shows that the upper and lower bounds are within a relatively benign factor. 
 To the best of our knowledge, there are few problem-dependent lower bounds known for pure exploration MABs besides the case of identifying the single best arm \citep{mannor2004sample,audibert2010best}.
-We also notice that our result resolves the open conjectures of \citet{kalyanakrishnan2012pac} and \citet{bubeck2013multiple} on the sample complexity lower bounds of \MultiIdent and \MultiBandit problem.
+We also notice that our result resolves the open conjectures of \citet{kalyanakrishnan2012pac} and \citet{bubeck2013multiple} on the sample complexity lower bounds of \MultiIdent and \MultiBandit problems.
 
 In the fixed budget setting, we present a parameter-free algorithm called Combinatorial Gap-based Elimination (\AlgorithmBud) algorithm.
 We prove a probability of error bound of the \AlgorithmBud algorithm. 
@@ -782,7 +820,7 @@ Note that the objective of these work is to minimize the cumulative regret, whic
 
 In the literature of pure exploration MABs, the classical problem of identifying the single best arm has been well-studied in both fixed confidence and fixed budget settings \citep{mannor2004sample,bubeck2010pure,audibert2010best,gabillon2012best,jamieson2013lil,jamieson2014best}.
 A flurry of recent work extend this classical problem to \MultiIdent and \MultiBandit problems and provide algorithms and upper bounds \citep{kalyanakrishnan2010efficient,kalyanakrishnan2012pac,zhou2014optimal,bubeck2013multiple,NIPS2011_4478,gabillon2012best}.
-Our framework encompasses these two problems as special cases and covers a much larger class of structured pure exploration problems, which are unaddressed in the current literature.
+Our framework encompasses these two problems as special cases and covers a much larger class of combinatorial pure exploration problems, which are unaddressed in the current literature.
 Applying our results back to \MultiIdent and \MultiBandit, our upper bounds match the best known problem-dependent bounds due to \citet{gabillon2012best} and \citet{bubeck2013multiple}; and our lower bound provides the first problem-dependent lower bounds for these two problems, which are conjectured earlier by \citet{kalyanakrishnan2012pac} and \citet{bubeck2013multiple}.
 %We also notice that a very recent due to XXX improves 
 %In addition, to our knowledge, there is no known problem-dependent lower bounds for \MultiIdent and \MultiBandit. 
@@ -2586,7 +2624,7 @@ Given any $T>n$, any decision class $\M \subseteq 2^{[n]}$ and any expected rewa
 Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ is  $R$-sub-Gaussian with mean $w(e)$.
 %Use the same notations as in Theorem~\ref{theorem:main}.
 Define $\Delta_{(1)}=\min_{i\in[n]}\Delta_i$ and $\mathbf H_3 = n\Delta_{(1)}^{-2}$.
-Then, the output $\Out$ of the \Uniform algorithm satisfies
+Then, the output $\out$ of the \Uniform algorithm satisfies
 \begin{equation}
 \label{eq:uniform}
 \Pr[\out\not=M_*] \le 2n\exp\left(- \frac{2T}{9R^2\rank(\M)^2 \mathbf H_{3}}\right),
