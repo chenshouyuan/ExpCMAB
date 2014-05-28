@@ -72,9 +72,9 @@
 
 %\def\ttdefault{blg}
 
-\newcommand{\Algorithm}{{\small \textsf{CGapExp}}\xspace}
-\newcommand{\AlgorithmPAC}{{\small \textsf{CGapExpPAC}}\xspace}
-\newcommand{\AlgorithmBud}{{\small \textsf{CGapKill}}\xspace}
+\newcommand{\Algorithm}{{\small \textsf{CLUCB}}\xspace}
+\newcommand{\AlgorithmPAC}{{\small \textsf{CLUCB-PAC}}\xspace}
+\newcommand{\AlgorithmBud}{{\small \textsf{CSAR}}\xspace}
 \newcommand{\Uniform}{{\small \textsf{Uniform}}\xspace}
 %\newcommand{\Problem}{{\small \textsf{ExpCMAB}}\xspace}
 \newcommand{\Problem}{{CPE}\xspace}
@@ -138,14 +138,14 @@
 \maketitle
 
 \begin{abstract}
-We study {\em combinatorial pure exploration (\Problem)} in the stochastic multi-armed bandit setting,
+We study {\em combinatorial pure exploration (\Problem)} problem in the stochastic multi-armed bandit setting,
 	where a learner explores a set of arms with the objective of identifying the optimal set of arms
 	satisfying certain combinatorial constraints, such as size-$K$ subsets, matchings, spanning trees,
 	paths, etc.
 A collection of subsets of arms satisfying a combinatorial constraint is referred to as a {\em decision class}.	
 Instead of solving each \Problem task in an ad-hoc way, we provide a general framework
-	and solutions that work for all decision classes with linear reward functions and exact offline maximization oracles.  
-In particular, We present two algorithms for the general \Problem task: 
+	and solutions that work for all decision classes which admit offline maximization oracles.  
+In particular, we present two algorithms for the general \Problem task: 
 	one for the fixed confidence setting and one for the fixed budget setting.
 We prove problem-dependent upper bounds of our algorithms. 
 Our analysis exploits the combinatorial structures of the decision classes and introduces a new analytic tool.
@@ -260,9 +260,9 @@ This suggests that exchange class may be useful for the analysis of similar prob
 In addition, when applying the algorithm to back \MultiIdent and \MultiBandit, our bound recovers a recent result due to \citet{bubeck2013multiple}. 
 
 
-\textbf{Notations.} Let $[n]$ denote the set $\{1,\ldots,n\}$. Suppose that $\vec w\in \RR^{n}$ is a vector and $E\subseteq[n]$ is a set. 
+\textbf{Useful notations.} Let $[n]$ denote the set $\{1,\ldots,n\}$. Suppose that $\vec w\in \RR^{n}$ is a vector and $E\subseteq[n]$ is a set. 
 Let $w(i)$ denote the $i$-th entry of $\vec w$. 
-We also define $w(E) \triangleq  \sum_{i\in E} w(i)$ to be the sum of entries indexed by $E$.
+We define $w(E) \triangleq  \sum_{i\in E} w(i)$ to be the sum of entries indexed by $E$.
 Furthermore, we will use the convention that $\max_{M\in \emptyset} f(M) = -\infty$ and $\argmax_{M\in \emptyset} f(M) = \bot$ for any real-valued function $f$.
 
 \section{Problem Formulation}
@@ -276,7 +276,7 @@ Assume that each arm $e\in[n]$ is associated with a reward distribution $\Rew_e$
 Let $\vec w = \big(w(1),\ldots, w(n)\big)^T$ denote the vector of expected rewards, where each entry $w(e)=\E_{X\sim \Rew_e}[X]$ denote the expected reward of arm $e$.
 Following standard assumptions of stochastic MABs, we assume that all reward distributions have $R$-sub-Gaussian tails for some known constant $R>0$. 
 Formally, if $X$ is a random variable drawn according to $\Rew_e$, then, for all $t\in \RR$, one has $\mathbb E\big[\exp(tX-t\mathbb E[X])\big] \le \exp(R^2t^2/2)$ and $\mathbb E\big[\exp(t\mathbb E[X]-tX)\big] \le \exp(R^2t^2/2)$.
-It is well-known that all distributions that are supported on $[0,R]$ have $R$-sub-Gaussian tails \citep{pollard2000asymptopia}.
+It is well-known that the family of $R$-sub-Gaussian tail distributions encompasses all distributions that are supported on $[0,R]$ as well as Gaussian distributions with variance $R^2$ (cf. \citep{pollard2000asymptopia}).
 
 
 We define a \emph{decision class} $\M \subseteq 2^{[n]}$ as a collection of sets of arms.
@@ -377,7 +377,7 @@ Intuitively, the adjusted expectation vector $\vec {\tilde w}_t$ penalizes arms 
 If $\tilde w_t(\tilde M_t) = \tilde w_t(M_t)$ then \Algorithm stops and returns $\out=M_t$.
 Otherwise, \Algorithm pulls the arm belonging to the symmetric difference $(\tilde M_t \del M_t) \cup (M_t \del \tilde M_t)$ between $M_t$ and $\tilde M_t$ with the largest confidence radius in the end of round $t$.
 The pseudo-code of \Algorithm is shown in Algorithm~\ref{algo:pac}. 
-
+We note that \Algorithm generalizes and unifies several different fixed confidence algorithms dedicated to the \MultiIdent and \MultiBandit problems in the literature \citep{kalyanakrishnan2012pac,gabillon2012best}.
 
 \begin{algorithm}[htbp]
 {
@@ -408,7 +408,7 @@ The pseudo-code of \Algorithm is shown in Algorithm~\ref{algo:pac}.
 	\State Update number of pulls: $T_{t+1}(p_t)\gets T_{t}(p_t)+1$ and $T_{t+1}(e) \gets T_{t}(e)$ for all $e\not=p_t$
 	\EndFor
 \end{algorithmic}
-\caption{\Algorithm: Combinatorial Gap based Exploration}
+\caption{\Algorithm: Combinatorial Lower-Upper Confidence Bound}
 \label{algo:pac}
 }
 \end{algorithm}
@@ -574,6 +574,7 @@ Then we have $\rank(\M_{\MultiIdent(K)}) \le 2$ and $\rank(\M_{\MultiBandit(\mat
 %In addition, for the two problems, our definition of gaps $\Delta_e$ and $\mathbf H$ resembles the previous definitions \citep{kalyanakrishnan2012pac,gabillon2012best}.
 \end{example}
 
+
 Next we consider the problem of identifying the maximum matching or the shortest path in a setting where arms correspond to edges.
 For these problems, Theorem~\ref{theorem:main} establishes the first known sample complexity bound.
 \begin{example}[Matchings and Paths]
@@ -736,7 +737,7 @@ Then, the empirical gap of $e$ is calculated as $\bar w_t(M_t)-\bar w_t(\tilde M
 Finally, \AlgorithmBud chooses the  arm $p_t$ with the largest empirical gap.
 If $p_t\in M_t$ then $p_t$ is accepted otherwise $p_t$ is rejected.
 The pseudo-code of \AlgorithmBud is shown in Algorithm~\ref{algo:budget}.
-
+We note that \AlgorithmBud can be considered as a generalization of the SAR algorithm due to \citet{bubeck2013multiple}, which is designed specifically for the \MultiIdent and \MultiBandit problems.
 \begin{algorithm}[htbp]
 {
 \small
@@ -748,17 +749,14 @@ The pseudo-code of \AlgorithmBud is shown in Algorithm~\ref{algo:budget}.
 	\State $\tilde T_t \gets \left\lceil \frac{T-n}{\barlog(n)(n-t+1)} \right\rceil$
 	\State Pull each arm $e\in [n]\del (A_t\cup B_t)$ for $\tilde T_t - \tilde T_{t-1}$ times
 	\State Update the empirical means $\vec {\bar w}_t\in \RR^n$ of each active arm
-  %\Comment{The values on $A_t\cup B_t$ can be arbitrary.}
+  %\Comment{The values on $A_t\cup B_t$ can be arbitrary.}  
 	\State $M_t \gets \COracle(\vec {\bar w}_t, A_t, B_t)$
   \If{$M_t = \bot$}
     \State \textbf{fail:} set $\out\gets \bot$ and \textbf{return }$\out$
   \EndIf
 	\For{\textbf{each} $e \in [n]\del (A_t\cup B_t)$}
-		\If {$e\in M_t$}
-			\State $\tilde M_{t,e} \gets \COracle(\vec {\bar w}_t, A_t, B_t \cup \{e\})$
-	  \Else
-	    \State $\tilde M_{t,e} \gets \COracle(\vec {\bar w}_t, A_t \cup \{e\}, B_t)$
-	  \EndIf
+		\State \textbf{if } {$e\in M_t$} \textbf{then }  $\tilde M_{t,e} \gets \COracle(\vec {\bar w}_t, A_t, B_t \cup \{e\})$
+		\State \textbf{else} $\tilde M_{t,e} \gets \COracle(\vec {\bar w}_t, A_t \cup \{e\}, B_t)$
 	\EndFor
 	\State $p_t \gets \argmax_{i\in[n]\del (A_t\cup B_t)} \bar w_t(M_t) - \bar w_t(\tilde M_{t,i})$
   \Comment{ Define $\bar w_t(\bot) = -\infty$; Break ties arbitrarily.}
@@ -771,7 +769,7 @@ The pseudo-code of \AlgorithmBud is shown in Algorithm~\ref{algo:budget}.
 \State $\out\gets A_{n+1}$
 \State \textbf{return} $\out$
 \end{algorithmic}
-\caption{\AlgorithmBud: Combinatorial Gap-based Elimination}
+\caption{\AlgorithmBud: Combinatorial Successive Accept Reject}
 \label{algo:budget}
 }
 \end{algorithm}
@@ -809,25 +807,27 @@ In addition, applying Theorem~\ref{theorem:budget} back to \MultiIdent and \Mult
 %We also notice that the \AlgorithmBud algorithm uses solely the empirical means of arms to support its decision making; while \Algorithm uses explicitly constructed confidence intervals of the arms.
 %From this viewpoint, the \AlgorithmBud algorithm is quite different from \Algorithm, which leads to a substantially different analysis.
 %And we have to build different gadgets using the exchange classes.
-
+\vspace{-1em}
 \section{Related Work}
-
+\vspace{-1em}
 The multi-armed bandit problem has been extensively studied in both stochastic and adversarial settings \citep{lai1985asymptotically,auer2002nonstochastic,auer2002nonstochastic}.
 We refer readers to \citep{bubeck2012regret} for a survey on recent advances.
 Many work in MABs focus on minimizing the cumulative regret, which is an objective known to be fundamentally different from the objective of pure exploration MABs \citep{bubeck2010pure}.
-Among these work, a recent line of research considers a generalized setting called combinatorial bandits in which a set of arms (satisfying certain combinatorial constraint) is played on each round \citep{cesa2012combinatorial,chen2013combinatorial,kale2010non,neu2010online,audibert2009minimax,Bubeck12towardsminimax}.
+Among these work, a recent line of research considers a generalized setting called combinatorial bandits in which a set of arms (satisfying certain combinatorial constraint) is played on each round \citep{cesa2012combinatorial,chen2013combinatorial,kale2010non,neu2010online,audibert2009minimax,Bubeck12towardsminimax,gopalan2014thompson}.
 Note that the objective of these work is to minimize the cumulative regret, which differs from ours.
 
 In the literature of pure exploration MABs, the classical problem of identifying the single best arm has been well-studied in both fixed confidence and fixed budget settings \citep{mannor2004sample,bubeck2010pure,audibert2010best,gabillon2012best,jamieson2013lil,jamieson2014best}.
 A flurry of recent work extend this classical problem to \MultiIdent and \MultiBandit problems and provide algorithms and upper bounds \citep{kalyanakrishnan2010efficient,kalyanakrishnan2012pac,zhou2014optimal,bubeck2013multiple,NIPS2011_4478,gabillon2012best}.
 Our framework encompasses these two problems as special cases and covers a much larger class of combinatorial pure exploration problems, which are unaddressed in the current literature.
-Applying our results back to \MultiIdent and \MultiBandit, our upper bounds match the best known problem-dependent bounds due to \citet{gabillon2012best} and \citet{bubeck2013multiple}; and our lower bound provides the first problem-dependent lower bounds for these two problems, which are conjectured earlier by \citet{kalyanakrishnan2012pac} and \citet{bubeck2013multiple}.
+Applying our results back to \MultiIdent and \MultiBandit, our upper bounds match the best known problem-dependent bounds due to \citet{gabillon2012best,bubeck2013multiple} and \citet{kalyanakrishnan2012pac}; and our lower bound provides the first problem-dependent lower bounds for these two problems, which are conjectured earlier by \citet{kalyanakrishnan2012pac} and \citet{bubeck2013multiple}.
 %We also notice that a very recent due to XXX improves 
 %In addition, to our knowledge, there is no known problem-dependent lower bounds for \MultiIdent and \MultiBandit. 
 %Therefore, when applying our general lower bound to \MultiIdent and \MultiBandit, we obtain the first problem-dependent lower bounds for these two problems. 
 %Our result also shows that our upper bound is essentially tight (up to logarithmic factors) for these two problems.
 
+\vspace{-1em}
 \section{Conclusion}
+\vspace{-1em}
 In this paper, we proposed a general framework called \Problem which represents a rich class of structured pure exploration problems and admits potential applications in various domains.
 We have shown a number of results for the framework, including two novel learning algorithms, their related upper bounds and a novel lower bound.
 The proposed algorithms support a wide range of decision classes in a unifying way and our analysis introduced a novel tool called exchange class which maybe of independent interest.
@@ -969,7 +969,7 @@ $$
 $$
 \end{proof}
 
-Next we state two basic lemmas that help us to convert set-theoretical arguments to linear algebra arguments.
+Next we state two basic lemmas that help us to convert set-theoretical arguments to linear algebraic arguments.
 \begin{lemma}
 \label{lemma:max}
 Let $M, M' \subseteq [n]$ be two sets. Let $\vec \rad_t$ be an $n$-dimensional vector.
