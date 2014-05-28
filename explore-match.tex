@@ -140,11 +140,11 @@
 \begin{abstract}
 We study {\em combinatorial pure exploration (\Problem)} problem in the stochastic multi-armed bandit setting,
 	where a learner explores a set of arms with the objective of identifying the optimal set of arms
-	satisfying certain combinatorial constraints, such as size-$K$ subsets, matchings, spanning trees,
+	with certain combinatorial structures, such as size-$K$ subsets, matchings, spanning trees,
 	paths, etc.
-A collection of subsets of arms satisfying a combinatorial constraint is referred to as a {\em decision class}.	
+A collection of subsets of arms with certain combinatorial structure is referred to as a {\em decision class}.	
 Instead of solving each \Problem task in an ad-hoc way, we provide a general framework
-	and solutions that work for all decision classes which admit offline maximization oracles.  
+	as well as solutions that work for all decision classes which admit offline maximization oracles.  
 In particular, we present two algorithms for the general \Problem task: 
 	one for the fixed confidence setting and one for the fixed budget setting.
 We prove problem-dependent upper bounds of our algorithms. 
@@ -173,10 +173,11 @@ In addition, applying our results back to problems of top-$K$ arms identificatio
 
 \section{Introduction}
 
-For more than fifty years, multi-armed bandit (MAB) has been a predominant model for characterizing the tradeoff between exploration and exploitation in decision-making problems. 
-Although this tradeoff is intrinsic in many tasks, some application domains prefer a dedicated exploration procedure in which the goal is to identify an optimal object among a set of candidates and the reward or loss incurred during exploration is irrelevant.
+%After introduced in the seminal work of \citet{robbins1985some}, 
+Multi-armed bandit (MAB) is a predominant model for characterizing the tradeoff between exploration and exploitation in decision-making problems. 
+Although this tradeoff is intrinsic in many tasks, some application domains prefer a dedicated exploration procedure in which the goal is to identify an optimal object among a collection of candidates and the reward or loss incurred during exploration is irrelevant.
 In light of these applications, the related learning problem, called pure exploration in MABs, has received much attention.
-Recent results of pure exploration MABs have found potential applications in many domains including crowdsourcing, communication network and online advertising.
+Recent advances in pure exploration MABs have found potential applications in many domains including crowdsourcing, communication network and online advertising.
 
 In many  of these application domains, a recurring problem is to identify an optimal object with certain \emph{combinatorial structures}. 
 For example, a crowdsourcing application may want to find the best assignment from workers to tasks such that overall productivity of workers are maximized. 
@@ -220,9 +221,12 @@ As we have explained earlier, these types of combinatorial pure exploration prob
 
 %Finding optimal objects from decision classes with non-trivial structures
 The generality of \Problem framework raises several interesting challenges to the design and analysis of pure exploration algorithms. 
-One challenge is that the arms with the largest mean rewards may not belong to the optimal set. For example, consider the case where the decision class is the set of all matchings in a bipartite graph.  
+A clear challenge is that, instead of solving each \Problem task in an ad-hoc way, one requires a unified algorithm and analysis that supports different decision classes.
+Another challenge is that the arms with the largest mean rewards may not belong to the optimal set. 
+%This challenge stems from the combinatorial nature of the \Problem problem.
+For example, consider the case where the decision class is the set of all matchings in a bipartite graph.  
 In this case, a matching consisting of edges with relatively small weights may turn out to be optimal.  
-On the other hand, in many existing algorithms for pure exploration MABs, arms would no longer be considered once their expected reward are proven suboptimal during the learning process. 
+However, in many existing algorithms for pure exploration MABs, arms would no longer be considered once their expected reward are proven suboptimal during the learning process. 
 Therefore, the design and analysis of algorithms for \Problem demands different techniques which take both rewards and structures into account.
 \junk{
 Before describing our results, we recall two common settings in pure exploration problems: fixed confidence and fixed budget. 
@@ -263,9 +267,11 @@ In addition, when applying the algorithm to back \MultiIdent and \MultiBandit, o
 \textbf{Useful notations.} Let $[n]$ denote the set $\{1,\ldots,n\}$. Suppose that $\vec w\in \RR^{n}$ is a vector and $E\subseteq[n]$ is a set. 
 Let $w(i)$ denote the $i$-th entry of $\vec w$. 
 We define $w(E) \triangleq  \sum_{i\in E} w(i)$ to be the sum of entries indexed by $E$.
-Furthermore, we will use the convention that $\max_{M\in \emptyset} f(M) = -\infty$ and $\argmax_{M\in \emptyset} f(M) = \bot$ for any real-valued function $f$.
+Furthermore, we will use the convention that $\max_{M\in \emptyset} f(M) = -\infty$ for any real-valued function $f$.
 
+\vspace{-0.5em}
 \section{Problem Formulation}
+\vspace{-0.5em}
 %Let $\vec u \in \RR^{n}$ be a vector. 
 % and $M\subseteq [n]$ be a set. 
 %\textbf{\Problem: problem formulation.} 
@@ -280,7 +286,7 @@ It is well-known that the family of $R$-sub-Gaussian tail distributions encompas
 
 
 We define a \emph{decision class} $\M \subseteq 2^{[n]}$ as a collection of sets of arms.
-Let $M_*=\argmax_{M\in \M} w(M)$ denote the optimal set belonging to the decision class $\M$ which maximizes the sum of expected reward\footnote{For convenience, we will assume that $M_*$ is unique throughout the paper.}. 
+Let $M_*=\argmax_{M\in \M} w(M)$ denote the optimal set belonging to the decision class $\M$ which maximizes the sum of expected reward\footnote{For convenience, we will assume that $M_*$ is unique. We also assume that $\M$ is non-empty.}. 
 A learner's objective is to identify $M_*$ from $\M$ by playing the following game with the stochastic environment.
 %Let $\M\subseteq 2^{[n]}$ be the family of all feasible solutions to a combinatorial problem.
 %Let $M_* = \argmax_{M\in \M} w(M)$ denote the optimal set of arms which max
@@ -375,11 +381,12 @@ In particular, \Algorithm uses the confidence radius to compute an adjusted expe
 Intuitively, the adjusted expectation vector $\vec {\tilde w}_t$ penalizes arms belonging to the current set $M_t$ and encourages exploring arms out of $M_t$.
 \Algorithm then calls the oracle using the adjusted expectation vector $\vec {\tilde w}_t$ as input to compute a refined set $\tilde M_t = \Oracle(\vec {\tilde w}_t)$.
 If $\tilde w_t(\tilde M_t) = \tilde w_t(M_t)$ then \Algorithm stops and returns $\out=M_t$.
-Otherwise, \Algorithm pulls the arm belonging to the symmetric difference $(\tilde M_t \del M_t) \cup (M_t \del \tilde M_t)$ between $M_t$ and $\tilde M_t$ with the largest confidence radius in the end of round $t$.
+Otherwise, \Algorithm pulls the arm belonging to the symmetric difference $(\tilde M_t \del M_t) \cup (M_t \del \tilde M_t)$ between $M_t$ and $\tilde M_t$ with the largest confidence radius.
+This ends the $t$-th round of \Algorithm.
 The pseudo-code of \Algorithm is shown in Algorithm~\ref{algo:pac}. 
 We note that \Algorithm generalizes and unifies several different fixed confidence algorithms dedicated to the \MultiIdent and \MultiBandit problems in the literature \citep{kalyanakrishnan2012pac,gabillon2012best}.
 
-\begin{algorithm}[htbp]
+\begin{algorithm}[tb]
 {
 \small
 \begin{algorithmic}[1]
@@ -417,8 +424,8 @@ We note that \Algorithm generalizes and unifies several different fixed confiden
 \subsection{Sample complexity}
 %In this part, we analyze the performance of Algorithm~\ref{algo:pac} for both fixed confidence and fixed budget settings. 
 Now we prove a problem-dependent sample complexity bound of the \Algorithm algorithm. 
-Our sample complexity bound depends on the combinatorial properties of $\M$. 
-Therefore, to formally state our result, we need to introduce several definitions.
+Our sample complexity bound depends on the combinatorial structure of the decision class $\M$. 
+Therefore, to formally state our result, we need to introduce several notions to capture these structural properties.
 %To state our results, we need to define two quantities: gap and width.
 
 \textbf{Gap.} We begin with defining a natural hardness measure of the \Problem problem. 
@@ -439,7 +446,7 @@ We also define the hardness $\mathbf H$ as the sum of inverse squared gaps
 \end{equation}
 
 From Eq.~\eqref{eq:define-delta}, we see that, for each arm $e\not\in M_*$, the gap $\Delta_e$ represents sub-optimality of the best set that includes arm $e$; and, for each arm $e\in M_*$, the gap $\Delta_e$ is the sub-optimality of the best set that does not include arm $e$.
-This naturally generalizes previous definitions of gaps \citep{audibert2010best,NIPS2011_4478,kalyanakrishnan2010efficient,bubeck2013multiple}.
+This naturally generalizes and unifies previous definitions of gaps \citep{audibert2010best,NIPS2011_4478,kalyanakrishnan2010efficient,bubeck2013multiple}.
 %We notice that, for many combinatorial problems, the definition Eq.~\eqref{eq:define-delta} naturally reflects the hardness of an arm.
 %().
 %Figure X illustrates these interpretations.
@@ -448,13 +455,21 @@ This naturally generalizes previous definitions of gaps \citep{audibert2010best,
 
 
 \textbf{Exchange class and the width of a decision class.} 
-The analysis of our algorithm depends on certain exchange properties of combinatorial structures.
-To capture these properties, we introduce notions of \emph{exchange set} and \emph{exchange class} as tools for our analysis.
-We present their definitions in the following.
+A notable challenge of our analysis stems from the generality of \Algorithm which, as we have seen, supports a wide range of decision classes $\M$.
+Indeed, previous algorithms for special cases including \MultiIdent and \MultiBandit require a separate analysis for each individual type of problem.
+Such strategy is intractable for our setting and we need a unified analysis for all decision classes.
+Our solution to this challenge is a novel combinatorial construction called \emph{exchange class}, which is used as a proxy for the structure of the decision class.
+Intuitively, an exchange class $\B$ for a decision class $\M$ can be seen as a collection of ``patches'' (borrowing concepts from software engineering) such that, for any two different sets $M,M'\in \M$, one can transform $M$ to $M'$ by applying a series of patches of $\B$; and each application of a patch yields a valid member of $\M$.
+These patches are later used by our analysis to build gadgets that interpolate between different members of the decision class and serve to bridge different key quantities.
+%In addition, the smaller the patches are the 
+
+%The analysis of our algorithm depends on certain exchange properties of combinatorial structures.
+%To capture these properties, we introduce notions of \emph{exchange set} and \emph{exchange class} as tools for our analysis.
+%We present their definitions in the following.
 
 %An exchange set is defined as a pair of disjoint sets.
-
-We begin with the definition of exchange set. 
+Now we formally define the exchange class.
+We begin with the definition of exchange sets, which formalize the aforementioned ``patches''.
 We define an exchange set $b$ as an ordered pair of disjoint sets $b=(b_+,b_-)$ where $b_+\cap b_- = \emptyset$.
 Then, we define operator $\oplus$ such that, for any set $M \subseteq [n]$ and any exchange set $b=(b_+,b_-)$, we have $M\oplus b \triangleq M\del b_- \cup b_+$.
 Similarly, we also define operator $\ominus$ such that $M\ominus b \triangleq M\del b_+\cup b_-$.
@@ -462,13 +477,11 @@ Similarly, we also define operator $\ominus$ such that $M\ominus b \triangleq M\
 We call a collection of exchange sets $\B$ an \emph{exchange class for $\M$} if $\B$ satisfies the following property.
 Let $M$ and $M'$ be two  elements of $\M$.
 Then, for any $e \in (M\del M')$, there exists an exchange set $(b_+,b_-)\in \B$ which satisfies $e\in b_-$, $b_+ \subseteq M'\del M$, $b_- \subseteq M \del M'$, $(M\oplus b) \in \M$ and $(M'\ominus b) \in \M$.
-Next, we define the \emph{width} of exchange class $\B$ to be the size of largest exchange set as follows
+In our analysis, the key quantity associated with the exchange class is called \emph{width}, which is defined as the size of largest exchange set as follows
 \begin{equation}
 \label{eq:width}
 \rank(\B) = \max_{(b_+,b_-) \in \B} |b_+|+|b_-|.
 \end{equation}
-Intuitively an exchange class $\B$ for $\M$ can be seen as a collection of ``patches'' (borrowing concepts from software engineering) such that, for any two different sets $M,M'\in \M$, one can convert from $M$ to $M'$ by applying a series of patches from $\B$, i.e. $M'=M\oplus b_1 \oplus \ldots \oplus b_k$. 
-These patches are later used by our analysis to build gadgets that interpolate between different members of the decision class and serve to bridge different quantities.
 %The width o reflects the granularity of these patches.
 
 
@@ -554,9 +567,9 @@ By combining Lemma~\ref{lemma:example-exchange-class} and Theorem~\ref{theorem:m
 
 \subsection{Examples of decision classes}
 
-Now we investigate several concrete types of decision classes, which correspond to different structured pure exploration problems. 
+Now we investigate several concrete types of decision classes, which correspond to different \Problem tasks.
 We analyze the width of these decision classes and apply \Cref{theorem:main} to obtain the sample complexity bounds.
-A more detailed analysis and construction can be found in the supplementary material.
+A more detailed analysis and the constructions of exchange classes can be found in the supplementary material.
 %Our bounds of width are proven b
 %and apply Theorem~\ref{theorem:main} for these classes. 
 We begin with the problem of top-$K$ arm identification (\MultiIdent) and multi-bandit best arms identification (\MultiBandit).
@@ -575,7 +588,7 @@ Then we have $\rank(\M_{\MultiIdent(K)}) \le 2$ and $\rank(\M_{\MultiBandit(\mat
 \end{example}
 
 
-Next we consider the problem of identifying the maximum matching or the shortest path in a setting where arms correspond to edges.
+Next we consider the problem of identifying the maximum matching or the problem of finding the shortest path in a setting where arms correspond to edges.
 For these problems, Theorem~\ref{theorem:main} establishes the first known sample complexity bound.
 \begin{example}[Matchings and Paths]
 Let $G(V,E)$ be a graph with $n$ edges and assume there is a one-to-one mapping between edges $E$ and arms $[n]$.
@@ -653,8 +666,9 @@ In \Cref{fig:exchange:matroid}, we use spanning tree as a specific instance of \
 %Hence, intuitively, an exchange class for $\M$ characterizes the ``operations'' of transforming an element $M\in \M$ to another element $M'\in \M$.
 
 
-
+\vspace{-0.5em}
 \section{Lower Bound}
+\vspace{-0.5em}
 In this section, we present a problem-dependent lower bound on the sample complexity of the \Problem problem. 
 To state our results, we first define the notion of \emph{$\delta$-correct algorithm} as follows.
 For any $\delta \in (0,1)$, we call an algorithm $\mathbb A$ a $\delta$-correct algorithm if, for any expected reward $\vec w \in \RR^{n}$, the probability of error of $\mathbb A$ is at most $\delta$, i.e. $\Pr[M_*\not =\out] \le \delta$, where $\out$ is the output of algorithm $\mathbb A$.
@@ -692,8 +706,9 @@ In the supplementary material, we provide evidence on this conjecture which is a
  %dependency on $\rank(\M)$ of the sample complexity might be intrinsic. 
 %In the supplementary material, we provide evidence showing that the sample complexity of any $\delta$-correct algorithm should be related to size of exchange sets. 
 
-
+\vspace{-0.5em}
 \section{Fixed Budget Algorithm}
+\vspace{-0.5em}
 In this section, we present \AlgorithmBud, a parameter-free learning algorithm for the \Problem problem in the fixed budget setting.
 Then, we upper bound the probability of error \AlgorithmBud in terms of $\mathbf H$ and $\rank(\M)$.
 %Recall that, in the fixed budget setting, an algorithm is given a budget $T>0$ such that the algorithm can use at most $T$ pulls.
@@ -702,15 +717,19 @@ Then, we upper bound the probability of error \AlgorithmBud in terms of $\mathbf
 \textbf{Constrained oracle.} 
 The \AlgorithmBud algorithm requires access to a \emph{constrained oracle}, which is a function denoted as $\COracle: \RR^{n}\times 2^{[n]} \times 2^{[n]} \rightarrow \M \cup \{\bot\}$ and satisfies
 $$
-\COracle(\vec v, A, B) \in \argmax_{M\in \M_{A,B}} v(M),
+\COracle(\vec v, A, B)=
+\begin{cases} 
+	\argmax_{M\in \M_{A,B}} v(M) & \text{if } \M_{A,B} \not= \emptyset\\
+	\bot & \text{if }\M_{A,B} = \emptyset,\\
+\end{cases}
 $$
-where $\M_{A,B}=\{M\in \M \mid A\subseteq M, B\cap M = \emptyset\}$.
+where $\M_{A,B}=\{M\in \M \mid A\subseteq M, B\cap M = \emptyset\}$ and $\bot$ is a null symbol.
 %The function $\COracle$ takes three inputs: (1) a weight vector $\vec v$, (2) a set $A$ of positive constraints and (3) a set $B$ of negative constraints; the function returns a set such that
 %$\COracle(\vec v, A, B) \in \argmax_{M \in  \M_{a,b}} v(M)$,
 %where $\M_{a,b}=\{M\in \M \mid a\subseteq M, b\cap M = \emptyset\}$.
-Hence we see that $\COracle(\vec v, A, B)$ returns an optimal set that includes all elements of $A$ while excluding all elements of $B$; and if there is no feasible set (i.e. $\M_{A,B} = \emptyset$), the oracle $\COracle(\vec v, A, B)$ returns the null symbol $\bot$.
+Hence we see that $\COracle(\vec v, A, B)$ returns an optimal set that includes all elements of $A$ while excluding all elements of $B$; and if there are no feasible sets, the oracle $\COracle(\vec v, A, B)$ returns the null symbol $\bot$.
 %It is clear that constrained oracles exist for many combinatorial problems including the four examples we considered in this paper.
-We show that constrained oracles are equivalent to maximization oracles up to a transformation on the weight vector in the supplementary material.
+In the supplementary material, we show that constrained oracles are equivalent to maximization oracles up to a transformation on the weight vector.
 In addition, similar to \Algorithm, \AlgorithmBud does not need any additional knowledge of $\M$ other than accesses to a constrained oracle for $\M$.
 
 
@@ -737,7 +756,7 @@ Then, the empirical gap of $e$ is calculated as $\bar w_t(M_t)-\bar w_t(\tilde M
 Finally, \AlgorithmBud chooses the  arm $p_t$ with the largest empirical gap.
 If $p_t\in M_t$ then $p_t$ is accepted otherwise $p_t$ is rejected.
 The pseudo-code of \AlgorithmBud is shown in Algorithm~\ref{algo:budget}.
-We note that \AlgorithmBud can be considered as a generalization of the SAR algorithm due to \citet{bubeck2013multiple}, which is designed specifically for the \MultiIdent and \MultiBandit problems.
+We note that \AlgorithmBud can be considered as a generalization of the two versions of SAR algorithm due to \citet{bubeck2013multiple}, which are designed specifically for the \MultiIdent and \MultiBandit problems respectively.
 \begin{algorithm}[htbp]
 {
 \small
@@ -773,7 +792,6 @@ We note that \AlgorithmBud can be considered as a generalization of the SAR algo
 \label{algo:budget}
 }
 \end{algorithm}
-
 
 \subsection{Probability of error}
 In the following theorem, we bound that the probability of error of the \AlgorithmBud algorithm.
@@ -1372,7 +1390,7 @@ We will use $\tilde M_t \oplus b$ as a gadget for this case.
 
 
 Next, we define vectors $\vec d = \vec \chi_{\tilde M_t} - \vec \chi_{M_t}$ and $\vec d_1 = \vec\chi_{\tilde M_t\oplus b}-\vec\chi_{M_t}$.
-Notice that Lemma~\ref{lemma:exchange} gives that $\vec d_1= \vec d+\vec b$.
+Notice that Lemma~\ref{lemma:exchange-char} gives that $\vec d_1= \vec d+\vec \chi_b$.
 
 Then, we apply Lemma~\ref{lemma:max} by setting $M = M_t$ and $M' = \tilde M_t$. 
 This shows that 
@@ -1504,7 +1522,7 @@ More specifically, we consider the notion of $(\epsilon,\delta)$-PAC algorithm.
 Formally, an algorithm $\mathbb A$ is called an $(\epsilon,\delta)$-PAC algorithm if its output $\out$ satisfies $\Pr\big[w(M_*)-w(\out) > \epsilon\big] \le \delta$.
 
 We show that a simple modification on the \Algorithm algorithm gives an $(\epsilon,\delta)$-PAC algorithm, with guarantees similar  to Theorem~\ref{theorem:main}.
-In fact, the only modification needed is to change the stopping condition from $\tilde w_t(\tilde M_t)\le \tilde w_t(M_t)$ to $w(\tilde M_t)-w(M_t) \le \epsilon$ on line~\ref{algo:step:D} of Algorithm~\ref{algo:pac}.
+In fact, the only modification needed is to change the stopping condition from $\tilde w_t(\tilde M_t) = \tilde w_t(M_t)$ to $w(\tilde M_t)-w(M_t) \le \epsilon$ on line~\ref{algo:step:D} of Algorithm~\ref{algo:pac}.
 We let  \AlgorithmPAC denote the modified algorithm.
 In the following theorem, we show that \AlgorithmPAC is indeed an $(\epsilon,\delta)$-PAC algorithm and has sample complexity similar to \Algorithm.
 \begin{restatable}{theorem}{resultpac}
@@ -2975,7 +2993,7 @@ Therefore, Fact~\ref{fact:coracle} shows that maximization oracles are equivalen
   \EndIf
 \EndFor
 \State $M \gets \Oracle(\vec w_2)$
-\If{$B\cap M = \emptyset$ and $A\subseteq \out$}
+\If{$B\cap M = \emptyset$ and $A\subseteq M$}
   \State $\out=M$
 \Else
   \State $\out=\bot$
