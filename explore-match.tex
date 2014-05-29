@@ -267,7 +267,7 @@ In addition, when applying the algorithm to back \MultiIdent and \MultiBandit, o
 \textbf{Useful notations.} Let $[n]$ denote the set $\{1,\ldots,n\}$. Suppose that $\vec w\in \RR^{n}$ is a vector and $E\subseteq[n]$ is a set. 
 Let $w(i)$ denote the $i$-th entry of $\vec w$. 
 We define $w(E) \triangleq  \sum_{i\in E} w(i)$ to be the sum of entries indexed by $E$.
-Furthermore, we will use the convention that $\max_{M\in \emptyset} f(M) = -\infty$ for any real-valued function $f$.
+Furthermore, we will use the convention that $\max_{M\in \emptyset} f(M) = -\infty$ for any real-valued function $f$. \wei{Do we need this convention?}
 
 \vspace{-0.5em}
 \section{Problem Formulation}
@@ -294,7 +294,7 @@ A learner's objective is to identify $M_*$ from $\M$ by playing the following ga
 %The learning problem of pure exploration combinatorial bandit can be formalized as a game between a learner and a stochastic environment, where the learner's goal is to find the optimal solution to the combinatorial problem which maximizes the sum of expected reward $M_* = \argmax_{M\in \M} w(M)$.
 At the beginning of the game, the decision class $\M$ is revealed to the learner while the reward distributions $\{\Rew_e\}_{e\in[n]}$ are unknown to the learner.
 Then, the learner plays the game over a sequence of rounds;
-on each round $t$, the learner pulls an arm $p_t\in [n]$ and observes a reward sampled from the associated reward distribution $\Rew_{p_t}$.
+in each round $t$, the learner pulls an arm $p_t\in [n]$ and observes a reward sampled from the associated reward distribution $\Rew_{p_t}$.
 The game continues until certain stopping condition is satisfied.
 %which will be specified later.
 After the game finishes, the learner need to output a set $\out \in \M$.
@@ -340,12 +340,13 @@ In this case, the learner's performance is measured by the probability of error.
 %In this section, we describe our algorithm for pure exploration combinatorial bandit problem.
 %Then, we analyze the sample complexity and the probability of error of our algorithm.
 
-In this section, we present \Algorithm, a learning algorithm for the \Problem problem in the fixed confidence setting, and analyze its sample complexity. 
-En route to our sample complexity bound, we introduce the notions of exchange class and widths, which characterize the certain exchange properties of combinatorial structures.
+In this section, we present \Algorithm,\wei{Do we need to give its full name, or some explanation on what
+it stands for?} a learning algorithm for the \Problem problem in the fixed confidence setting, and analyze its sample complexity. 
+En route to our sample complexity bound, we introduce the notions of exchange class and widths, which characterize certain exchange properties of combinatorial structures.
 %Our analysis uses tools developed using exchange classes.
 %Then, we analyze the sample complexity of \Algorithm algorithm.
-Furthermore, the \Algorithm algorithm can be extended to the fixed budget and PAC learning settings.
-We will discuss these extensions in the supplementary material (Section~\ref{section:extensions}).
+Furthermore, the \Algorithm algorithm can be extended to the fixed budget and PAC learning settings,
+	the discussion of which is included in the supplementary material (Section~\ref{section:extensions}).
 %Now we begin with introducing the notion of oracles.
 %Many common combinatorial problems admit computationally efficient oracles.
 
@@ -364,12 +365,13 @@ Besides the access to the oracle, \Algorithm does not need \emph{any} additional
 
 
 \textbf{Algorithm.} 
-Now we describe the details of \Algorithm.
+Now we describe the details of \Algorithm, as shown in Algorithm~\ref{algo:pac}.
 %
 %Our algorithm works for both fixed confidence and fixed budget settings.
 %In either settings, the behaviors of our algorithm only differ in the construction of confidence radius and the stopping condition.
 %In the following, we describe the procedure of our algorithm.
 During its execution, the \Algorithm algorithm maintains empirical mean $\bar w_t(e)$ and confidence radius $\rad_t(e)$ for each arm $e\in[n]$ and each round $t$.
+\wei{Do we still want to change $\bar w_t(e)$ to $\hat w_t(e)$?}
 The construction of confidence radius ensures that $|w(e)-\bar w_t(e)| \le \rad_t(e)$ holds with high probability for each arm $e \in [n]$ and each round $t>0$.
 \Algorithm begins with an initialization phase in which each arm is pulled once.
 Then, at round $t \ge n$, \Algorithm uses the following procedure to choose an arm to play. 
@@ -381,9 +383,10 @@ In particular, \Algorithm uses the confidence radius to compute an adjusted expe
 Intuitively, the adjusted expectation vector $\vec {\tilde w}_t$ penalizes arms belonging to the current set $M_t$ and encourages exploring arms out of $M_t$.
 \Algorithm then calls the oracle using the adjusted expectation vector $\vec {\tilde w}_t$ as input to compute a refined set $\tilde M_t = \Oracle(\vec {\tilde w}_t)$.
 If $\tilde w_t(\tilde M_t) = \tilde w_t(M_t)$ then \Algorithm stops and returns $\out=M_t$.
+\wei{Is there a difference of using $\tilde w_t(\tilde M_t) = \tilde w_t(M_t)$ or using
+	$\tilde M_t = M_t$?}
 Otherwise, \Algorithm pulls the arm belonging to the symmetric difference $(\tilde M_t \del M_t) \cup (M_t \del \tilde M_t)$ between $M_t$ and $\tilde M_t$ with the largest confidence radius.
 This ends the $t$-th round of \Algorithm.
-The pseudo-code of \Algorithm is shown in Algorithm~\ref{algo:pac}. 
 We note that \Algorithm generalizes and unifies the ideas of several different fixed confidence algorithms dedicated to the \MultiIdent and \MultiBandit problems in the literature \citep{kalyanakrishnan2012pac,gabillon2012best,kaufmann2013information}.
 
 \begin{algorithm}[tb]
@@ -471,12 +474,15 @@ These patches are later used by our analysis to build gadgets that interpolate b
 %An exchange set is defined as a pair of disjoint sets.
 Now we formally define the exchange class.
 We begin with the definition of exchange sets, which formalize the aforementioned ``patches''.
-We define an exchange set $b$ as an ordered pair of disjoint sets $b=(b_+,b_-)$ where $b_+\cap b_- = \emptyset$.
+We define an exchange set $b$ as an ordered pair of disjoint sets $b=(b_+,b_-)$ where $b_+\cap b_- = \emptyset$. \wei{and $b_+, b_- \subseteq [n]$!?}
 Then, we define operator $\oplus$ such that, for any set $M \subseteq [n]$ and any exchange set $b=(b_+,b_-)$, we have $M\oplus b \triangleq M\del b_- \cup b_+$.
 Similarly, we also define operator $\ominus$ such that $M\ominus b \triangleq M\del b_+\cup b_-$.
 
+\wei{There is no intuitive connection on exchange class with the regret bound. Also,
+it would be better to intuitively explain why those exchange sets are patches.}
 We call a collection of exchange sets $\B$ an \emph{exchange class for $\M$} if $\B$ satisfies the following property.
 Let $M$ and $M'$ be two  elements of $\M$.
+\wei{The definition of $\B$ is for any pair of $M$ and $M'$ or there exists such a pair?}
 Then, for any $e \in (M\del M')$, there exists an exchange set $(b_+,b_-)\in \B$ which satisfies $e\in b_-$, $b_+ \subseteq M'\del M$, $b_- \subseteq M \del M'$, $(M\oplus b) \in \M$ and $(M'\ominus b) \in \M$.
 In our analysis, the key quantity associated with the exchange class is called \emph{width}, which is defined as the size of largest exchange set as follows
 \begin{equation}
@@ -511,7 +517,7 @@ We define the width of a decision class $\M$ as the width of the thinnest exchan
 \label{eq:width-class}
 \rank(\M) = \min_{\B \in \Exchange(\M)} \rank(\B),
 \end{equation}
-where $\rank(\B)$ is defined in Eq.~\eqref{eq:width}.
+where $\rank(\B)$ is defined in Eq.~\eqref{eq:width}.\wei{This line could be removed.}
 
 \junk{
 Next, we investigate the exchange classes for our running examples.
@@ -581,7 +587,7 @@ For any $K\in[n]$, the problem of finding the top $K$ arms with the largest expe
 Let $\mathcal A=\{A_1,\ldots,A_m\}$ be a partition of $[n]$. 
 The problem of identifying the best arms from each group of arms $A_1,\ldots,A_m$ can be modeled by decision class
 $\M_{\MultiBandit(\mathcal A)} = \{M \subseteq [n] \mid \forall i\in [m], |M\cap A_i| = 1\}$.
-
+\wei{Need to mention that the oracle here is the trivial one.}
 
 Then we have $\rank(\M_{\MultiIdent(K)}) \le 2$ and $\rank(\M_{\MultiBandit(\mathcal A)}) \le 2$
 (see Fact~\ref{fact:topk} and \ref{fact:multibandit} in the supplementary material) and therefore the sample complexity of \Algorithm for solving \MultiIdent and \MultiBandit is $O\big(\mathbf H \log(\mathbf H/\delta)\big)$,  which matches previous results in the fixed confidence setting \citep{kalyanakrishnan2012pac,gabillon2012best,kaufmann2013information} up to constant factors.
@@ -672,7 +678,7 @@ In \Cref{fig:exchange:matroid}, we use spanning tree as a specific instance of \
 \vspace{-0.5em}
 In this section, we present a problem-dependent lower bound on the sample complexity of the \Problem problem. 
 To state our results, we first define the notion of \emph{$\delta$-correct algorithm} as follows.
-For any $\delta \in (0,1)$, we call an algorithm $\mathbb A$ a $\delta$-correct algorithm if, for any expected reward $\vec w \in \RR^{n}$, the probability of error of $\mathbb A$ is at most $\delta$, i.e. $\Pr[M_*\not =\out] \le \delta$, where $\out$ is the output of algorithm $\mathbb A$.
+For any $\delta \in (0,1)$, we call an algorithm $\mathbb A$ a $\delta$-correct algorithm if, for any expected reward $\vec w \in \RR^{n}$, the probability of error of $\mathbb A$ is at most $\delta$, i.e. $\Pr[M_*\not =\out] \le \delta$, where $\out$ is the output of $\mathbb A$.
 
 We show that, for any decision class $\M$ and any expected rewards $\vec w$, any $\delta$-correct algorithm $\mathbb A$ must use at least $\Omega\big(\mathbf H \log(1/\delta) \big)$ samples in expectation.
 \begin{restatable}{theorem}{lowerbound}
@@ -745,7 +751,8 @@ The arms that are neither accepted nor rejected are sampled for a equal number o
 For decision classes with non-trivial combinatorial structures, one cannot simply accept/reject arms according to their empirical means, since an arm with small expected reward may belong to the optimal set.
 We resolve this challenge by using a novel gap estimation method for decision making and demonstrate that \AlgorithmBud can achieve a small probability of error.}
 
-Now we describe the procedure of the \AlgorithmBud algorithm for choosing an arm to accept/reject.
+Now we describe the procedure of the \AlgorithmBud algorithm for choosing an arm to accept/reject
+	(Algorithm~\ref{algo:budget}).
 Let $A_t$ denote the set of accepted arms before phase $t$ and let $B_t$ denote the set of rejected arms before phase $t$.
 We call an arm $e$ to be active if $e\not\in A_t\cup B_t$.
 Then, in phase $t$, \AlgorithmBud samples each active arm for $\tilde T_t -\tilde T_{t-1}$ times, where the definition of $\tilde T_t$ is given in Algorithm~\ref{algo:budget}.
@@ -756,7 +763,6 @@ Conversely, if $e\not\in M_t$, then \AlgorithmBud computes an optimal $\tilde M_
 Then, the empirical gap of $e$ is calculated as $\bar w_t(M_t)-\bar w_t(\tilde M_{t,e})$.
 Finally, \AlgorithmBud chooses the  arm $p_t$ with the largest empirical gap.
 If $p_t\in M_t$ then $p_t$ is accepted otherwise $p_t$ is rejected.
-The pseudo-code of \AlgorithmBud is shown in Algorithm~\ref{algo:budget}.
 We note that \AlgorithmBud can be considered as a generalization of the ideas of the two versions of SAR algorithm due to \citet{bubeck2013multiple}, which are designed specifically for the \MultiIdent and \MultiBandit problems respectively.
 \begin{algorithm}[htbp]
 {
@@ -848,9 +854,12 @@ Applying our results back to \MultiIdent and \MultiBandit, our upper bounds matc
 \vspace{-1em}
 \section{Conclusion}
 \vspace{-1em}
-In this paper, we proposed a general framework called \Problem which represents a rich class of structured pure exploration problems and admits potential applications in various domains.
+In this paper, we proposed a general framework called combinatorial pure exploration (CPE) that
+	can handle pure exploration tasks for many complex bandit problems with combinatorial constraints, and
+	have potential applications in various domains.
+%\Problem which represents a rich class of structured pure exploration problems and admits potential applications in various domains.
 We have shown a number of results for the framework, including two novel learning algorithms, their related upper bounds and a novel lower bound.
-The proposed algorithms support a wide range of decision classes in a unifying way and our analysis introduced a novel tool called exchange class which maybe of independent interest.
+The proposed algorithms support a wide range of decision classes in a unifying way and our analysis introduced a novel tool called exchange class which may be of independent interest.
 Our upper and lower bounds characterize the complexity of the \Problem problem: the sample complexity of our algorithm is optimal (up to a logarithmic factor) for the decision classes derived from matroids (including \MultiIdent and \MultiBandit), while for general decision classes, our upper and lower bounds are within a relatively benign factor.
 %We presented two learning algorithms  for the \Problem problem in both fixed confidence (\Algorithm) and fixed budget settings (\AlgorithmBud) and proved problem-dependent performance guarantees using a novel tool called exchange class.
 %The proposed algorithms support a wide range of decision classes and only require accesses to a maximization oracle.
