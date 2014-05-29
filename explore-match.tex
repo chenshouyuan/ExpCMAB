@@ -151,7 +151,7 @@ We prove problem-dependent upper bounds of our algorithms.
 Our analysis exploits the combinatorial structures of the decision classes and introduces a new analytic tool.
 We also establish a general problem-dependent lower bound for the \Problem problem.
 Our results show that the proposed algorithms achieve optimal sample complexity (within logarithmic factors) for many decision classes. 
-In addition, applying our results back to problems of top-$K$ arms identification and multiple bandit best arms identification, we recover the best known upper bounds and settles two open conjectures on the lower bounds.
+In addition, applying our results back to problems of top-$K$ arms identification and multiple bandit best arms identification, we recover the state-of-the-art upper bounds and settles two open conjectures on the lower bounds.
 
 %\wei{Currently not mentioning PAC result extension. Perhaps OK as long as we mention it in the intro.}
 
@@ -221,7 +221,7 @@ As we have explained earlier, these types of combinatorial pure exploration prob
 
 %Finding optimal objects from decision classes with non-trivial structures
 The generality of \Problem framework raises several interesting challenges to the design and analysis of pure exploration algorithms. 
-A clear challenge is that, instead of solving each \Problem task in an ad-hoc way, one requires a unified algorithm and analysis that supports different decision classes.
+One challenge is that, instead of solving each \Problem task in an ad-hoc way, one requires a unified algorithm and analysis that supports different decision classes.
 Another challenge is that the arms with the largest mean rewards may not belong to the optimal set. 
 %This challenge stems from the combinatorial nature of the \Problem problem.
 For example, consider the case where the decision class is the set of all matchings in a bipartite graph.  
@@ -238,12 +238,12 @@ In the fixed budget setting, the learner uses at most a fixed number of samples 
 In this paper, we propose two general learning algorithms for the \Problem problem: one for the fixed confidence setting and one for the fixed budget setting.
 Both algorithms support a wide range of decision classes in a unified way. 
 %In this paper, we develop a learning algorithm for the \Problem problem in the fixed confidence setting that supports a very wide range of decision classes, which is referred as Combinatorial Gap Exploration (\Algorithm) algorithm.%
-In the fixed confidence setting, we present Combinatorial Gap Exploration (\Algorithm) algorithm.
+In the fixed confidence setting, we present Combinatorial Lower-Upper Confidence Bound (\Algorithm) algorithm.
 The \Algorithm algorithm does not need to know the definition of the decision class, as long as it has access to the decision class through a maximization oracle.
 %Algorithm is an efficient and practical algorithm that works for a very wide range of decision classes. 
 We upper bound the number of samples used by \Algorithm. 
 This sample complexity bound depends on both expected reward and the structure of decision class. 
-When specializing our result into \MultiIdent and \MultiBandit, we recover previous sample complexity bounds due to \citet{kalyanakrishnan2012pac} and \citet{gabillon2012best}.
+When specializing our result into \MultiIdent and \MultiBandit, we recover previous sample complexity bounds \citep{kalyanakrishnan2012pac,gabillon2012best} up to constant factors.
 % with a small improvement in the logarithmic factors. 
 While for other decision classes in general, our result establishes the first sample complexity upper bound. 
 Our analysis relies on a novel combinatorial construction called \emph{exchange class} which we believe may be of independent interest for other combinatorial optimization problems. 
@@ -256,7 +256,7 @@ For more general decision classes, our results shows that the upper and lower bo
 To the best of our knowledge, there are few problem-dependent lower bounds known for pure exploration MABs besides the case of identifying the single best arm \citep{mannor2004sample,audibert2010best}.
 We also notice that our result resolves the open conjectures of \citet{kalyanakrishnan2012pac} and \citet{bubeck2013multiple} on the sample complexity lower bounds of \MultiIdent and \MultiBandit problems.
 
-In the fixed budget setting, we present a parameter-free algorithm called Combinatorial Gap-based Elimination (\AlgorithmBud) algorithm.
+In the fixed budget setting, we present a parameter-free algorithm called Combinatorial Successive Accept Reject (\AlgorithmBud) algorithm.
 We prove a probability of error bound of the \AlgorithmBud algorithm. 
 This bound can be shown to be equivalent to the sample complexity bound of \Algorithm within logarithmic factors, although the two algorithms are based on quite different techniques. 
 Our analysis of \AlgorithmBud re-uses exchange classes as tools. 
@@ -285,8 +285,8 @@ Formally, if $X$ is a random variable drawn according to $\Rew_e$, then, for all
 It is well-known that the family of $R$-sub-Gaussian tail distributions encompasses all distributions that are supported on $[0,R]$ as well as Gaussian distributions with variance $R^2$ (cf. \citep{pollard2000asymptopia}).
 
 
-We define a \emph{decision class} $\M \subseteq 2^{[n]}$ as a collection of sets of arms.
-Let $M_*=\argmax_{M\in \M} w(M)$ denote the optimal set belonging to the decision class $\M$ which maximizes the sum of expected reward\footnote{For convenience, we will assume that $M_*$ is unique. We also assume that $\M$ is non-empty.}. 
+We define a \emph{decision class} $\M \subseteq 2^{[n]}$ as a non-empty collection of sets of arms.
+Let $M_*=\argmax_{M\in \M} w(M)$ denote the optimal set belonging to the decision class $\M$ which maximizes the sum of expected reward\footnote{For convenience, we will assume that $M_*$ is unique.}. 
 A learner's objective is to identify $M_*$ from $\M$ by playing the following game with the stochastic environment.
 %Let $\M\subseteq 2^{[n]}$ be the family of all feasible solutions to a combinatorial problem.
 %Let $M_* = \argmax_{M\in \M} w(M)$ denote the optimal set of arms which max
@@ -351,7 +351,7 @@ We will discuss these extensions in the supplementary material (Section~\ref{sec
 
 \textbf{Oracle.}
 We allow the \Algorithm algorithm to access a \emph{maximization oracle}. 
-A maximization oracle takes a weight vector $\vec v \in \RR^{n}$ as input and finds an optimal set within a given decision class $\M$ with respect to the weight vector $\vec v$.
+A maximization oracle takes a weight vector $\vec v \in \RR^{n}$ as input and finds an optimal set from a given decision class $\M$ with respect to the weight vector $\vec v$.
 Formally, we call a function $\text{Oracle:}~\RR^{n} \rightarrow \M$ a maximization oracle for $\M$ if, for all $\vec v\in \RR^{n}$, we have $\Oracle(\vec v) \in \argmax_{M\in \M} v(M)$.
 It is clear that a wide range of decision classes admit such maximization oracles, including decision classes correspond to collections of matchings, paths or bases of matroids (see later for concrete examples).
 Besides the access to the oracle, \Algorithm does not need \emph{any} additional knowledge of the decision class $\M$.
@@ -384,7 +384,7 @@ If $\tilde w_t(\tilde M_t) = \tilde w_t(M_t)$ then \Algorithm stops and returns 
 Otherwise, \Algorithm pulls the arm belonging to the symmetric difference $(\tilde M_t \del M_t) \cup (M_t \del \tilde M_t)$ between $M_t$ and $\tilde M_t$ with the largest confidence radius.
 This ends the $t$-th round of \Algorithm.
 The pseudo-code of \Algorithm is shown in Algorithm~\ref{algo:pac}. 
-We note that \Algorithm generalizes and unifies several different fixed confidence algorithms dedicated to the \MultiIdent and \MultiBandit problems in the literature \citep{kalyanakrishnan2012pac,gabillon2012best}.
+We note that \Algorithm generalizes and unifies the ideas of several different fixed confidence algorithms dedicated to the \MultiIdent and \MultiBandit problems in the literature \citep{kalyanakrishnan2012pac,gabillon2012best,kaufmann2013information}.
 
 \begin{algorithm}[tb]
 {
@@ -420,8 +420,9 @@ We note that \Algorithm generalizes and unifies several different fixed confiden
 }
 \end{algorithm}
 
-
+\vspace{-0.3em}
 \subsection{Sample complexity}
+\vspace{-0.3em}
 %In this part, we analyze the performance of Algorithm~\ref{algo:pac} for both fixed confidence and fixed budget settings. 
 Now we prove a problem-dependent sample complexity bound of the \Algorithm algorithm. 
 Our sample complexity bound depends on the combinatorial structure of the decision class $\M$. 
@@ -583,7 +584,7 @@ $\M_{\MultiBandit(\mathcal A)} = \{M \subseteq [n] \mid \forall i\in [m], |M\cap
 
 
 Then we have $\rank(\M_{\MultiIdent(K)}) \le 2$ and $\rank(\M_{\MultiBandit(\mathcal A)}) \le 2$
-(see Fact~\ref{fact:topk} and \ref{fact:multibandit} in the supplementary material) and therefore the sample complexity of \Algorithm for solving \MultiIdent and \MultiBandit is $O\big(\mathbf H \log(\mathbf H/\delta)\big)$,  which matches previous results in the fixed confidence setting \citep{kalyanakrishnan2012pac,gabillon2012best}.
+(see Fact~\ref{fact:topk} and \ref{fact:multibandit} in the supplementary material) and therefore the sample complexity of \Algorithm for solving \MultiIdent and \MultiBandit is $O\big(\mathbf H \log(\mathbf H/\delta)\big)$,  which matches previous results in the fixed confidence setting \citep{kalyanakrishnan2012pac,gabillon2012best,kaufmann2013information} up to constant factors.
 %In addition, for the two problems, our definition of gaps $\Delta_e$ and $\mathbf H$ resembles the previous definitions \citep{kalyanakrishnan2012pac,gabillon2012best}.
 \end{example}
 
@@ -723,7 +724,7 @@ $$
 	\bot & \text{if }\M_{A,B} = \emptyset,\\
 \end{cases}
 $$
-where $\M_{A,B}=\{M\in \M \mid A\subseteq M, B\cap M = \emptyset\}$ and $\bot$ is a null symbol.
+where $\M_{A,B}=\{M\in \M \mid A\subseteq M, B\cap M = \emptyset\}$ is the collection of feasible sets and $\bot$ is a null symbol.
 %The function $\COracle$ takes three inputs: (1) a weight vector $\vec v$, (2) a set $A$ of positive constraints and (3) a set $B$ of negative constraints; the function returns a set such that
 %$\COracle(\vec v, A, B) \in \argmax_{M \in  \M_{a,b}} v(M)$,
 %where $\M_{a,b}=\{M\in \M \mid a\subseteq M, b\cap M = \emptyset\}$.
@@ -756,7 +757,7 @@ Then, the empirical gap of $e$ is calculated as $\bar w_t(M_t)-\bar w_t(\tilde M
 Finally, \AlgorithmBud chooses the  arm $p_t$ with the largest empirical gap.
 If $p_t\in M_t$ then $p_t$ is accepted otherwise $p_t$ is rejected.
 The pseudo-code of \AlgorithmBud is shown in Algorithm~\ref{algo:budget}.
-We note that \AlgorithmBud can be considered as a generalization of the two versions of SAR algorithm due to \citet{bubeck2013multiple}, which are designed specifically for the \MultiIdent and \MultiBandit problems respectively.
+We note that \AlgorithmBud can be considered as a generalization of the ideas of the two versions of SAR algorithm due to \citet{bubeck2013multiple}, which are designed specifically for the \MultiIdent and \MultiBandit problems respectively.
 \begin{algorithm}[htbp]
 {
 \small
@@ -792,8 +793,9 @@ We note that \AlgorithmBud can be considered as a generalization of the two vers
 \label{algo:budget}
 }
 \end{algorithm}
-
+\vspace{-0.3em}
 \subsection{Probability of error}
+\vspace{-0.3em}
 In the following theorem, we bound that the probability of error of the \AlgorithmBud algorithm.
 % is at most $\tilde O(\exp(-T\rank(\M)^{-2} \mathbf H^{-1}))$.
 \begin{restatable}{theorem}{realfixbudget}
@@ -811,7 +813,7 @@ Then, the \AlgorithmBud algorithm uses at most $T$ samples and outputs a solutio
 where $\barlog(n)\triangleq \sum_{i=1}^n i^{-1}$, $M_* = \argmax_{M\in \M} w(M)$ and $\rank(\M)$ is defined in Eq.~\eqref{eq:width-class}.
 \label{theorem:budget}
 \end{restatable}
-It is well-known that $\mathbf H_2$ is equivalent to $\mathbf H$ up to a logarithmic factor: $\mathbf H_2 \le \mathbf H \le \log(2n) \mathbf H_2$ (see \citep{audibert2010best}).
+It is well-known that $\mathbf H_2$ is equivalent to $\mathbf H$ up to a logarithmic factor, i.e. $\mathbf H_2 \le \mathbf H \le \log(2n) \mathbf H_2$ (see \citep{audibert2010best}).
 Therefore, by setting the probability of error (the RHS of Eq.~\eqref{eq:fbudget:prob-error}) to a constant, one can see that \AlgorithmBud requires a budget of $T = \tilde O(\rank(\M)^2 \mathbf H)$ samples.
 This is equivalent to the sample complexity bound of \Algorithm up to logarithmic factors.
 %Thisis equivalent to.
@@ -831,13 +833,13 @@ In addition, applying Theorem~\ref{theorem:budget} back to \MultiIdent and \Mult
 The multi-armed bandit problem has been extensively studied in both stochastic and adversarial settings \citep{lai1985asymptotically,auer2002nonstochastic,auer2002nonstochastic}.
 We refer readers to \citep{bubeck2012regret} for a survey on recent advances.
 Many work in MABs focus on minimizing the cumulative regret, which is an objective known to be fundamentally different from the objective of pure exploration MABs \citep{bubeck2010pure}.
-Among these work, a recent line of research considers a generalized setting called combinatorial bandits in which a set of arms (satisfying certain combinatorial constraint) is played on each round \citep{cesa2012combinatorial,chen2013combinatorial,kale2010non,neu2010online,audibert2009minimax,Bubeck12towardsminimax,gopalan2014thompson}.
+Among these work, a recent line of research considers a generalized setting called combinatorial bandits in which a set of arms (satisfying certain combinatorial constraint) is played on each round \citep{cesa2012combinatorial,chen2013combinatorial,kale2010non,neu2010online,audibert2009minimax,Bubeck12towardsminimax,gopalan2014thompson,lin2014}.
 Note that the objective of these work is to minimize the cumulative regret, which differs from ours.
 
-In the literature of pure exploration MABs, the classical problem of identifying the single best arm has been well-studied in both fixed confidence and fixed budget settings \citep{mannor2004sample,bubeck2010pure,audibert2010best,gabillon2012best,jamieson2013lil,jamieson2014best}.
-A flurry of recent work extend this classical problem to \MultiIdent and \MultiBandit problems and provide algorithms and upper bounds \citep{kalyanakrishnan2010efficient,kalyanakrishnan2012pac,zhou2014optimal,bubeck2013multiple,NIPS2011_4478,gabillon2012best}.
+In the literature of pure exploration MABs, the classical problem of identifying the single best arm has been well-studied in both fixed confidence and fixed budget settings \citep{mannor2004sample,even2006action,bubeck2010pure,audibert2010best,gabillon2012best,jamieson2013lil,jamieson2014best}.
+A flurry of recent work extend this classical problem to \MultiIdent and \MultiBandit problems and provide algorithms, upper bounds \citep{kalyanakrishnan2010efficient,kalyanakrishnan2012pac,zhou2014optimal,bubeck2013multiple,NIPS2011_4478,gabillon2012best,kaufmann2013information} and a worst-case lower bound of \MultiIdent \citep{kalyanakrishnan2012pac}.
 Our framework encompasses these two problems as special cases and covers a much larger class of combinatorial pure exploration problems, which are unaddressed in the current literature.
-Applying our results back to \MultiIdent and \MultiBandit, our upper bounds match the best known problem-dependent bounds due to \citet{gabillon2012best,bubeck2013multiple} and \citet{kalyanakrishnan2012pac}; and our lower bound provides the first problem-dependent lower bounds for these two problems, which are conjectured earlier by \citet{kalyanakrishnan2012pac} and \citet{bubeck2013multiple}.
+Applying our results back to \MultiIdent and \MultiBandit, our upper bounds match state-of-the-art problem-dependent bounds up to constant factors \citep{gabillon2012best,bubeck2013multiple,kalyanakrishnan2012pac} in both fixed confidence and fixed budget settings; and our lower bound provides the first problem-dependent lower bounds for these two problems, which are conjectured earlier by \citet{kalyanakrishnan2012pac} and \citet{bubeck2013multiple}.
 %We also notice that a very recent due to XXX improves 
 %In addition, to our knowledge, there is no known problem-dependent lower bounds for \MultiIdent and \MultiBandit. 
 %Therefore, when applying our general lower bound to \MultiIdent and \MultiBandit, we obtain the first problem-dependent lower bounds for these two problems. 
@@ -864,9 +866,10 @@ Our upper and lower bounds characterize the complexity of the \Problem problem: 
 %Therefore it is easy to see that $$
 
 \newpage
+{\small
 \bibliography{bandit}
 \bibliographystyle{my-plainnat}
-
+}
 \newpage
 \appendix
 
