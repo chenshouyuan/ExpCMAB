@@ -191,10 +191,10 @@ Our paper contributes such a framework which accounts for general combinatorial 
 In this paper, we formulate the {\em combinatorial pure exploration (\Problem)} problem for stochastic multi-armed bandits.  
 In the \Problem problem, a learner has a fixed set of arms and each arm is associated with an unknown reward distribution. 
 The learner is also given a collection of sets of arms called \emph{decision class}, which
-	correspond to  certain combinatorial structures.
+	corresponds to  certain collection of combinatorial structures.
 During the exploration period, in each round the learner chooses an arm to play
 	and observes a random reward sampled from the associated distribution. 
-The objective is when the exploration period ends, the learner output a member of the decision
+The objective is when the exploration period ends, the learner outputs a member of the decision
 	class that she believes to be optimal, in the sense that the sum of expected rewards of all arms
 	in the output set is maximized among all members in the decision class.
 
@@ -3123,17 +3123,26 @@ The experiment results show that the proposed algorithms are very sample efficie
 
 %Our implementations of \Algorithm and \AlgorithmBud slightly differs from our descriptions in Algorithm~\ref{algo:pac} and Algorithm~\ref{algo:budget}. For \AlgorithmBud,  
 
-\textbf{Setup.} For each task, we assign the expected reward of arms using the corresponding dataset, and rewards are typical modeled as the sum of the expected reward and an additive zero-mean noise.
-In this way, the ground-truth of expected reward $\vec w$ is known in each task.
-This allows us to know the ground-truth of the optimal set $M_*$ and the hardness measures $\mathbf H$ in each task.
-Furthermore, from this ground-truth, we generate a number instances with different $\mathbf H$ by adjusting the expected reward of each arm $e\in M_*$ with a same amount $c_0>0$.
+\textbf{Setup.} 
+Our task is to identify the optimal routing tree from a networking system that has the lowest expected latency in a dedicated exploration procedure, in which one can obtain noisy measurements of latencies between different nodes.
+We model this problem as a \Problem problem where the arms correspond to edges and the decision class corresponds to the set of spanning trees (which is a special case of matroids, as we have discussed in Example~X).
+We use a real-world dataset called RocketFuel [], which contains  ISP networks with routing information such as average latencies between nodes pairs. 
+We choose the ISP networks which form connected graphs.
+The statistics of the graphs are shown in Table~X.
+We model the latency $X(e)$ of edge $e$ to be the sum of the average latency $l(e)$ and an additive random noise $\mathcal N(0, 1)$.
+Then we model the reward of edge $e$ as the negative latency $-X(e)$ and therefore the expected reward of $e$ is given by $w(e) = -l(e)$.
+Notice that we now need to find the spanning tree that maximizes the expected reward, which is exactly an instance of \Problem. 
+
+Since the ground-truth of expected reward $\vec w$ is known.
+We are allowed to know the ground-truth of the optimal set $M_*$ and the hardness measures $\mathbf H$.
+In order to find the relationship between $\mathbf H$ and sample complexity, we generate a number instances with different $\mathbf H$ by adjusting the expected reward of each arm $e\in M_*$ with a same amount $c_0$ while does not change the optimality of $M_*$.
 By definition of $\mathbf H$, we see that $\mathbf H$ decreases when $c_0$ increases.
 % and $\mathbf H$ increases if $c_0 < 0$.
 %We will translate the sample complexity of \Algorithm in units of $\mathbf H$ in the spirit of the sample complexity bound of Theorem~\ref{theorem:main}.
 
 
 \textbf{Evaluation method.} 
-For each task, we use the following evaluation procedure to compare the sample efficiency between \Algorithm,\AlgorithmBud and \Uniform.
+We use the following evaluation procedure to compare the sample efficiency between \Algorithm,\AlgorithmBud and \Uniform.
 Since \AlgorithmBud and \Uniform are both learning algorithms in the fixed budget setting, the comparison between them is straightforward:
 for each given budget, we run both algorithms with this budget independently for 100 times and compare their empirical probability of errors (the fraction of runs where a tested algorithm fails to report the ground-truth optimal set $M_*$).
 On the other hand, we use the following procedure to compare \Algorithm with other fixed budget algorithms.
@@ -3145,21 +3154,10 @@ Finally, we set $\delta=0.3$ for \Algorithm throughout the experiments.
 %In this way, we can compare the sample efficiency of \Algorithm with \Uniform and \AlgorithmBud.
 
 
-
-\subsection{Minimum Spanning Tree}
-Our first task is to identify the optimal routing tree from a networking system that has the lowest expected latency in a dedicated exploration procedure, in which one can obtain noisy measurements of latencies between different nodes.
-We model this problem as a \Problem problem where the arms correspond to edges and the decision class corresponds to the set of spanning trees (which is a special case of matroids, as we have discussed in Example~X).
-We use a real-world dataset called RocketFuel [], which contains  ISP networks with routing information such as average latencies between nodes pairs. 
-We choose the ISP networks which form connected graphs.
-The statistics of the graphs are shown in Table~X.
-We model the latency $X(e)$ of edge $e$ to be the sum of the average latency $w(e)$ and an additive random noise $\mathcal N(0, 1)$.
-Then we model the reward of edge $e$ as the negative latency $-X(e)$.
-Notice that we now need to find the spanning tree that maximizes the expected reward, which is exactly an instance of \Problem. 
-
-
+\textbf{Experimental results.}
 We test all competing algorithms using the aforementioned evaluation method.
 The experimental results are shown in Figure~Z.
-From the results, we see that both \Algorithm and \AlgorithmBud are consistently more sample efficient than \Uniform by a large margin (Figure~Z).
+From the results, we see that both \Algorithm and \AlgorithmBud are consistently more sample efficient than \Uniform by a large margin, i.e. they incur a smaller empirical probability of error than \Uniform while using a same number of samples (Figure~Z).
 This matches our theoretical analyses of these algorithms.
 We also see that the probability of error of \Algorithm is always smaller than the guarantee $\delta=0.3$ (Figure~A) and the sample complexity of \Algorithm is approximately linear in $\mathbf H$ (Figure~B), which agrees with our theory that the sample complexity bound for the spanning tree decision class is $\tilde O(\mathbf H)$ (see Example~X).
 
