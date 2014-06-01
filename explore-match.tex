@@ -286,7 +286,7 @@ Assume that each arm $e\in[n]$ is associated with a reward distribution $\Rew_e$
 Let $\vec w = \big(w(1),\ldots, w(n)\big)^T$ denote the vector of expected rewards, where each entry $w(e)=\E_{X\sim \Rew_e}[X]$ denote the expected reward of arm $e$.
 Following standard assumptions of stochastic MABs, we assume that all reward distributions have $R$-sub-Gaussian tails for some known constant $R>0$. 
 Formally, if $X$ is a random variable drawn according to $\Rew_e$, then, for all $t\in \RR$, one has $\mathbb E\big[\exp(tX-t\mathbb E[X])\big] \le \exp(R^2t^2/2)$ and $\mathbb E\big[\exp(t\mathbb E[X]-tX)\big] \le \exp(R^2t^2/2)$.
-It is well-known that the family of $R$-sub-Gaussian tail distributions encompasses all distributions that are supported on $[0,R]$ as well as unbounded distributions such as Gaussian distributions with variance $R^2$ (cf. \citep{pollard2000asymptopia}).
+It is well-known that the family of $R$-sub-Gaussian tail distributions encompasses all distributions that are supported on $[0,R]$ as well as many unbounded distributions such as Gaussian distributions with variance $R^2$ (cf. \citep{pollard2000asymptopia}).
 
 
 We define a \emph{decision class} $\M \subseteq 2^{[n]}$ as a   collection of sets of arms.
@@ -295,7 +295,7 @@ A learner's objective is to identify $M_*$ from $\M$ by playing the following ga
 %Let $\M\subseteq 2^{[n]}$ be the family of all feasible solutions to a combinatorial problem.
 %Let $M_* = \argmax_{M\in \M} w(M)$ denote the optimal set of arms which max
 %A learner wants to find the optimal solution of $\M$ which maximizes the expected reward $M_*=\argmax_{M\in \M} w(M)$ by playing the following game.
-%The learning problem of pure exploration combinatorial bandit can be formalized as a game between a learner and a stochastic environment, where the learner's goal is to find the optimal solution to the combinatorial problem which maximizes the sum of expected reward $M_* = \argmax_{M\in \M} w(M)$.
+%The learning problem of pure exploration combinatorial bandit can be formalized as a game between a learner and a stochastic environment, where the learner's goal is to find the optimal solution to the combinatorial problem which maximizes the sum of expected reward $M_* = \argmax_{M\in \M} w(M)$.v
 At the beginning of the game, the decision class $\M$ is revealed to the learner while the reward distributions $\{\Rew_e\}_{e\in[n]}$ are unknown to the learner.
 Then, the learner plays the game over a sequence of rounds;
 in each round $t$, the learner pulls an arm $p_t\in [n]$ and observes a reward sampled from the associated reward distribution $\Rew_{p_t}$.
@@ -346,7 +346,7 @@ In this case, the learner's performance is measured by the probability of error.
 %Then, we analyze the sample complexity and the probability of error of our algorithm.
 
 In this section, we present Combinatorial Lower-Upper Confidence Bound (\Algorithm) algorithm, a learning algorithm for the \Problem problem in the fixed confidence setting, and analyze its sample complexity. 
-En route to our sample complexity bound, we introduce the notions of exchange class and widths.
+En route to our sample complexity bound, we introduce the notions of exchange class and the widths of decision classes.
 % which characterize certain exchange properties of combinatorial structures.
 %Our analysis uses tools developed using exchange classes.
 %Then, we analyze the sample complexity of \Algorithm algorithm.
@@ -854,7 +854,7 @@ Among these work, a recent line of research considers a generalized setting call
 Note that the objective of these work is to minimize the cumulative regret, which differs from ours.
 
 In the literature of pure exploration MABs, the classical problem of identifying the single best arm has been well-studied in both fixed confidence and fixed budget settings \citep{mannor2004sample,even2006action,bubeck2010pure,audibert2010best,gabillon2012best,jamieson2013lil,jamieson2014best}.
-A flurry of recent work extend this classical problem to \MultiIdent and \MultiBandit problems and provide algorithms, upper bounds \citep{kalyanakrishnan2010efficient,kalyanakrishnan2012pac,zhou2014optimal,bubeck2013multiple,NIPS2011_4478,gabillon2012best,kaufmann2013information} and worst-case lower bounds of \MultiIdent \citep{kalyanakrishnan2012pac,zhou2014optimal}.
+A flurry of recent work extend this classical problem to \MultiIdent and \MultiBandit problems and obtain algorithms, upper bounds \citep{kalyanakrishnan2010efficient,kalyanakrishnan2012pac,zhou2014optimal,bubeck2013multiple,NIPS2011_4478,gabillon2012best,kaufmann2013information} and worst-case lower bounds of \MultiIdent \citep{kalyanakrishnan2012pac,zhou2014optimal}.
 Our framework encompasses these two problems as special cases and covers a much larger class of combinatorial pure exploration problems, which are unaddressed in the current literature.
 Applying our results back to \MultiIdent and \MultiBandit, our upper bounds match state-of-the-art problem-dependent bounds up to constant factors \citep{gabillon2012best,bubeck2013multiple,kalyanakrishnan2012pac} in both fixed confidence and fixed budget settings; and our lower bound provides the first problem-dependent lower bounds for these two problems, which are conjectured earlier by \citet{kalyanakrishnan2012pac} and \citet{bubeck2013multiple}.
 %We also notice that a very recent due to XXX improves 
@@ -2267,7 +2267,8 @@ Given a phase $t\in[n]$, we define random event $\tau_t$ as follows
 
 Then, we have
 \begin{equation}
-\Pr\left[\bigcap_{t=1}^T \tau_t \right] \ge 1- n^2  \exp\left(-\frac{2(T-n)}{9R^2 \barlog(n) \rank(\M)^2 \mathbf H_2} \right).
+\label{eq:fbudget-prob-error-1}
+\Pr\left[\bigcap_{t=1}^n \tau_t \right] \ge 1- n^2  \exp\left(-\frac{2(T-n)}{9R^2 \barlog(n) \rank(\M)^2 \mathbf H_2} \right).
 \end{equation}
 \end{lemma}
 
@@ -2305,6 +2306,9 @@ Now using Eq.~\eqref{eq:lci-2} and a union bound for all $t \in [n]$ and all $i\
 
 \end{proof}
 
+Readers may notice that the right-hand side of Eq.~\eqref{eq:fbudget-prob-error-1} equals to the probability of error of \AlgorithmBud claimed in Theorem~\ref{theorem:budget}. 
+Indeed, we will show that the \AlgorithmBud algorithm will not make a mistake if the random event $\bigcap_{t=1}^n \tau_t$ occurs.
+
 The following lemma builds the confidence bound of inner products.
 \begin{lemma}
 Fix a phase $t\in[n]$, suppose that random event $\tau_t$ occurs.
@@ -2337,6 +2341,7 @@ Eq.~\eqref{eq:fcip-1} follows from the definition of $\tau_t$ (Eq.~\eqref{eq:def
 
 \subsubsection{Main Lemmas}
 
+We begin with a technical lemma which characterizes several useful properties of $A_t$ and $B_t$.
 
 \begin{lemma}
 Fix a phase $t\in[n]$. Suppose that $A_t\subseteq M_*$ and $B_t \cap M_* = \emptyset$.
@@ -2766,7 +2771,7 @@ To prove \Cref{fact:matroid}, we first recall a well-known result from matroid t
 \begin{lemma}[Strong basis exchange \citep{oxley2006matroid}]
 \label{lemma:basis-exchange}
 Let $\mathcal A$ the set of all bases of a matroid $T=(E,\mathcal I)$. 
-Let $A_1,A_2 \in \mathcal A$ be two members of $\mathcal A$.
+Let $A_1,A_2 \in \mathcal A$ be two bases.
 Then for all $x \in A_1\del A_2$, there exists $y\in A_2\del A_1$ 
 such that $A_1\del \{x\} \cup \{y\} \in \mathcal A$ and $A_2\del\{y\}\cup\{x\} \in \mathcal A$.
 \end{lemma}
@@ -2913,7 +2918,6 @@ Since $C$ is an $A$-augmenting path/cycle, therefore it immediately holds that $
 Therefore, we have $M\del b_- \cup b_+ \in \M_{\Match(G)}$.
 Similarly, one can show that $M'\del b_+ \cup b_-\in \M_{\Match(G)}$.
 Hence we have shown that $\B_{\Match(G)}$ is an exchange class for $\M_{\Match(G)}$.
-
 %Observe that $\rank(\B_{\Match(G)}) \le |V|$. We conclude that $\rank(\M_{\Match(G)}) \le |V|$.
 \end{proof}
 
@@ -2962,7 +2966,6 @@ Now it is easy to check that $E(P_1)\del E(Q_1) \cup E(Q_2)$ equals the set of a
 This means that $E(P_1)\del E(Q_1)\cup E(Q_2) \in \mathcal A(s,t)$ and therefore $M\del b_-\cup b_+ \in \M_{\Path(G,s,t)}$.
 Using a similar argument, one can show that $M'\del b_+\cup b_- \in \M_{\Path(G,s,t)}$ and hence we have verified that 
 $\B_{\Path(G)}\in\Exchange(\M_{\Path(G,s,t)})$.
-
 %Hence we can conclude by observing that $\rank(\B_\Path(G)) \le |V|$.
 \end{proof}
 
@@ -3110,6 +3113,66 @@ By combining with the assumption that $w(M_1) > w(M)$
 we see that $w_2(M_1) > w_2(M)$, which contradicts to the definition of $M$. 
 Hence we have verified that $w(M) = \max_{M'\in\M_{A,B}} w(M')$.
 \end{proof}
+
+\section{Preliminary Experiment}
+In this section, we present some preliminary experimental results of our algorithms \Algorithm and \AlgorithmBud. 
+We conduct experiments on a real-world dataset with decision classes corresponding to spanning trees.
+We compare our algorithms with the uniform allocation benchmark \Uniform discussed in Section~Y.
+The experiment results show that the proposed algorithms are very sample efficient compared with the \Uniform algorithm, which agrees with our theoretical analysis.
+
+
+%Our implementations of \Algorithm and \AlgorithmBud slightly differs from our descriptions in Algorithm~\ref{algo:pac} and Algorithm~\ref{algo:budget}. For \AlgorithmBud,  
+
+\textbf{Setup.} For each task, we assign the expected reward of arms using the corresponding dataset, and rewards are typical modeled as the sum of the expected reward and an additive zero-mean noise.
+In this way, the ground-truth of expected reward $\vec w$ is known in each task.
+This allows us to know the ground-truth of the optimal set $M_*$ and the hardness measures $\mathbf H$ in each task.
+Furthermore, from this ground-truth, we generate a number instances with different $\mathbf H$ by adjusting the expected reward of each arm $e\in M_*$ with a same amount $c_0>0$.
+By definition of $\mathbf H$, we see that $\mathbf H$ decreases when $c_0$ increases.
+% and $\mathbf H$ increases if $c_0 < 0$.
+%We will translate the sample complexity of \Algorithm in units of $\mathbf H$ in the spirit of the sample complexity bound of Theorem~\ref{theorem:main}.
+
+
+\textbf{Evaluation method.} 
+For each task, we use the following evaluation procedure to compare the sample efficiency between \Algorithm,\AlgorithmBud and \Uniform.
+Since \AlgorithmBud and \Uniform are both learning algorithms in the fixed budget setting, the comparison between them is straightforward:
+for each given budget, we run both algorithms with this budget independently for 100 times and compare their empirical probability of errors (the fraction of runs where a tested algorithm fails to report the ground-truth optimal set $M_*$).
+On the other hand, we use the following procedure to compare \Algorithm with other fixed budget algorithms.
+We run \Algorithm independently for 100 times with a given confidence parameter.
+Suppose that the $i$-th run of \Algorithm uses $T_i$ samples, we also run \Uniform and \AlgorithmBud with budget $T_i$.
+Then we compare the empirical probability of errors of the tested algorithms after the 100 runs are completed.
+In this way, we see the compared algorithms use an equal number of samples in each run, which allows us to compare their sample efficiency.
+Finally, we set $\delta=0.3$ for \Algorithm throughout the experiments.
+%In this way, we can compare the sample efficiency of \Algorithm with \Uniform and \AlgorithmBud.
+
+
+
+\subsection{Minimum Spanning Tree}
+Our first task is to identify the optimal routing tree from a networking system that has the lowest expected latency in a dedicated exploration procedure, in which one can obtain noisy measurements of latencies between different nodes.
+We model this problem as a \Problem problem where the arms correspond to edges and the decision class corresponds to the set of spanning trees (which is a special case of matroids, as we have discussed in Example~X).
+We use a real-world dataset called RocketFuel [], which contains  ISP networks with routing information such as average latencies between nodes pairs. 
+We choose the ISP networks which form connected graphs.
+The statistics of the graphs are shown in Table~X.
+We model the latency $X(e)$ of edge $e$ to be the sum of the average latency $w(e)$ and an additive random noise $\mathcal N(0, 1)$.
+Then we model the reward of edge $e$ as the negative latency $-X(e)$.
+Notice that we now need to find the spanning tree that maximizes the expected reward, which is exactly an instance of \Problem. 
+
+
+We test all competing algorithms using the aforementioned evaluation method.
+The experimental results are shown in Figure~Z.
+From the results, we see that both \Algorithm and \AlgorithmBud are consistently more sample efficient than \Uniform by a large margin (Figure~Z).
+This matches our theoretical analyses of these algorithms.
+We also see that the probability of error of \Algorithm is always smaller than the guarantee $\delta=0.3$ (Figure~A) and the sample complexity of \Algorithm is approximately linear in $\mathbf H$ (Figure~B), which agrees with our theory that the sample complexity bound for the spanning tree decision class is $\tilde O(\mathbf H)$ (see Example~X).
+
+
+%It is clear that the maximal spanning tree problem can be solved using a greedy algorithm.
+
+%For each network used in this experiment, we identify the ground-truth optimal spanning tree using an offline algorithm. 
+%We tune the hardness $\mathbf H$ by modifying the weights on the optimal spanning tree by a fixed amount.
+%And for each different 
+%Notice that our theory shows that a larger $\mathball H$ leads to a more difficult \Problem problem.
+
+
+
 
 \bibliography{bandit}
 \bibliographystyle{my-plainnat}
