@@ -205,7 +205,7 @@ This framework also naturally encompasses several recent extensions, including t
 multi-bandit problem of finding the best arms simultaneously from several disjoint sets of arms (henceforth \MultiBandit) \citep{NIPS2011_4478,bubeck2013multiple}.
 % by constructing proper decision classes. 
 %The decision classes associated with these problems are relatively flat. 
-Furthermore, this framework also covers many more interesting cases where the decision classes correspond to collections of non-trivial combinatorial structures.
+Furthermore, this framework  covers many more interesting cases where the decision classes correspond to collections of non-trivial combinatorial structures.
 %By allowing general decision classes, this framework represents a rich class of pure exploration problems including many interesting cases where the decision classes correspond to non-trivial combinatorial structures.
 %More interesting cases 
 %Apart from these simple cases, the decision classes may correspond to non-trivial combinatorial structures. 
@@ -3134,7 +3134,7 @@ Then we model the reward of edge $e$ as the negative latency $-X(e)$ and therefo
 Notice that we now need to find the spanning tree that maximizes the expected reward, which is exactly an instance of \Problem. 
 
 Since the ground-truth of expected reward $\vec w$ is known.
-We are allowed to know the ground-truth of the optimal set $M_*$ and the hardness measures $\mathbf H$.
+We know the ground-truth of the optimal set $M_*$ and the hardness measures $\mathbf H$.
 In order to find the relationship between $\mathbf H$ and sample complexity, we generate a number instances with different $\mathbf H$ by adjusting the expected reward of each arm $e\in M_*$ with a same amount $c_0$ while does not change the optimality of $M_*$.
 By definition of $\mathbf H$, we see that $\mathbf H$ decreases when $c_0$ increases.
 % and $\mathbf H$ increases if $c_0 < 0$.
