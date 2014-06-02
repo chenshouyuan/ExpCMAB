@@ -205,7 +205,7 @@ This framework also naturally encompasses several recent extensions, including t
 multi-bandit problem of finding the best arms simultaneously from several disjoint sets of arms (henceforth \MultiBandit) \citep{NIPS2011_4478,bubeck2013multiple}.
 % by constructing proper decision classes. 
 %The decision classes associated with these problems are relatively flat. 
-Furthermore, this framework  covers many more interesting cases where the decision classes correspond to collections of non-trivial combinatorial structures.
+Further, this framework  covers many more interesting cases where the decision classes correspond to collections of non-trivial combinatorial structures.
 %By allowing general decision classes, this framework represents a rich class of pure exploration problems including many interesting cases where the decision classes correspond to non-trivial combinatorial structures.
 %More interesting cases 
 %Apart from these simple cases, the decision classes may correspond to non-trivial combinatorial structures. 
@@ -224,7 +224,7 @@ As we have explained earlier, these types of combinatorial pure exploration prob
 %Finding optimal objects from decision classes with non-trivial structures
 The \Problem framework raises several interesting challenges to the design and analysis of pure exploration algorithms. 
 One challenge is that, instead of solving each type of \Problem task in an ad-hoc way, one requires a unified algorithm and analysis that supports different decision classes.
-Another challenge stems from the combinatorial nature of \Problem, namely that the optimal set may contain some arms with very small expected rewards (e.g. a maximal matching may contain the edge with the smallest weight); hence arms with suboptimal rewards cannot be eliminated  during the learning process or be ignored in the analysis. This differs from many existing approach of pure exploration MABs.
+Another challenge stems from the combinatorial nature of \Problem, namely that the optimal set may contain some arms with very small expected rewards (e.g. it is possible that a maximum matching contains the edge with the smallest weight); hence arms with suboptimal rewards cannot be eliminated  during the learning process or be ignored in the analysis. This differs from many existing approach of pure exploration MABs.
 %Another challenge stemming from the combinatorial nature of the \Problem problem is that 
 %Another challenge is that the arms with the largest mean rewards may not belong to the optimal set. 
 %This challenge stems from the combinatorial nature of the \Problem problem.
@@ -248,7 +248,7 @@ The \Algorithm algorithm does not need to know the definition of the decision cl
 We upper bound the number of samples used by \Algorithm. 
 This sample complexity bound depends on both expected reward and the structure of decision class. 
 Our analysis relies on a novel combinatorial construction called \emph{exchange class} which may be of independent interest for other combinatorial optimization problems. 
-When specializing our result into \MultiIdent and \MultiBandit, we recover previous sample complexity bounds \citep{kalyanakrishnan2012pac,gabillon2012best} up to constant factors.
+Specializing our result  to \MultiIdent and \MultiBandit, we recover previous sample complexity bounds \citep{kalyanakrishnan2012pac,gabillon2012best} up to constant factors.
 % with a small improvement in the logarithmic factors. 
 While for other decision classes in general, our result establishes the first sample complexity upper bound. 
 We further show that \Algorithm can be easily extended to the fixed budget setting and PAC learning setting and we provide related theoretical guarantees in the supplementary material.  
@@ -285,7 +285,7 @@ Assume that each arm $e\in[n]$ is associated with a reward distribution $\Rew_e$
 % and we let $w(e)=\E_{X\sim \Rew_e}[X]$ denote the expected reward. 
 Let $\vec w = \big(w(1),\ldots, w(n)\big)^T$ denote the vector of expected rewards, where each entry $w(e)=\E_{X\sim \Rew_e}[X]$ denote the expected reward of arm $e$.
 Following standard assumptions of stochastic MABs, we assume that all reward distributions have $R$-sub-Gaussian tails for some known constant $R>0$. 
-Formally, if $X$ is a random variable drawn according to $\Rew_e$, then, for all $t\in \RR$, one has $\mathbb E\big[\exp(tX-t\mathbb E[X])\big] \le \exp(R^2t^2/2)$ and $\mathbb E\big[\exp(t\mathbb E[X]-tX)\big] \le \exp(R^2t^2/2)$.
+Formally, if $X$ is a random variable drawn according to $\Rew_e$ for some $e\in[n]$, then, for all $t\in \RR$, one has $\mathbb E\big[\exp(tX-t\mathbb E[X])\big] \le \exp(R^2t^2/2)$ and $\mathbb E\big[\exp(t\mathbb E[X]-tX)\big] \le \exp(R^2t^2/2)$.
 It is well-known that the family of $R$-sub-Gaussian tail distributions encompasses all distributions that are supported on $[0,R]$ as well as many unbounded distributions such as Gaussian distributions with variance $R^2$ (cf. \citep{pollard2000asymptopia}).
 
 
@@ -346,7 +346,7 @@ In this case, the learner's performance is measured by the probability of error.
 %Then, we analyze the sample complexity and the probability of error of our algorithm.
 
 In this section, we present Combinatorial Lower-Upper Confidence Bound (\Algorithm) algorithm, a learning algorithm for the \Problem problem in the fixed confidence setting, and analyze its sample complexity. 
-En route to our sample complexity bound, we introduce the notions of exchange class and the widths of decision classes.
+En route to our sample complexity bound, we introduce the notions of exchange class and the widths of decision classes, which play an important role in the analysis and sample complexity bound.
 % which characterize certain exchange properties of combinatorial structures.
 %Our analysis uses tools developed using exchange classes.
 %Then, we analyze the sample complexity of \Algorithm algorithm.
@@ -698,7 +698,7 @@ In the supplementary material, we provide evidence on this conjecture which is a
 \vspace{-0.5em}
 \section{Fixed Budget Algorithm}
 \vspace{-0.5em}
-In this section, we present Combinatorial Successive Accept Reject algorithm (\AlgorithmBud), which a parameter-free learning algorithm for the \Problem problem in the fixed budget setting.
+In this section, we present Combinatorial Successive Accept Reject algorithm (\AlgorithmBud), which is a parameter-free learning algorithm for the \Problem problem in the fixed budget setting.
 Then, we upper bound the probability of error \AlgorithmBud in terms of gaps and $\rank(\M)$.
 %Recall that, in the fixed budget setting, an algorithm is given a budget $T>0$ such that the algorithm can use at most $T$ pulls.
 %The goal of the algorithm is to minimize the probability of error. 
