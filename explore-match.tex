@@ -75,7 +75,7 @@
 \newcommand{\Algorithm}{{\small \textsf{CLUCB}}\xspace}
 \newcommand{\AlgorithmPAC}{{\small \textsf{CLUCB-PAC}}\xspace}
 \newcommand{\AlgorithmBud}{{\small \textsf{CSAR}}\xspace}
-\newcommand{\Uniform}{{\small \textsf{Uniform}}\xspace}
+\newcommand{\Uniform}{{\small \textsf{UNI}}\xspace}
 %\newcommand{\Problem}{{\small \textsf{ExpCMAB}}\xspace}
 \newcommand{\Problem}{{CPE}\xspace}
 \newcommand{\Rew}{\varphi}
@@ -582,6 +582,8 @@ By combining Lemma~\ref{lemma:example-exchange-class} and Theorem~\ref{theorem:m
 \vspace{-0.5em}
 \subsection{Examples of decision classes}
 \vspace{-0.5em}
+\label{section:example}
+
 Now we investigate several concrete types of decision classes, which correspond to different \Problem tasks.
 We analyze the width of these decision classes and apply \Cref{theorem:main} to obtain the sample complexity bounds.
 A more detailed analysis and the constructions of exchange classes can be found in the supplementary material.
@@ -640,37 +642,7 @@ The bounds on the width of our examples decision classes are proven by construct
 In fact, these exchange classes correspond to natural combinatorial structures. 
 We illustrate our constructions in \Cref{fig:exchange}.
 
-\begin{figure}[tb]
-\centering
-\begin{subfigure}[c]{0.22\textwidth}
-	\includegraphics[width=\textwidth]{fig/exchange-multi}
-	\caption{An member of $\B_{\Matroid(n)}$.}
-	\label{fig:exchange:topk}	
-\end{subfigure}
-~
-\begin{subfigure}[c]{0.25\textwidth}
-	\includegraphics[width=\textwidth]{fig/exchange-matroid}
-	\caption{A member of $\B_{\Matroid(n)}$}
-	\label{fig:exchange:matroid}
-\end{subfigure}
-~
-\begin{subfigure}[c]{0.22\textwidth}
-	\includegraphics[width=\textwidth]{fig/exchange-match}
-	\caption{A member of $\B_{\Match(G)}$.}
-\end{subfigure}
-~
-\begin{subfigure}[c]{0.22\textwidth}
-	\includegraphics[width=\textwidth]{fig/exchange-path}
-	\caption{A member of $\B_{\Path(G,s,t)}$.}
-\end{subfigure}
-\caption{
-Examples of exchange sets belonging to the exchange classes $\B_{\MultiIdent}$, $\B_{\Matroid}$, $\B_{\Match}$ and $\B_{\Path}$:
-green-solid elements constitute the set $b_+$, red-dotted elements constitute the set $b_-$ and the example exchange set is $b=(b_+,b_-)$. 
-In \Cref{fig:exchange:topk}, we use \MultiIdent as a specific instance of \Matroid.
-In \Cref{fig:exchange:matroid}, we use spanning tree as a specific instance of \Matroid.
-}
-\label{fig:exchange}
-\end{figure}
+
 }
 
  %is also covered by \Cref{example:matroid} (cf. \citep{oxley2006matroid}).
@@ -785,7 +757,7 @@ We note that \AlgorithmBud can be considered as a generalization of the ideas of
 \For{$t=1,\ldots,n$}
 	\State $\tilde T_t \gets \left\lceil \frac{T-n}{\barlog(n)(n-t+1)} \right\rceil$
 	\State Pull each arm $e\in [n]\del (A_t\cup B_t)$ for $\tilde T_t - \tilde T_{t-1}$ times
-	\State Update the empirical means $\vec {\bar w}_t\in \RR^n$ of each active arm
+	\State Update the empirical means $\vec {\bar w}_t$ of each active arm
   %\Comment{The values on $A_t\cup B_t$ can be arbitrary.}  
 	\State $M_t \gets \COracle(\vec {\bar w}_t, A_t, B_t)$
   \If{$M_t = \bot$}
@@ -850,7 +822,7 @@ In addition, applying Theorem~\ref{theorem:budget} back to \MultiIdent and \Mult
 The multi-armed bandit problem has been extensively studied in both stochastic and adversarial settings \citep{lai1985asymptotically,auer2002nonstochastic,auer2002nonstochastic}.
 We refer readers to \citep{bubeck2012regret} for a survey on recent advances.
 Many work in MABs focus on minimizing the cumulative regret, which is an objective known to be fundamentally different from the objective of pure exploration MABs \citep{bubeck2010pure}.
-Among these work, a recent line of research considers a generalized setting called combinatorial bandits in which a set of arms (satisfying certain combinatorial constraint) are played on each round \citep{cesa2012combinatorial,chen2013combinatorial,kale2010non,neu2010online,audibert2009minimax,Bubeck12towardsminimax,gopalan2014thompson,lin2014}.
+Among these work, a recent line of research considers a generalized setting called combinatorial bandits in which a set of arms (satisfying certain combinatorial constraint) are played on each round \citep{cesa2012combinatorial,chen2013combinatorial,kale2010non,neu2010online,audibert2009minimax,Bubeck12towardsminimax,gopalan2014thompson,lin2014,kveton2014matroid}.
 Note that the objective of these work is to minimize the cumulative regret, which differs from ours.
 
 In the literature of pure exploration MABs, the classical problem of identifying the single best arm has been well-studied in both fixed confidence and fixed budget settings \citep{mannor2004sample,even2006action,bubeck2010pure,audibert2010best,gabillon2012best,jamieson2013lil,jamieson2014best}.
@@ -897,6 +869,7 @@ Our upper and lower bounds characterize the complexity of the \Problem problem: 
 
 
 \section{Analysis of \Algorithm}
+\label{section:proof-algorithm}
 
 In this section, we analyze the sample complexity of \Algorithm and prove Theorem~\ref{theorem:main}.
 
@@ -967,7 +940,7 @@ there exists $b=(b_+, b_-) \in \B$ which satisfies that
 $e\in b_-$, $b_- \subseteq (M\del M') $, $b_+\subseteq (M' \del M)$, $(M\oplus b) \in \M$ and $(M'\ominus b) \in \M$.
 
 Next, if $M'=M_*$, we see that $e\not \in M_*$.
-Let us consider the set $M_1 = \argmax_{M': M'\in \M \wedge e\in M'} w(M')$.
+Let us consider the set $M_1 = \argmax_{M'\in \M\colon e\in M'} w(M')$.
 Note that, by definition of gaps, one has that $w(M_*)-w(M_1) = \Delta_e$.
 Now we define $M_0 = M_*\ominus b$. 
 Note that we already have that $M_0=M_* \ominus b \in \M$.  
@@ -998,7 +971,7 @@ Therefore, it is clear that $b$ satisfies the requirement of the lemma.
 
 Now, suppose that $M'=M_*$. 
 In this case, we have $e\in M_*$.
-Consider the set $M_3 = \argmax_{M': M'\in \M \wedge e\not \in M'} w(M')$.
+Consider the set $M_3 = \argmax_{M'\in \M\colon e\not \in M'} w(M')$.
 By definition of $\Delta_e$, we see that $w(M_*)-w(M_3)=\Delta_e$.
 Now we define $M_2 = M_* \ominus b$ and notice that  $M_2 \in \M$.
 By combining with the fact that $e\not \in M_2$, we obtain that $w(M_2) \le w(M_3)$.
@@ -1059,7 +1032,6 @@ $$
 $$
 \label{lemma:tilde}
 \end{lemma}
-
 \begin{proof}
 We begin with proving the first part.
 It is easy to verify that $\vec {\tilde w_t} = \vec {\bar w}_t+ \vec \rad_t \odot (\vec 1_n-2\vec\chi_{M_t})$.
@@ -1243,7 +1215,7 @@ Now, we decompose our proof into two cases.
 
 \textbf{Case (1): $(e \in M_* \wedge e\in c_+) \vee (e \not \in M_* \wedge e\in c_-)$.}
 
-First we construct a gadget $M_t'$ as $M_t' = \tilde M_t \ominus c$ and recall that $M_t' \in \M$ due to the definition of exchange class.
+First we construct a gadget $M_t'$ as $M_t' = \tilde M_t \ominus c = \tilde M_t \del c_+ \oplus c_-$ and recall that $M_t' \in \M$ due to the definition of exchange class.
 
 We claim that $M_t'\not= M_*$.
 Suppose that $e\in M_*$ and $e\in c_+$.
@@ -1298,11 +1270,23 @@ $c_+\subseteq (\tilde M_t \del M_t)$ and $c_-\subseteq (M_t\del \tilde M_t)$.
 Hence $c_+\cup c_- \subseteq  (\tilde M_t \del M_t)\cup (M_t\del \tilde M_t)$.
 Since $\vec \chi_c \in [-1,1]^n$, we see that 
 \begin{align}
-\nor{\vec \rad_t \odot |\vec \chi_c|}_\infty &= \max_{i\in  c_+\cup c_-} \rad_t(i) \nonumber \\
+\nor{\vec \rad_t \odot \vec \chi_c}_\infty &= \max_{i\in  c_+\cup c_-} \rad_t(i) \nonumber \\
 									    &\le \max_{i\in  (\tilde M_t \del M_t)\cup (M_t\del \tilde M_t)} \rad_t(i)  \nonumber \\
 									    &= \rad_t(e) < \frac{\Delta_e}{3\rank(\B)} \label{eq:u-c-1-0-1}.
 \end{align}
-
+From Eq.~\eqref{eq:u-c-1-0-1}, we derive
+\begin{align}
+\inn{\vec \rad_t, |\vec \chi_c|} &= \inn{\vec\rad_t, \vec\chi_c^2} \label{eq:rvtmp-1}\\
+																 &= \inn{\vec\rad_t \odot\vec\chi_c, \vec\chi_c} \label{eq:rvtmp-2}\\
+																 &\le \nor{\vec\rad_t\odot \vec\chi_c}_\infty \nor{\vec\chi_c}_1 \label{eq:rvtmp-3}\\
+																 &\le \frac{\Delta_e}{3\rank(\B)}\nor{\vec\chi_c}_1 \label{eq:rvtmp-4}\\
+																 &\le \frac{\Delta_e}{3}\label{eq:rvtmp-5},
+\end{align}
+where Eq.~\eqref{eq:rvtmp-1} hold since $\vec\chi_c \in \{-1,0,1\}^n$; 
+Eq.~\eqref{eq:rvtmp-2} follows form Lemma~\ref{lemma:vector-technical};
+Eq.~\eqref{eq:rvtmp-3} follows from H\"older's inequality;
+Eq.~\eqref{eq:rvtmp-4} follows from Eq.~\eqref{eq:u-c-1-0-1};
+and Eq.~\eqref{eq:rvtmp-5} holds since $\nor{\vec\chi_c}_1=|c_+|+|c_-| \le \rank(\B)$ where the inequality is due to $c\in \B$ .
 
 Next, we claim that $\vec d \odot \vec \chi_c = |\vec \chi_c|$.
 Recall that $\vec\chi_c = \vec\chi_{c_+}-\vec\chi_{c_-}$
@@ -1380,13 +1364,13 @@ Rearranging the above inequality, we obtain
 \left\langle \vec \rad_t, |\vec\chi_b| \right\rangle
   -\left\langle \vec \rad_t, |\vec\chi_c| \right\rangle
   -\frac{2\Delta_e}{3} \label{eq:u-c-1-7}\\
-&> \inn{\vec w, \vec \chi_b}-\inn{\vec \rad_t, \vec \chi_c}-\frac{2\Delta_e}{3} \label{eq:u-c-1-8}\\
+&> \inn{\vec w, \vec \chi_b}-\inn{\vec \rad_t, |\vec \chi_c|}-\frac{2\Delta_e}{3} \label{eq:u-c-1-8}\\
 &> \inn{\vec w, \vec \chi_b}-\frac{\Delta_e}{3}-\frac{2\Delta_e}{3} \label{eq:u-c-1-9}\\
 &= \inn{\vec w, \vec \chi_b}-\Delta_e \ge 0,
 \end{align}
 where Eq.~\eqref{eq:u-c-1-7} uses Eq.~\eqref{eq:u-c-1-6}; 
 Eq.~\eqref{eq:u-c-1-8} follows from the assumption that event $\xi_t$ occurs and Lemma~\ref{lemma:ci-property};
-and Eq.~\eqref{eq:u-c-1-8} holds since Eq.~\eqref{eq:u-c-1-0-1}.
+and Eq.~\eqref{eq:u-c-1-9} holds since Eq.~\eqref{eq:rvtmp-5}.
 
 We have shown that $\inn{\vec {\bar w}_t,\vec \chi_c}>0$. Now we can bound $\bar w_t(M_t')$ as follows
 \begin{align*}
@@ -1418,9 +1402,10 @@ Notice that Lemma~\ref{lemma:exchange-char} gives that $\vec d_1= \vec d+\vec \c
 Then, we apply Lemma~\ref{lemma:max} by setting $M = M_t$ and $M' = \tilde M_t$. 
 This shows that 
 \begin{equation}
-\nor{\vec \rad_t\odot \vec d}_\infty \le \max_{i: (\tilde M_t \del M_t)\cup (M_t\del \tilde M_t)} \rad_t(i) = \rad_t(e) < \frac{\Delta_e}{3}.
+\nor{\vec \rad_t\odot \vec d}_\infty \le \max_{i: (\tilde M_t \del M_t)\cup (M_t\del \tilde M_t)} \rad_t(i) = \rad_t(e) < \frac{\Delta_e}{3\rank(\B)},
 \label{eq:u-c-2-0}
 \end{equation}
+where the last inequality follows from the assumption that $\xi_t$ occurs.
 
 Now, we bound quantity $\inn{\vec {\bar w}_t, \vec d_1}+\inn{\vec \rad_t, |\vec d_1|}
 -\inn{\vec {\bar w}_t, \vec d}-\inn{\vec \rad_t,  |\vec d|}$ as follows
@@ -1431,16 +1416,17 @@ Now, we bound quantity $\inn{\vec {\bar w}_t, \vec d_1}+\inn{\vec \rad_t, |\vec 
 & =	\inn{\vec {\bar w}_t, \vec \chi_b} + \inn{\vec \rad_t, \vec d_1^2-\vec d^2} \label{eq:u-c-2-1} \\
 & =	\inn{\vec {\bar w}_t, \vec \chi_b} + \inn{\vec \rad_t, 2\vec d\odot \vec \chi_b +\vec \chi_b^2} \label{eq:u-c-2-2} \\
 & =	\inn{\vec {\bar w}_t, \vec \chi_b} + \inn{\vec \rad_t, \vec\chi_b^2} + 2\inn{\vec \rad_t\odot \vec d, \vec \chi_b} \nonumber \\
-& \ge \inn{\vec w, \vec \chi_b}- 2\inn{\vec \rad_t\odot \vec d, \vec \chi_b}  \label{eq:u-c-2-3} \\
+& \ge \inn{\vec w, \vec \chi_b}+2\inn{\vec \rad_t\odot \vec d, \vec \chi_b}  \label{eq:u-c-2-3} \\
 & \ge \inn{\vec w, \vec \chi_b}-2\nor{\vec \rad_t\odot \vec d}_\infty\nor{\vec\chi_b}_1 \label{eq:u-c-2-3.5} \\
 & > \inn{\vec w, \vec \chi_b}-\frac{2\Delta_e}{3} \label{eq:u-c-2-4} \\
-& \ge 0 \label{eq:u-c-2-5},
+& > 0 \label{eq:u-c-2-5},
 \end{align}
 where Eq.~\eqref{eq:u-c-2-1} follows from the fact that $\vec d_1\in \{-1,0,1\}^n$ and $\vec d \in \{-1,0,1\}^n$;
 Eq.~\eqref{eq:u-c-2-2} holds since $\vec d_1=\vec d+\vec \chi_b$;
 Eq.~\eqref{eq:u-c-2-3} follows from the assumption that $\xi_t$ occurs and Lemma~\ref{lemma:ci-property};
 Eq.~\eqref{eq:u-c-2-3.5} follows from Lemma~\ref{lemma:vector-technical}  and H\"older's inequality;
-and Eq.~\eqref{eq:u-c-2-4} is due to Eq.~\eqref{eq:u-c-2-0}.
+Eq.~\eqref{eq:u-c-2-4} is due to Eq.~\eqref{eq:u-c-2-0};
+and Eq.~\eqref{eq:u-c-2-5} follows from $\inn{\vec w,\vec\chi_b} \ge \Delta_e >0$.
 
 Therefore, we have proved that 
 \begin{equation}
@@ -1542,7 +1528,7 @@ Nevertheless, Theorem~\ref{theorem:main-budget} shows that \Algorithm can solve 
 \subsection{PAC Learning}
 Now we consider a setting where the learner is only required to report an approximately optimal set of arms. 
 More specifically, we consider the notion of $(\epsilon,\delta)$-PAC algorithm.
-Formally, an algorithm $\mathbb A$ is called an $(\epsilon,\delta)$-PAC algorithm if its output $\out$ satisfies $\Pr\big[w(M_*)-w(\out) > \epsilon\big] \le \delta$.
+Formally, an algorithm $\mathbb A$ is called an $(\epsilon,\delta)$-PAC algorithm if its output $\out\in \M$ satisfies $\Pr\big[w(M_*)-w(\out) > \epsilon\big] \le \delta$.
 
 We show that a simple modification on the \Algorithm algorithm gives an $(\epsilon,\delta)$-PAC algorithm, with guarantees similar  to Theorem~\ref{theorem:main}.
 In fact, the only modification needed is to change the stopping condition from $\tilde w_t(\tilde M_t) = \tilde w_t(M_t)$ to $\tilde w_t(\tilde M_t)-\tilde w_t(M_t) \le \epsilon$ on line~\ref{algo:step:D} of Algorithm~\ref{algo:pac}.
@@ -1551,7 +1537,7 @@ In the following theorem, we show that \AlgorithmPAC is indeed an $(\epsilon,\de
 \begin{restatable}{theorem}{resultpac}
 Use the same notations as in Theorem~\ref{theorem:main}.
 Fix $\delta\in(0,1)$ and $\epsilon \ge 0$.
-Then, with probability at least $1-\delta$, the output $\out$ of \AlgorithmPAC satisfies
+Then, with probability at least $1-\delta$, the output $\out \in \M$ of \AlgorithmPAC satisfies
 $
 w(M_*)-w(\out) \le \epsilon.
 $
@@ -1562,11 +1548,11 @@ O\left(R^2\sum_{e\in [n]} \min\left\{\frac{\rank(\M)^2}{\Delta_e^2}, \frac{K^2}{
 \log\left(\frac{R^2}\delta \sum_{e\in [n]} \min\left\{\frac{\rank(\M)^2}{\Delta_e^2}, \frac{K^2}{\epsilon^2}\right\}\right)\right),
 \label{eq:pac}
 \end{equation}
-where $K=\max_{M\in \M} |M|$ is the size of the largest feasible solution.
+where $K=\max_{M\in \M} |M|$ is the size of the largest member of decision class.
 \label{theorem:pac}
 \end{restatable}
-We see that the sample complexity of \AlgorithmPAC decreases when $\epsilon$ increases.
-And if $\epsilon=0$, the sample complexity Eq.~\eqref{eq:pac} of \AlgorithmPAC equals to that of \Algorithm. 
+We see that if $\epsilon=0$, the sample complexity Eq.~\eqref{eq:pac} of \AlgorithmPAC equals to that of \Algorithm. 
+And the sample complexity of \AlgorithmPAC decreases when $\epsilon$ increases.
 
 There are several PAC learning algorithms dedicated for the \MultiIdent problem in the literature with different guarantees \citep{kalyanakrishnan2012pac,zhou2014optimal,gabillon2012best}.
 \citet{zhou2014optimal} proposed an $(\epsilon,\delta)$-PAC algorithm for the \MultiIdent problem with a problem-independent sample complexity bound of $O(\frac{K^2n}{\epsilon^2}+\frac{Kn\log(1/\delta)}{\epsilon^2})$.\footnote{We notice that the definition of \citet{zhou2014optimal} allow an $(\epsilon',\delta)$-PAC algorithm to produce an output with \emph{average} sub-optimality of $\epsilon'$. This is equivalent to our definition of $(\epsilon,\delta)$-PAC algorithm with $\epsilon=K\epsilon'$ for the \MultiIdent problem.
@@ -1743,10 +1729,10 @@ Let $T(e)$ denote the total number of pull of arm $e\in [n]$.
 Let $t_e$ be the last round which arm $e$ is pulled, i.e. $p_{t_e} = e$. 
 Hence $T_{t_e}(e) = T(e) - 1$.
 By Lemma~\ref{lemma:pac-key}, we see that 
-$\rad_{t_e}(e) \ge \min\{\frac{\Delta_e}{3\rank(\B)},\frac{\epsilon}{2K}\}$.
+$\rad_{t_e}(e) \ge \max\{\frac{\Delta_e}{3\rank(\B)},\frac{\epsilon}{2K}\}$.
 Then, by the construction of $\rad_{t_e}(e)$, we have
 \begin{equation}
-\min\left\{\frac{\Delta_e}{3\rank(\B)},\frac{\epsilon}{2K}\right\} \le 
+\max\left\{\frac{\Delta_e}{3\rank(\B)},\frac{\epsilon}{2K}\right\} \le 
 R\sqrt{\frac{2\log\left(4n t_e^2/\delta\right)}{T(e)-1}} \le
 R\sqrt{\frac{2\log\left(4n T^2/\delta\right)}{T(e)-1}}.
 \label{eq:bound-pac-te}
@@ -1779,6 +1765,7 @@ Notice that the theorem follows immediately by summing up Eq.~\eqref{eq:lower-ea
 
 
 Fix an arm $e\in [n]$. We now focus on proving Eq.~\eqref{eq:lower-each}.
+Suppose, in the contrary, that $\E[T_e] < \frac{1}{16\Delta_e^2}\log(1/4\delta)$.
 Consider two hypothesis $H_0$ and $H_1$. 
 Under hypothesis $H_0$, all reward distributions are same with our assumption before
 $$
@@ -1828,7 +1815,7 @@ First, we show that $\Pr_0[\mathcal A] \ge 3/4$.
 This can be proved by Markov inequality as follows.
 \begin{align*}
 \Pr_0[T_e > 4t_e^*] &\le \frac{\E_0[T_e]}{4t_e^*} \\
-					  &= \frac{t_e^*}{4t_e^*} = \frac14.
+					  &\le \frac{t_e^*}{4t_e^*} = \frac14.
 \end{align*}
 
 Let $X_1,\ldots,X_{T_e}$ denote the sequence of reward outcomes of arm $e$.
@@ -1874,6 +1861,7 @@ To do this, we divide our analysis into two different cases.
 In this case, the reward distribution of arm $e$ under $H_1$ is a Gaussian distribution with mean $w(e)+2\Delta_e$ and variance 1. 
 Recall that the probability density function of a Gaussian distribution with mean $\mu$ and variance $\sigma^2$ is given by
 $\mathcal N(x | \mu,\sigma^2)=\frac{1}{\sigma\sqrt{2\pi}}\exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)$.
+Note $H_1$ and $H_0$ only differs in reward distribution $\Rew_e$ and the rest of reward distributions are identical.
 Hence, we have
 \begin{align}
   \frac{L_1(W)}{L_0(W)} &= \prod_{i=1}^{T_e} \exp\left(\frac{-(X_i-w(e)-2\Delta_e)^2+(X_i-w(e))^2}{2}\right) \nonumber \\
@@ -1911,7 +1899,7 @@ Combining Eq.~\eqref{eq:lower-bound-case-1-1.3} and Eq.~\eqref{eq:lower-bound-ca
 
 \textbf{Case (2): $e\in M_*$.}
 In this case, we know that the mean reward of arm $e$ under $H_1$ is $w(e)-2\Delta$.
-Therefore, the likelihood ratio $L_1(W)/L_0(W)$ is given by
+Similar to Case (1), the likelihood ratio $L_1(W)/L_0(W)$ is given by
 \begin{align}
   \frac{L_1(W)}{L_0(W)} &= \prod_{i=1}^{T_e} \exp\left(\frac{-(X_i-w(e)+2\Delta_e)^2+(X_i-w(e))^2}{2}\right) \nonumber \\
   						&= \prod_{i=1}^{T_e} \exp\big(\Delta_e(2w(e)-2X_i)-2\Delta_e^2\big) \nonumber \\
@@ -2045,6 +2033,7 @@ In the rest of the proof, we will bound $\E_0[T_{b_-}]$ and $\E_0[T_{b_+}]$ indi
 
 \textbf{Part (1): Lower bound of $\E_0[T_{b_-}]$.}
 In this part, we will show that $\E_0[T_{b_-}]\ge t_{b_-}^*$, where we define $t_{b_-}^* = \frac{|b_-|^2}{16 w(b)^2}\log(1/\theta)$.
+We will prove this by contradiction, thus assume the opposite, that is, $\E_0[T_{b_-}] < t_{b_-}^*$.
 
 Consider the complete sequence of sampling process by algorithm $\mathbb A$.
 Formally, let $W=\{(\tilde I_1,\tilde X_1),\ldots, (\tilde I_T, \tilde X_T)\}$ be the sequence of all trials by algorithm $\mathbb A$, where $\tilde I_i$ denotes the arm played in $i$-th trial and $\tilde X_i$ be the reward outcome of $i$-th trial.
@@ -2150,6 +2139,7 @@ Hence we have proved that
 \emph{(End of Part (1).)}
 
 \textbf{Part (2): Lower bound of $\E_0[T_{b_+}]$.} In this part, we will show that $\E_0[T_{b_+}]\ge t_{b_+}^*$, where we define $t_{b_+}^* = \frac{|b_+|^2}{16 w(b)^2}\log(1/\theta)$.
+We will prove this by contradiction, thus assume the opposite, that is, $\E_0[T_{b_+}] < t_{b_+}^*$.
 The arguments used in this part are similar to that of Part (1). 
 Hence, we will omit the redundant parts and highlight the differences.
 
@@ -2231,7 +2221,7 @@ Let $\Delta_{(1)},\ldots,\Delta_{(n)}$ be a permutation of $\Delta_1,\ldots,\Del
 $\Delta_{(1)} \le \ldots \ldots \Delta_{(n)}$.
 Let $A_1,\ldots,A_n$ and $B_1,\ldots, B_n$ be two sequence of sets which are defined in Algorithm~\ref{algo:budget}.
 Let $M\subseteq [n]$ be a set, we denote $\neg M$ to be the complement of $M$.
-
+We will also continue to use the notations of incidence vectors of sets and exchange sets, which are defined in \Cref{section:proof-algorithm}.
 
 \junk{
 \begin{lemma}
@@ -2403,8 +2393,11 @@ $$
 $$
 \end{proof}
 
+The next lemma provides an important insight on the correctness of \AlgorithmBud.
+Informally speaking, suppose that the algorithm does not make an error before phase $t$.
+Then, we show that, suppose arm $e$ has a gap $\Delta_e$ larger than the ``reference'' gap $\Delta_{(t-n+1)}$ of phase $t$, then arm $e$ must be correctly classified by $M_t$, i.e. $e\in M_t$ if and only if $e\in M_*$.
 \begin{lemma}
-Fix any round $t>0$. 
+Fix any phase $t>0$. 
 Suppose that event $\tau_t$ occurs. 
 Also assume that $A_t \subseteq M_*$ and $B_t \cap M_* = \emptyset$.
 Let $e\in [n] \del (A_t \cup B_t)$ be an active arm.
@@ -2462,14 +2455,14 @@ This means that $\bar w_t(M_t \oplus b) > \bar w_t(M_t)$.
 This contradicts to Eq.~\eqref{eq:lbc-1}.
 Therefore we have $e\in (M_* \cap M_t) \cup ( \neg M_* \cap \neg M_t)$.
 %Therefore we proved that $e\in M_t$ in this case.
-
 %\textbf{Case (2) $e\not \in M_*$.}
 %Suppose that $e\in M_t$.
 %This means that $M_t \not= M_*$.
 %Therefore, by Lemma~\ref{lemma:exchange}
-
 \end{proof}
 
+The next lemma takes a step further.
+It shows that if $\Delta_e \ge \Delta_{(t-n+1)}$ for some arm $e$, then the empirical gap of arm $e$ is greater than $\frac23 \Delta_{(t-n+1})$.
 \begin{lemma}
 \label{lemma-budget-c}
 Fix any round $t>0$. 
@@ -2530,6 +2523,7 @@ and Eq.~\eqref{eq:lbcx-6} follows from the fact that $\inn{\vec w, \vec\chi_b} \
 
 \end{proof}
 
+The next lemma shows that if $\Delta_e \le \Delta_{(t-n+1)}$ for some arm $e$, then the empirical gap of arm $e$ is smaller than $\frac13 \Delta_{(t-n+1})$.
 \begin{lemma}
 \label{lemma-budget-e}
 Fix any phase $t>0$. 
@@ -2582,6 +2576,7 @@ and Eq.~\eqref{eq:lbe-3} follows from the fact $\nor{\vec\chi_b}_1 \le \rank(\M)
 
 \subsection{Proof of Theorem~\ref{theorem:budget}}
 
+Using these technical lemmas, we are now ready to prove Theorem~\ref{theorem:budget}.
 For reader's convenience, we first restate Theorem~\ref{theorem:budget} in the following.
 \realfixbudget*
 
@@ -2644,9 +2639,10 @@ Therefore the algorithm outputs $\out=A_{n+1}=M_*$ after phase $n$.
 \end{proof}
 
 
-\section{Analysis of the uniform allocation algorithm}
+\section{Analysis of the Uniform Allocation Algorithm}
+\label{section:uniform}
 In this section, we analyze the performance of a simple benchmark strategy \Uniform which plays each arm for a equal number of times and then calls a maximization oracle using the empirical means of arms as input.
-The \Uniform algorithm is a natural generalization of previous uniform allocation algorithms in the literature of pure exploration MABs \citep{bubeck2010pure}.
+%The \Uniform algorithm is a natural generalization of previous uniform allocation algorithms in the literature of pure exploration MABs \citep{bubeck2010pure}.
 The pseudo-code of the \Uniform algorithm is listed in Algorithm~\ref{algo:uniform}.
 
 \begin{algorithm}[htbp]
@@ -2740,9 +2736,16 @@ Hence, by contradiction, we have proven that $\out=M_*$.
 
 
 
-\section{Exchange classes for example decision classes}
+\section{Exchange Classes for Example Decision Classes}
 
 %In this section
+
+In this section, we give formal constructions of the decision classes discussed in Example~1, 2 and 3.
+Further, we bound the width of the examples exchange classes.
+These bounds are proven using concrete constructions of exchange classes (Fact~\ref{fact:matroid}~through~\ref{fact:path}).
+The constructed exchange classes embody natural combinatorial structures.
+We illustrate the constructed exchange classes in Figure~\ref{fig:exchange}.
+
 
 \textbf{Notation.} We need one extra notation.
 Let $\sigma: E\rightarrow [n]$ be a bijection from some set $E$ with $n$ elements to $[n]$.
@@ -2812,7 +2815,11 @@ For all $K \in [n]$, let $\M_{\MultiIdent(K)} = \{M\subseteq [n] \mid |M| = K\}$
 Then we have $\rank(\M_{\MultiIdent(K)}) \le 2$.
 \end{fact}
 \begin{proof}
-Recall the definition of a uniform matroid $U_n^K$ \citep{oxley2006matroid}. 
+Let $U_n^K = ([n], \mathcal I_{K})$ where $\mathcal I_K$ is given by
+$$
+\mathcal I_K = \big\{M\subseteq[n] \mid |M| \le K\}.
+$$
+Recall that $U_n^K$ is a matroid (in particular, a uniform matroid of rank $K$) \citep{oxley2006matroid}.
 We know that a subset $M$ of $[n]$ is basis of $U_n^K$ if and only if $|M|=K$.
 Therefore, we have $\M_{\MultiIdent(K)}=\M_{\Matroid(U_n^K)}$. 
 Then the conclusion follows immediately from \Cref{fact:matroid}.
@@ -2837,6 +2844,37 @@ Therefore we have $\M_{\MultiBandit(\mathcal A)}=\M_{\Matroid(P_{\mathcal A})}$.
 Then the conclusion follows immediately from \Cref{fact:matroid}.
 \end{proof}
 
+\begin{figure}[t]
+\centering
+\begin{subfigure}[c]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{fig/exchange-multi}
+	\caption{An exchange set from $\B_{\Matroid(n)}$ (\MultiIdent: \Cref{fact:topk}; each cylinder represents an arm).}
+	\label{fig:exchange:topk}	
+\end{subfigure}
+~
+\begin{subfigure}[c]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{fig/exchange-matroid}
+	\caption{An exchange set from $\B_{\Matroid(n)}$ (Spanning trees: \Cref{fact:matroid}; each edge corresponds to an arm).}
+	\label{fig:exchange:matroid}
+\end{subfigure}
+~
+\begin{subfigure}[c]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{fig/exchange-match}
+	\caption{An exchange set from $\B_{\Match(G)}$ (Matchings: \Cref{fact:match}; each edge corresponds to an arm) }
+\end{subfigure}
+~
+\begin{subfigure}[c]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{fig/exchange-path}
+	\caption{An exchange set from $\B_{\Path(G,s,t)}$ (Paths: \Cref{fact:path}; each edge corresponds to an arm).}
+\end{subfigure}
+\caption{
+Examples of exchange sets belonging to the exchange classes $\B_{\Matroid}$ (one for \MultiIdent and one for spanning tree), $\B_{\Match}$ and $\B_{\Path}$:
+green-solid elements constitute the set $b_+$, red-dotted elements constitute the set $b_-$ and an example exchange set is given by $b=(b_+,b_-)$. 
+In \Cref{fig:exchange:topk}, we use \MultiIdent as a specific instance of matroid decision class.
+In \Cref{fig:exchange:matroid}, we use spanning tree as a specific instance of matroid decision class.
+}
+\label{fig:exchange}
+\end{figure}
 
 
 \begin{fact}[Matching]
@@ -2880,7 +2918,7 @@ Let $M,M' \in \M_{\Match(G)}$ be two different elements of $\M_{\Match(G)}$ and 
 On a high level perspective, we construct an exchange class which contains all augmenting cycles and paths of $G$.
 We know that the symmetric difference between $M$ and $M'$ can be decomposed into a collection of disjoint augmenting cycles and paths. 
 And $e$ must be on one of the augmenting cycle or path. 
-Then, since ``applying'' the augmenting cycle/path on $M$ will yield another valid matching which does not contains $e$. 
+Then, since ``applying'' this augmenting cycle/path on $M$ will yield another valid matching which does not contains $e$. 
 We see that this meets the requirements of an exchange class.
 In the rest of the proof, we carry out the technical details of this argument.
 
@@ -2988,8 +3026,7 @@ Moreover, since \Matroid encompasses both \MultiIdent and \MultiBandit types of 
 }
 
 
-
-\section{Reducing constrained oracles to maximization oracles}
+\section{Equivalence between Constrained Oracles and Maximization Oracles}
 
 In this section, we present a general method to implement constrained oracles using maximization oracles.
 The idea of the reduction is simple: one can impose the negative constrains $B$ by setting the corresponding weights to be sufficiently small; and one can impose the positive constrains $A$ by setting the corresponding weights to very large.
@@ -3005,7 +3042,7 @@ Therefore, \Cref{fact:coracle} shows that maximization oracles are equivalent to
 %Then, one solves a maximization oracle for the decision class which is the restriction of $\M$ onto $[n]\del b$.
 
 
-\begin{algorithm}[htbp]
+\begin{algorithm}[ht]
 {
 \small
 \begin{algorithmic}[1]
@@ -3062,17 +3099,26 @@ Therefore Algorithm~\ref{algo:reduction} returns $\bot$ in this case.
 
 In the rest of the proof, we assume that $\M_{A,B} \not=\emptyset$. 
 Since $\M_{A,B}$ is non-empty, we can fix an arbitrary $M_0 \in \M_{A,B}$, which will be used later in the proof. 
-We will also frequently use the fact that for all $\vec v\in \RR^{n}$ and all $S\subseteq[n]$, we have $-\nor{\vec v}_1 \le v(S) \le \nor{\vec v}_1$.
+We will also frequently use the fact that for all $\vec v\in \RR^{n}$ and all $S\subseteq[n]$, we have 
+\begin{equation}
+\label{eq:r62-0}
+-\nor{\vec v}_1 \le v(S) \le \nor{\vec v}_1.
+\end{equation}
 
 First we claim that $B\cap M =\emptyset$.
 Suppose that $B\cap M\not=\emptyset$. 
-Then there exists $i\in B \cap M$.
-Notice that $w_2(i) = -3L_2$ and recall that $L_2=\nor{\vec w_1}_1$.
-Therefore we have
-\begin{align*}
-w_2(M) &= w_2(M\del \{i\})+w_2(i) \le w_2(M\del B)+w_2(i) \\
-       &= w_1(M\del B)+w_2(i) \le L_2-3L_2 \le -2L_2.
-\end{align*}
+Then there exists $i\in B \cap M$ and we fix such an $i$.
+Then we have
+\begin{align}
+	w_2(M) &= w_2(M\del \{i\})+w_2(i) \nonumber\\
+				 &\le w_2(M \del B) + w_2(i) \label{eq:r62-1}\\
+				 &= w_1(M\del B)+w_2(i) \label{eq:r62-2} \\
+				 &\le L_2-3L_2 = -2L_2, \label{eq:r62-3}
+\end{align}
+where Eq.~\eqref{eq:r62-1} follows from the fact that $w_2(j) = -L_2 \le 0$ for all $j \in B \del \{i\}$;
+Eq.~\eqref{eq:r62-2} holds since $\vec w_1$ and $\vec w_2$ coincide on all entries of $M\del B$;
+and Eq.~\eqref{eq:r62-3} follows from the definition $L_2 = \nor{\vec w_1}_1$ and Eq.~\eqref{eq:r62-0}.
+
 On the other hand, observing that $B\cap M_0=\emptyset$, we can bound $w_2(M_0)$ as follows
 \begin{align*}
 w_2(M_0) = w_1(M_0) \ge -L_2.
@@ -3087,17 +3133,28 @@ w_2(M) = w_1(M).
 \end{equation}
 
 Next we claim that $A \subseteq M$. Suppose that $A\not\subseteq M$. 
-We see that $|M\cap A| \le |A|-1$.
-By combining Eq.~\eqref{eq:rdc1}, we have
-\begin{align*}
-w_2(M) &= w_1(M) = w_1(M\cap A)+w_1(M\del A) \\
-       &= 3|M\cap A| L_1 + w(M\del A) \le 3(|A|-1) L_1+ L_1 = (3|A|-2)L_1.
-\end{align*}
-On the other hand, using the fact that $A\subseteq M_0$, we see that
-$$
-w_2(M_0) = w_1(M_0) = w_1(A)+w_1(M\del A) = 3|A| L_1+w(M_0\del A) \ge 3|A| L_1-L_1 = (3|A|-1)L_1.
-$$
-Therefore, we see that $w_2(M_0) > w_2(M)$. 
+Then we have
+\begin{align}
+	w_2(M) &= w_1(M) = w_1(M\cap A)+w_1(M\del A) \nonumber \\
+				 &= 3|M\cap A| L_1 + w(M\del A) \label{eq:r62-4}\\
+				 &\le (3|A|-3) L_1+L_1 \label{eq:r62-5}\\
+				 &= (3|A|-2)L_1, \label{eq:r62-6}
+\end{align}
+where Eq.~\eqref{eq:r62-4} follows from the definition of $\vec w_1$;
+and Eq.~\eqref{eq:r62-5} follows from the assumption that $A\not\subseteq M$ and therefore $|M\cap A| \le |A|-1$.
+
+On the other hand, using the fact that $A\subseteq M_0$ (since $M_0\in \M_{A,B})$, we have
+\begin{align}
+w_2(M_0) &= w_1(M_0) = w_1(A)+w_1(M_0 \del A) \label{eq:r62-10}\\
+	 		   &= 3|A| L_1+w(M_0\del A)\label{eq:r62-7}\\
+	 		   &\ge 3|A| L_1-L_1\label{eq:r62-8}\\
+	 		   &= (3|A|-1)L_1, \label{eq:r62-9} 	 		   
+\end{align}
+where Eq.~\eqref{eq:r62-10} follows from the fact that $M_0\cap B=\emptyset$ and $A\subseteq M_0$;
+Eq.~\eqref{eq:r62-7} follows from the definition of $\vec w_1$, which ensures that $\vec w_1$ and $\vec w$ coincide on $M_0\del A$;
+and Eq.~\eqref{eq:r62-8} follows from Eq.~\eqref{eq:r62-0}.
+
+Therefore, by combining Eq.~\eqref{eq:r62-6} and Eq.~\eqref{eq:r62-9}, we see that $w_2(M_0) > w_2(M)$. 
 Again this contradicts to the definition of $M$, which proves the claim.
 
 
@@ -3114,28 +3171,82 @@ we see that $w_2(M_1) > w_2(M)$, which contradicts to the definition of $M$.
 Hence we have verified that $w(M) = \max_{M'\in\M_{A,B}} w(M')$.
 \end{proof}
 
-\section{Preliminary Experiment}
+\section{Preliminary Experiments: Minimal Spanning Tree}
 In this section, we present some preliminary experimental results of our algorithms \Algorithm and \AlgorithmBud. 
 We conduct experiments on a real-world dataset with decision classes corresponding to spanning trees.
-We compare our algorithms with the uniform allocation benchmark \Uniform discussed in Section~Y.
-The experiment results show that the proposed algorithms are very sample efficient compared with the \Uniform algorithm, which agrees with our theoretical analysis.
+We compare our algorithms with the uniform allocation benchmark \Uniform discussed in \Cref{section:uniform}.
+The experiment results show that the proposed algorithms are considerably more sample efficient than the \Uniform algorithm, which agrees with our theoretical analysis.
 
 
 %Our implementations of \Algorithm and \AlgorithmBud slightly differs from our descriptions in Algorithm~\ref{algo:pac} and Algorithm~\ref{algo:budget}. For \AlgorithmBud,  
+\newcommand{\imgsize}{0.30}
+\begin{figure}[htbp]
+\centering
+\begin{subfigure}[c]{\imgsize\textwidth}
+	\includegraphics[width=\textwidth]{fig/exp/mst-c-1755}
+	\caption{Network 1755}
+\end{subfigure}
+\begin{subfigure}[c]{\imgsize\textwidth}
+	\includegraphics[width=\textwidth]{fig/exp/mst-c-3257}
+	\caption{Network 3257}
+\end{subfigure}
+\begin{subfigure}[c]{\imgsize\textwidth}
+	\includegraphics[width=\textwidth]{fig/exp/mst-c-3967}
+	\caption{Network 3967}
+\end{subfigure}
+\caption{Comparison of empirical probability of errors  with respect to $\mathbf H$.}
+\label{fig:exp1}
+\end{figure}
+\begin{figure}[htbp]
+\centering
+\begin{subfigure}[c]{\imgsize\textwidth}
+	\includegraphics[width=\textwidth]{fig/exp/mst-cs-1755}
+	\caption{Network 1755}
+\end{subfigure}
+\begin{subfigure}[c]{\imgsize\textwidth}
+	\includegraphics[width=\textwidth]{fig/exp/mst-cs-3257}
+	\caption{Network 3257}
+\end{subfigure}
+\begin{subfigure}[c]{\imgsize\textwidth}
+	\includegraphics[width=\textwidth]{fig/exp/mst-cs-3967}
+	\caption{Network 3967}
+\end{subfigure}
+\caption{Empirical sample complexity of \Algorithm with respect to $\mathbf H$.}
+\label{fig:exp2}
+\end{figure}
+\begin{figure}[htbp]
+\centering
+\begin{subfigure}[c]{\imgsize\textwidth}
+	\includegraphics[width=\textwidth]{fig/exp/mst-1755}
+	\caption{Network 1755}
+\end{subfigure}
+\begin{subfigure}[c]{\imgsize\textwidth}
+	\includegraphics[width=\textwidth]{fig/exp/mst-3257}
+	\caption{Network 3257}
+\end{subfigure}
+\begin{subfigure}[c]{\imgsize\textwidth}
+	\includegraphics[width=\textwidth]{fig/exp/mst-3967}
+	\caption{Network 3967}
+\end{subfigure}
+\caption{Empirical probability of error of \AlgorithmBud and \Uniform with respect to budget size $T$.}
+\label{fig:exp3}
+\end{figure}
+
 
 \textbf{Setup.} 
-Our task is to identify the optimal routing tree from a networking system that has the lowest expected latency in a dedicated exploration procedure, in which one can obtain noisy measurements of latencies between different nodes.
-We model this problem as a \Problem problem where the arms correspond to edges and the decision class corresponds to the set of spanning trees (which is a special case of matroids, as we have discussed in Example~X).
-We use a real-world dataset called RocketFuel [], which contains  ISP networks with routing information such as average latencies between nodes pairs. 
-We choose the ISP networks which form connected graphs.
-The statistics of the graphs are shown in Table~X.
-We model the latency $X(e)$ of edge $e$ to be the sum of the average latency $l(e)$ and an additive random noise $\mathcal N(0, 1)$.
+Our task is to identify the optimal routing tree  that has the lowest expected latency from a networking system in an exploration procedure, in which one can obtain noisy measurements of latencies between different nodes.
+We model this problem as a \Problem problem where the arms correspond to edges and the decision class corresponds to the set of spanning trees (which is a special case of matroids, as we have discussed in Example~\ref{example:matroid}).
+We use a real-world dataset called RocketFuel \citep{spring2002measuring}, which contains several ISP networks with routing information such as average latencies between nodes pairs. 
+We select three ISP networks with different numbers of edges ranging from $161$ to 328.
+%The number of nodes 
+%Among the six ISP networks, there are four fully connected networks which formed the dataset used in this experiment.
+For each network, we model the latency $X(e)$ of edge $e$ to be the sum of the given average latency $l(e)$ and an additive random noise $\mathcal N(0, 1)$.
 Then we model the reward of edge $e$ as the negative latency $-X(e)$ and therefore the expected reward of $e$ is given by $w(e) = -l(e)$.
 Notice that we now need to find the spanning tree that maximizes the expected reward, which is exactly an instance of \Problem. 
 
 Since the ground-truth of expected reward $\vec w$ is known.
-We know the ground-truth of the optimal set $M_*$ and the hardness measures $\mathbf H$.
-In order to find the relationship between $\mathbf H$ and sample complexity, we generate a number instances with different $\mathbf H$ by adjusting the expected reward of each arm $e\in M_*$ with a same amount $c_0$ while does not change the optimality of $M_*$.
+We can compute the ground-truth of the optimal set $M_*$ and the hardness measures $\mathbf H$.
+Furthermore, in order to investigate the relationship between $\mathbf H$ and sample complexity empirically, we generate a number instances with different $\mathbf H$ by adjusting the expected reward of each arm $e\in M_*$ with a same amount $c_0$ while not changing the optimality of $M_*$.
 By definition of $\mathbf H$, we see that $\mathbf H$ decreases when $c_0$ increases.
 % and $\mathbf H$ increases if $c_0 < 0$.
 %We will translate the sample complexity of \Algorithm in units of $\mathbf H$ in the spirit of the sample complexity bound of Theorem~\ref{theorem:main}.
@@ -3144,22 +3255,24 @@ By definition of $\mathbf H$, we see that $\mathbf H$ decreases when $c_0$ incre
 \textbf{Evaluation method.} 
 We use the following evaluation procedure to compare the sample efficiency between \Algorithm,\AlgorithmBud and \Uniform.
 Since \AlgorithmBud and \Uniform are both learning algorithms in the fixed budget setting, the comparison between them is straightforward:
-for each given budget, we run both algorithms with this budget independently for 100 times and compare their empirical probability of errors (the fraction of runs where a tested algorithm fails to report the ground-truth optimal set $M_*$).
+for each given budget, we run both algorithms with this budget independently for 1000 times and compare their empirical probability of errors (the fraction of runs where a tested algorithm fails to report the ground-truth optimal set $M_*$).
 On the other hand, we use the following procedure to compare \Algorithm with other fixed budget algorithms.
-We run \Algorithm independently for 100 times with a given confidence parameter.
+We run \Algorithm independently for 1000 times with a given confidence parameter.
 Suppose that the $i$-th run of \Algorithm uses $T_i$ samples, we also run \Uniform and \AlgorithmBud with budget $T_i$.
-Then we compare the empirical probability of errors of the tested algorithms after the 100 runs are completed.
+Then we compare the empirical probability of errors of the tested algorithms after the 1000 runs are completed.
 In this way, we see the compared algorithms use an equal number of samples in each run, which allows us to compare their sample efficiency.
 Finally, we set $\delta=0.3$ for \Algorithm throughout the experiments.
 %In this way, we can compare the sample efficiency of \Algorithm with \Uniform and \AlgorithmBud.
 
 
+
+
 \textbf{Experimental results.}
 We test all competing algorithms using the aforementioned evaluation method.
-The experimental results are shown in Figure~Z.
-From the results, we see that both \Algorithm and \AlgorithmBud are consistently more sample efficient than \Uniform by a large margin, i.e. they incur a smaller empirical probability of error than \Uniform while using a same number of samples (Figure~Z).
+The experimental results are shown in \Cref{fig:exp1}, \Cref{fig:exp2} and \Cref{fig:exp3}.
+From the results (\Cref{fig:exp1} and \Cref{fig:exp3}), we see that both \Algorithm and \AlgorithmBud are consistently more sample efficient than \Uniform by a large margin, i.e. they incur a smaller empirical probability of error than \Uniform when using a same number of samples.
 This matches our theoretical analyses of these algorithms.
-We also see that the probability of error of \Algorithm is always smaller than the guarantee $\delta=0.3$ (Figure~A) and the sample complexity of \Algorithm is approximately linear in $\mathbf H$ (Figure~B), which agrees with our theory that the sample complexity bound for the spanning tree decision class is $\tilde O(\mathbf H)$ (see Example~X).
+We also see that the probability of error of \Algorithm is always smaller than the guarantee $\delta=0.3$ (Figure~\ref{fig:exp1}) and the sample complexity of \Algorithm is approximately linear in $\mathbf H$ (Figure~\ref{fig:exp2}), which agrees with our theory that the sample complexity bound for the spanning tree decision class is $\tilde O(\mathbf H)$ (see Example~\ref{example:matroid}).
 
 
 %It is clear that the maximal spanning tree problem can be solved using a greedy algorithm.
