@@ -140,20 +140,21 @@
 \maketitle
 \vspace{-1em}
 \begin{abstract}
-We study {\em combinatorial pure exploration (\Problem)} problem in the stochastic multi-armed bandit setting,
-	where a learner explores a set of arms with the objective of identifying the optimal set of arms
-	with certain combinatorial structures, such as size-$K$ subsets, matchings, spanning trees,
-	paths, etc.
-A collection of subsets of arms with certain combinatorial structure is referred to as a {\em decision class}.	
-Instead of solving each \Problem task in an ad-hoc way, we provide a general framework
-	as well as solutions that work for all decision classes which admit offline maximization oracles.  
-In particular, we present two algorithms for the general \Problem task: 
-	one for the fixed confidence setting and one for the fixed budget setting.
+We study the {\em combinatorial pure exploration (\Problem)} problem in the stochastic multi-armed bandit setting,
+	where a learner explores a set of arms with the objective of identifying the optimal member
+	of a \emph{decision class}, which is a collection of subsets of arms with certain combinatorial structures 
+	such as size-$K$ subset, matching, spanning tree or path, etc.
+The \Problem problem represents a rich class of pure exploration tasks which covers not only many existing models but also novel cases where the object of interest has a non-trivial combinatorial structure.
+%The collection of subsets of arms which satisfy certain combinatorial constraint is referred as a \emph{decision class}.
+%We call such a collection of subsets of arms a {\em decision class}.	
+In this paper, we provide a series of results for the general \Problem problem.
+We present general learning algorithms that work for all decision classes that admit offline maximization oracles in both fixed confidence and fixed budget settings. 
+	%one for the fixed confidence setting and one for the fixed budget setting.
 We prove problem-dependent upper bounds of our algorithms. 
 Our analysis exploits the combinatorial structures of the decision classes and introduces a new analytic tool.
 We also establish a general problem-dependent lower bound for the \Problem problem.
-Our results show that the proposed algorithms achieve optimal sample complexity (within logarithmic factors) for many decision classes. 
-In addition, applying our results back to problems of top-$K$ arms identification and multiple bandit best arms identification, we recover the state-of-the-art upper bounds and settles two open conjectures on the lower bounds.
+Our results show that the proposed algorithms achieve the optimal sample complexity (within logarithmic factors) for many decision classes. 
+In addition, applying our results back to the problems of top-$K$ arms identification and multiple bandit best arms identification, we recover the best available upper bounds and settles two open conjectures on the lower bounds.
 
 %\wei{Currently not mentioning PAC result extension. Perhaps OK as long as we mention it in the intro.}
 
@@ -177,11 +178,11 @@ In addition, applying our results back to problems of top-$K$ arms identificatio
 \vspace{-0.3em}
 %After introduced in the seminal work of \citet{robbins1985some}, 
 Multi-armed bandit (MAB) is a predominant model for characterizing the tradeoff between exploration and exploitation in decision-making problems. 
-Although this tradeoff is intrinsic in many tasks, some application domains prefer a dedicated exploration procedure in which the goal is to identify an optimal object among a collection of candidates and the reward or loss incurred during exploration is irrelevant.
+Although this is an intrinsic tradeoff in many tasks, some application domains prefer a dedicated exploration procedure in which the goal is to identify an optimal object among a collection of candidates and the reward or loss incurred during exploration is irrelevant.
 In light of these applications, the related learning problem, called pure exploration in MABs, has received much attention.
 Recent advances in pure exploration MABs have found potential applications in many domains including crowdsourcing, communication network and online advertising.
 
-In many  of these application domains, a recurring problem is to identify an optimal object with certain \emph{combinatorial structures}. 
+In many  of these application domains, a recurring problem is to identify the optimal object with certain \emph{combinatorial structure}. 
 For example, a crowdsourcing application may want to find the best assignment from workers to tasks such that overall productivity of workers are maximized. 
 A network routing system during the initialization phase may try to build a spanning tree that minimizes the delay of links, or attempts to identify the shortest path between two sites.  
 An online advertising system may be interested to find the best matching between ads and display slots. 
@@ -191,7 +192,7 @@ Our paper contributes such a framework which accounts for general combinatorial 
 In this paper, we formulate the {\em combinatorial pure exploration (\Problem)} problem for stochastic multi-armed bandits.  
 In the \Problem problem, a learner has a fixed set of arms and each arm is associated with an unknown reward distribution. 
 The learner is also given a collection of sets of arms called \emph{decision class}, which
-	corresponds to  certain collection of combinatorial structures.
+	corresponds to  a collection of certain combinatorial structures.
 During the exploration period, in each round the learner chooses an arm to play
 	and observes a random reward sampled from the associated distribution. 
 The objective is when the exploration period ends, the learner outputs a member of the decision
@@ -212,8 +213,9 @@ Further, this framework  covers many more interesting cases where the decision c
 %Mo a substantially larger class of pure exploration problems.
 For example, suppose that the arms represent the edges in a graph.
 Then a decision class could be the set of all paths between two vertices, all spanning trees or all matchings of the graph. 
-And, in these cases, the objectives of \Problem correspond to identifying the optimal paths, spanning trees and matchings, respectively.
-As we have explained earlier, these types of combinatorial pure exploration problems admit potential applications in diverse domains.% including crowdsourcing, network routing and online advertising.
+And, in these cases, the objectives of \Problem become identifying the optimal paths, spanning trees and matchings through bandit explorations, respectively.
+To our knowledge, there are no results available in the literature for these types of combinatorial pure exploration problems.
+%As we have explained earlier, these types of combinatorial pure exploration problems admit potential applications in diverse domains.% including crowdsourcing, network routing and online advertising.
 %Therefore, due to its generality, our framework admits applications in diverse domains including the examples we previously explained.
 
 %More importantly, our framework covers a substantially larger class of pure exploration problems including many interesting cases where the decision classes correspond to non-trivial combinatorial structures. 
@@ -254,7 +256,7 @@ While for other decision classes in general, our result establishes the first sa
 We further show that \Algorithm can be easily extended to the fixed budget setting and PAC learning setting and we provide related theoretical guarantees in the supplementary material.  
 
 Moreover, we establish a problem-dependent sample complexity lower bound for the \Problem problem.  
-Our lower bound shows that the sample complexity of the proposed \Algorithm algorithm is optimal (to within logarithmic factors) for a large class of decision classes, including \MultiIdent, \MultiBandit and the decision classes derived from matroids (e.g. spanning tree). 
+Our lower bound shows that the sample complexity of the proposed \Algorithm algorithm is optimal (to within logarithmic factors) for many  decision classes, including \MultiIdent, \MultiBandit and the decision classes derived from matroids (e.g. spanning tree). 
 Therefore our upper and lower bounds  provide a near full characterization of the sample complexity of these \Problem problems. 
 For more general decision classes, our results show that the upper and lower bounds are within a relatively benign factor. 
 To the best of our knowledge, there are no problem-dependent lower bounds known for pure exploration MABs besides the case of identifying the single best arm \citep{mannor2004sample,audibert2010best}.
@@ -289,8 +291,8 @@ Formally, if $X$ is a random variable drawn according to $\Rew_e$ for some $e\in
 It is well-known that the family of $R$-sub-Gaussian tail distributions encompasses all distributions that are supported on $[0,R]$ as well as many unbounded distributions such as Gaussian distributions with variance $R^2$ (cf. \citep{pollard2000asymptopia}).
 
 
-We define a \emph{decision class} $\M \subseteq 2^{[n]}$ as a   collection of sets of arms.
-Let $M_*=\argmax_{M\in \M} w(M)$ denote the optimal set belonging to the decision class $\M$ which maximizes the sum of expected reward\footnote{We denote $v(M)\triangleq \sum_{i\in[n]} v(i)$ for any vector $\vec v\in\RR^{n}$ and any set $M\subseteq[n]$. For convenience, we will assume that $M_*$ is unique.}. 
+We define a \emph{decision class} $\M \subseteq 2^{[n]}$ as a  collection of sets of arms.
+Let $M_*=\argmax_{M\in \M} w(M)$ denote the optimal set belonging to the decision class $\M$ which maximizes the sum of expected reward\footnote{We denote $v(S)\triangleq \sum_{i\in S} v(i)$ for any vector $\vec v\in\RR^{n}$ and any set $S \subseteq[n]$. In addition, for convenience, we will assume that $M_*$ is unique.}.
 A learner's objective is to identify $M_*$ from $\M$ by playing the following game with the stochastic environment.
 %Let $\M\subseteq 2^{[n]}$ be the family of all feasible solutions to a combinatorial problem.
 %Let $M_* = \argmax_{M\in \M} w(M)$ denote the optimal set of arms which max
@@ -351,7 +353,7 @@ En route to our sample complexity bound, we introduce the notions of exchange cl
 %Our analysis uses tools developed using exchange classes.
 %Then, we analyze the sample complexity of \Algorithm algorithm.
 Furthermore, the \Algorithm algorithm can be extended to the fixed budget and PAC learning settings,
-	the discussion of which is included in the supplementary material (Section~\ref{section:extensions}).
+	the discussion of which is included in the supplementary material (\Cref{section:extensions}).
 %Now we begin with introducing the notion of oracles.
 %Many common combinatorial problems admit computationally efficient oracles.
 
@@ -488,7 +490,7 @@ Similarly, we also define operator $\ominus$ such that $M\ominus b \triangleq M\
 We call a collection of exchange sets $\B$ an \emph{exchange class for $\M$} if $\B$ satisfies the following property.
 For any $M,M'\in \M$ such that $M\not = M'$  and for any $e\in (M\del M')$, there exists an exchange set $(b_+,b_-)\in \B$ which satisfies five constraints: \textbf{(a)} $e\in b_-$, \textbf{(b)} $b_+ \subseteq M'\del M$, \textbf{(c)} $b_- \subseteq M \del M'$, \textbf{(d)} $(M\oplus b) \in \M$ and \textbf{(e)} $(M'\ominus b) \in \M$.
 
-Informally, constraints \textbf{(b)} and \textbf{(c)} resemble the concept of patches in the sense that $b_+$ contains only the ``new'' elements from $M'$ and $b_-$ contains only the ``old'' elements of $M$; constraints \textbf{(d)} and  \textbf{(e)} allow one to transform $M$ one step closer to $M'$ by applying  a patch $b\in \B$ to yield $(M\oplus b) \in \M$ (and similarly for $M'\ominus b$).
+Intuitively, constraints \textbf{(b)} and \textbf{(c)} resemble the concept of patches in the sense that $b_+$ contains only the ``new'' elements from $M'$ and $b_-$ contains only the ``old'' elements of $M$; constraints \textbf{(d)} and  \textbf{(e)} allow one to transform $M$ one step closer to $M'$ by applying  a patch $b\in \B$ to yield $(M\oplus b) \in \M$ (and similarly for $M'\ominus b$).
 These transformations are the basic building blocks of our analysis.
 Furthermore, as we will see later in our examples, for many decision classes, there are exchange classes embody natural combinatorial structures, e.g. augmenting paths and cycles of matchings.
 %One can repeat this step so that eventually $M'=M\oplus b_1 \oplus \ldots \oplus b_k$ for some $k$.
@@ -586,7 +588,7 @@ By combining Lemma~\ref{lemma:example-exchange-class} and Theorem~\ref{theorem:m
 
 Now we investigate several concrete types of decision classes, which correspond to different \Problem tasks.
 We analyze the width of these decision classes and apply \Cref{theorem:main} to obtain the sample complexity bounds.
-A more detailed analysis and the constructions of exchange classes can be found in the supplementary material.
+A more detailed analysis and the constructions of exchange classes can be found in the supplementary material (\Cref{section:exchange-proof}).
 %Our bounds of width are proven b
 %and apply Theorem~\ref{theorem:main} for these classes. 
 We begin with the problem of top-$K$ arm identification (\MultiIdent) and multi-bandit best arms identification (\MultiBandit).
@@ -683,7 +685,7 @@ $\mathbf H$ is defined in Eq.~\eqref{eq:hardness}.
 %Recall that, for \MultiIdent and \Matroid, Lemma~\ref{lemma:example-exchange-class} shows that $\rank(\B)=2$.
 Theorem~\ref{theorem:lower-bound} resolves the open conjectures of \citet{kalyanakrishnan2012pac} and \citet{bubeck2013multiple} that the lower bounds of sample complexity of \MultiIdent and \MultiBandit problem are $\Omega\big(\mathbf H\log(1/\delta)\big)$.
 Moreover, in \Cref{example:topk} and \Cref{example:matroid}, we have shown that the sample complexity of \Algorithm is $O(\mathbf H\log(n\mathbf H/\delta))$ for \MultiIdent, \MultiBandit and more generally the decision classes derived from matroids $\M_{\Matroid(T)}$ (including spanning trees).
-Hence, we see that the \Algorithm algorithm achieves the optimal sample complexity within logarithmic factors for these pure exploration problems.
+Hence, we see that the \Algorithm algorithm achieves the optimal sample complexity within logarithmic factors for these pure exploration tasks.
 
 %On the other hand, for $\Match(V,E)$ and $\Path(V,E)$, we see that the gap between the upper bound Eq.~\eqref{eq:sample-complexity} and this lower bound is a factor of $|V|^2$.
 On the other hand, for general decision classes with non-constant widths, we see that there is a gap of $\tilde \Theta(\rank(\M)^2)$ between the upper bound Eq.~\eqref{eq:sample-complexity} and the lower bound Eq.~\eqref{eq:lower-bound}.
@@ -691,7 +693,7 @@ Notice that we have $\rank(\M) \le n$ for any decision class $\M$ and therefore 
 %Ignoring the logarithmic factors, this gap only depends on the underlying combinatorial structure of $\M$.
 Our lower bound also suggests that the dependency on $\mathbf H$ of the sample complexity of \Algorithm cannot be improved up to logarithmic factors.
 Furthermore, we conjecture that the sample complexity lower bound might inherently depend on the size of exchange sets. 
-In the supplementary material, we provide evidence on this conjecture which is a lower bound on the sample complexity of exploration of exchange sets.
+In the supplementary material (\Cref{section:lowerbound-evidence}), we provide evidence on this conjecture which is a lower bound on the sample complexity of exploration of exchange sets.
  %dependency on $\rank(\M)$ of the sample complexity might be intrinsic. 
 %In the supplementary material, we provide evidence showing that the sample complexity of any $\delta$-correct algorithm should be related to size of exchange sets. 
 
@@ -717,9 +719,9 @@ where $\M_{A,B}=\{M\in \M \mid A\subseteq M, B\cap M = \emptyset\}$ is the colle
 %The function $\COracle$ takes three inputs: (1) a weight vector $\vec v$, (2) a set $A$ of positive constraints and (3) a set $B$ of negative constraints; the function returns a set such that
 %$\COracle(\vec v, A, B) \in \argmax_{M \in  \M_{a,b}} v(M)$,
 %where $\M_{a,b}=\{M\in \M \mid a\subseteq M, b\cap M = \emptyset\}$.
-Hence we see that $\COracle(\vec v, A, B)$ returns an optimal set that includes all elements of $A$ while excluding all elements of $B$; and if there are no feasible sets, the oracle $\COracle(\vec v, A, B)$ returns the null symbol $\bot$.
+Hence we see that $\COracle(\vec v, A, B)$ returns an optimal set that includes all elements of $A$ while excluding all elements of $B$; and if there are no feasible sets, the constrained oracle $\COracle(\vec v, A, B)$ returns the null symbol $\bot$.
 %It is clear that constrained oracles exist for many combinatorial problems including the four examples we considered in this paper.
-In the supplementary material, we show that constrained oracles are equivalent to maximization oracles up to a transformation on the weight vector.
+In the supplementary material (\Cref{section:equivalence-constrained-oracle}), we show that constrained oracles are equivalent to maximization oracles up to a transformation on the weight vector.
 In addition, similar to \Algorithm, \AlgorithmBud does not need any additional knowledge of $\M$ other than accesses to a constrained oracle for $\M$.
 
 
@@ -828,7 +830,7 @@ Note that the objective of these work is to minimize the cumulative regret, whic
 In the literature of pure exploration MABs, the classical problem of identifying the single best arm has been well-studied in both fixed confidence and fixed budget settings \citep{mannor2004sample,even2006action,bubeck2010pure,audibert2010best,gabillon2012best,jamieson2013lil,jamieson2014best}.
 A flurry of recent work extend this classical problem to \MultiIdent and \MultiBandit problems and obtain algorithms, upper bounds \citep{kalyanakrishnan2010efficient,kalyanakrishnan2012pac,zhou2014optimal,bubeck2013multiple,NIPS2011_4478,gabillon2012best,kaufmann2013information} and worst-case lower bounds of \MultiIdent \citep{kalyanakrishnan2012pac,zhou2014optimal}.
 Our framework encompasses these two problems as special cases and covers a much larger class of combinatorial pure exploration problems, which are unaddressed in the current literature.
-Applying our results back to \MultiIdent and \MultiBandit, our upper bounds match state-of-the-art problem-dependent bounds up to constant factors \citep{gabillon2012best,bubeck2013multiple,kalyanakrishnan2012pac} in both fixed confidence and fixed budget settings; and our lower bound provides the first problem-dependent lower bounds for these two problems, which are conjectured earlier by \citet{kalyanakrishnan2012pac} and \citet{bubeck2013multiple}.
+Applying our results back to \MultiIdent and \MultiBandit, our upper bounds match best available problem-dependent bounds up to constant factors \citep{gabillon2012best,bubeck2013multiple,kalyanakrishnan2012pac} in both fixed confidence and fixed budget settings; and our lower bound provides the first problem-dependent lower bounds for these two problems, which are conjectured earlier by \citet{kalyanakrishnan2012pac} and \citet{bubeck2013multiple}.
 %We also notice that a very recent due to XXX improves 
 %In addition, to our knowledge, there is no known problem-dependent lower bounds for \MultiIdent and \MultiBandit. 
 %Therefore, when applying our general lower bound to \MultiIdent and \MultiBandit, we obtain the first problem-dependent lower bounds for these two problems. 
@@ -867,8 +869,19 @@ Our upper and lower bounds characterize the complexity of the \Problem problem: 
 
 \maketitle
 
+\section*{Organization}
+This supplementary material is organized as follows.
+First, we provide the deferred proofs of Theorem~\ref{theorem:main} (\Cref{section:proof-algorithm}).
+Then, we present two simple extensions of \Algorithm: one to the fixed budget setting and one to the PAC learning setting; and provide related analysis (\Cref{section:extensions}).
+Next, we provide the deferred proof of our lower bound (Theorem~\ref{theorem:lower-bound}) in \Cref{section:lowerbound-proof}.
+In \Cref{section:fixed-budget-proof}, we provide the deferred proof of Theorem~\ref{theorem:budget}.
+We also analyze the uniform allocation algorithm as a simple benchmark in \Cref{section:uniform}.
+Afterwards, we provide the deferred discussion and constructions of example decision classes and exchange classes in \Cref{section:exchange-proof}. 
+In \Cref{section:equivalence-constrained-oracle}, we prove the equivalence between the constrained oracles and maximization oracles.
+Finally, we present some preliminary experimental results in \Cref{section:experiment}.
 
-\section{Analysis of \Algorithm}
+
+\section{Analysis of \Algorithm (Theorem~\ref{theorem:main})}
 \label{section:proof-algorithm}
 
 In this section, we analyze the sample complexity of \Algorithm and prove Theorem~\ref{theorem:main}.
@@ -1749,7 +1762,9 @@ Hence the theorem follows by summing up Eq.~\eqref{eq:bound-pac-te-2} for all $e
 
 
 
-\section{Proof of Lower Bound}
+\section{Proof of Lower Bound (Theorem~\ref{theorem:lower-bound})}
+\label{section:lowerbound-proof}
+
 \lowerbound*
 
 \begin{proof}
@@ -1951,6 +1966,7 @@ Hence, we must have $\E_0[T_e] > t_e^* = \frac{1}{16\Delta_e^2}\log(1/4\delta)$.
 
 
 \subsection{Exchange set size dependent lower bound}
+\label{section:lowerbound-evidence}
 We show that, for any arm $e\in [n]$, there exists an exchange set $b$ which contains $e$ such that a $\delta$-correct algorithm must spend
 $\tilde \Omega\Big(\big(|b_+|+|b_-|\big)^2 / \Delta_e^2 \Big)$ samples on exploring the arms belonging to $b$.
 %any optimal exchange set $b\in\Bopt$ and any $\delta$-correct algorithm, the algorithm  must spend $\tilde \Omega\left(|b|^2/w(b)^2\right)$ samples on the arms belonging to $b$.
@@ -2209,8 +2225,8 @@ We obtain
 %On the other hand, it is clear that one cannot prove any non-trivial lower bounds on the probability of error of algorithm $\mathbb A$: an algorithm which always outputs $M_*$ has zero probability of error for this particular problem instance.
 %We also notice that Theorem~\ref{theorem:lower-bound} does not imply 
 
-\section{Analysis of \AlgorithmBud}
-
+\section{Analysis of \AlgorithmBud (Theorem~\ref{theorem:budget})}
+\label{section:fixed-budget-proof}
 
 \textbf{Notations.}
 For convenience, we will use the following additional notations in the rest of this section.
@@ -2737,7 +2753,7 @@ Hence, by contradiction, we have proven that $\out=M_*$.
 
 
 \section{Exchange Classes for Example Decision Classes}
-
+\label{section:exchange-proof}
 %In this section
 
 In this section, we give formal constructions of the decision classes discussed in Example~1, 2 and 3.
@@ -2746,6 +2762,38 @@ These bounds are proven using concrete constructions of exchange classes (Fact~\
 The constructed exchange classes embody natural combinatorial structures.
 We illustrate the constructed exchange classes in Figure~\ref{fig:exchange}.
 
+
+\begin{figure}[ht]
+\centering
+\begin{subfigure}[c]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{fig/exchange-multi}
+	\caption{An exchange set from $\B_{\Matroid(n)}$ (\MultiIdent: \Cref{fact:topk}; each cylinder represents an arm).}
+	\label{fig:exchange:topk}	
+\end{subfigure}
+~
+\begin{subfigure}[c]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{fig/exchange-matroid}
+	\caption{An exchange set from $\B_{\Matroid(n)}$ (Spanning trees: \Cref{fact:matroid}; each edge corresponds to an arm).}
+	\label{fig:exchange:matroid}
+\end{subfigure}
+~
+\begin{subfigure}[c]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{fig/exchange-match}
+	\caption{An exchange set from $\B_{\Match(G)}$ (Matchings: \Cref{fact:match}; each edge corresponds to an arm) }
+\end{subfigure}
+~
+\begin{subfigure}[c]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{fig/exchange-path}
+	\caption{An exchange set from $\B_{\Path(G,s,t)}$ (Paths: \Cref{fact:path}; each edge corresponds to an arm).}
+\end{subfigure}
+\caption{
+Examples of exchange sets belonging to the exchange classes $\B_{\Matroid}$ (one for \MultiIdent and one for spanning tree), $\B_{\Match(G)}$ and $\B_{\Path(G,s,t)}$:
+green-solid elements constitute the set $b_+$, red-dotted elements constitute the set $b_-$ and an example exchange set is given by $b=(b_+,b_-)$. 
+In \Cref{fig:exchange:topk}, we use \MultiIdent as a specific instance of matroid decision class.
+In \Cref{fig:exchange:matroid}, we use spanning tree as a specific instance of matroid decision class.
+}
+\label{fig:exchange}
+\end{figure}
 
 \textbf{Notation.} We need one extra notation.
 Let $\sigma: E\rightarrow [n]$ be a bijection from some set $E$ with $n$ elements to $[n]$.
@@ -2843,38 +2891,6 @@ satisfies $|M\cap A_i| = 1$ for all $i\in [m]$.
 Therefore we have $\M_{\MultiBandit(\mathcal A)}=\M_{\Matroid(P_{\mathcal A})}$. 
 Then the conclusion follows immediately from \Cref{fact:matroid}.
 \end{proof}
-
-\begin{figure}[t]
-\centering
-\begin{subfigure}[c]{0.45\textwidth}
-	\includegraphics[width=\textwidth]{fig/exchange-multi}
-	\caption{An exchange set from $\B_{\Matroid(n)}$ (\MultiIdent: \Cref{fact:topk}; each cylinder represents an arm).}
-	\label{fig:exchange:topk}	
-\end{subfigure}
-~
-\begin{subfigure}[c]{0.45\textwidth}
-	\includegraphics[width=\textwidth]{fig/exchange-matroid}
-	\caption{An exchange set from $\B_{\Matroid(n)}$ (Spanning trees: \Cref{fact:matroid}; each edge corresponds to an arm).}
-	\label{fig:exchange:matroid}
-\end{subfigure}
-~
-\begin{subfigure}[c]{0.45\textwidth}
-	\includegraphics[width=\textwidth]{fig/exchange-match}
-	\caption{An exchange set from $\B_{\Match(G)}$ (Matchings: \Cref{fact:match}; each edge corresponds to an arm) }
-\end{subfigure}
-~
-\begin{subfigure}[c]{0.45\textwidth}
-	\includegraphics[width=\textwidth]{fig/exchange-path}
-	\caption{An exchange set from $\B_{\Path(G,s,t)}$ (Paths: \Cref{fact:path}; each edge corresponds to an arm).}
-\end{subfigure}
-\caption{
-Examples of exchange sets belonging to the exchange classes $\B_{\Matroid}$ (one for \MultiIdent and one for spanning tree), $\B_{\Match}$ and $\B_{\Path}$:
-green-solid elements constitute the set $b_+$, red-dotted elements constitute the set $b_-$ and an example exchange set is given by $b=(b_+,b_-)$. 
-In \Cref{fig:exchange:topk}, we use \MultiIdent as a specific instance of matroid decision class.
-In \Cref{fig:exchange:matroid}, we use spanning tree as a specific instance of matroid decision class.
-}
-\label{fig:exchange}
-\end{figure}
 
 
 \begin{fact}[Matching]
@@ -3027,6 +3043,7 @@ Moreover, since \Matroid encompasses both \MultiIdent and \MultiBandit types of 
 
 
 \section{Equivalence between Constrained Oracles and Maximization Oracles}
+\label{section:equivalence-constrained-oracle}
 
 In this section, we present a general method to implement constrained oracles using maximization oracles.
 The idea of the reduction is simple: one can impose the negative constrains $B$ by setting the corresponding weights to be sufficiently small; and one can impose the positive constrains $A$ by setting the corresponding weights to very large.
@@ -3123,7 +3140,7 @@ On the other hand, observing that $B\cap M_0=\emptyset$, we can bound $w_2(M_0)$
 \begin{align*}
 w_2(M_0) = w_1(M_0) \ge -L_2.
 \end{align*}
-Therefore we see that $w_2(M_0) \ge w_2(M)$.
+Therefore we see that $w_2(M_0) > w_2(M)$.
 However, this contradicts to the definition of $M$ since $M \in \argmax_{M'\in \M} w_2(M')$.
 Therefore our claim $B\cap M = \emptyset$ is true.
 By this claim and since $\vec w_2$ and $\vec w_1$ coincide on entries of $[n]\del B$, we have
@@ -3171,7 +3188,9 @@ we see that $w_2(M_1) > w_2(M)$, which contradicts to the definition of $M$.
 Hence we have verified that $w(M) = \max_{M'\in\M_{A,B}} w(M')$.
 \end{proof}
 
-\section{Preliminary Experiments: Minimal Spanning Tree}
+\section{Preliminary Experiments: Identifying the Minimal Spanning Tree}
+\label{section:experiment}
+
 In this section, we present some preliminary experimental results of our algorithms \Algorithm and \AlgorithmBud. 
 We conduct experiments on a real-world dataset with decision classes corresponding to spanning trees.
 We compare our algorithms with the uniform allocation benchmark \Uniform discussed in \Cref{section:uniform}.
@@ -3180,6 +3199,39 @@ The experiment results show that the proposed algorithms are considerably more s
 
 %Our implementations of \Algorithm and \AlgorithmBud slightly differs from our descriptions in Algorithm~\ref{algo:pac} and Algorithm~\ref{algo:budget}. For \AlgorithmBud,  
 \newcommand{\imgsize}{0.30}
+
+\textbf{Setup.} 
+Our task is to identify the optimal routing tree from a networking system which has the lowest expected latency  in an exploration procedure, where one can obtain noisy measurements of latencies between different nodes.
+We model this problem as a \Problem problem where the arms correspond to edges and the decision class corresponds to the set of spanning trees (which is a special case of matroids, as we have discussed in Example~\ref{example:matroid}).
+We use a real-world dataset called RocketFuel \citep{spring2002measuring}, which contains several ISP networks with routing information such as average latencies between nodes pairs. 
+We select three medium-sized ISP networks with numbers of edges ranging from $161$ to 328.
+%The number of nodes 
+%Among the six ISP networks, there are four fully connected networks which formed the dataset used in this experiment.
+For each network, we model the latency $X(e)$ of edge $e$ as the sum of the given average latency $l(e)$ and an additive random noise $\mathcal N(0, 1)$.
+Then we model the reward of edge $e$ as the negative latency $-X(e)$ and therefore the expected reward of $e$ is given by $w(e) = -l(e)$.
+Notice that we now need to find the spanning tree that maximizes the expected reward, which is exactly an instance of \Problem. 
+
+Since the ground-truth of expected reward $\vec w$ is known.
+We can compute the ground-truth of the optimal set $M_*$ and the hardness measures $\mathbf H$.
+Furthermore, in order to investigate the relationship between $\mathbf H$ and sample complexity empirically, we generate a number instances with different $\mathbf H$ by adjusting the expected reward of each arm $e\in M_*$ with a same amount $c_0$ while not changing the optimality of $M_*$.
+By definition of $\mathbf H$, we see that $\mathbf H$ decreases when $c_0$ increases.
+% and $\mathbf H$ increases if $c_0 < 0$.
+%We will translate the sample complexity of \Algorithm in units of $\mathbf H$ in the spirit of the sample complexity bound of Theorem~\ref{theorem:main}.
+
+
+\textbf{Evaluation method.} 
+We use the following evaluation procedure to compare the sample efficiency between \Algorithm,\AlgorithmBud and \Uniform.
+Since \AlgorithmBud and \Uniform are both learning algorithms in the fixed budget setting, the comparison between them is straightforward:
+for each given budget, we run both algorithms with this budget independently for 1000 times and compare their empirical probability of errors (the fraction of runs where a tested algorithm fails to report the ground-truth optimal set $M_*$).
+On the other hand, we use the following procedure to compare \Algorithm with other fixed budget algorithms.
+For each instance, we run \Algorithm independently for 1000 times.
+Suppose that the $i$-th run of \Algorithm uses $T_i$ samples, we also run \Uniform and \AlgorithmBud with budget $T_i$.
+Then we compare the empirical probability of errors of the tested algorithms after the 1000 runs are completed.
+In this way, we see the compared algorithms use an equal number of samples in each run, which allows us to compare their sample efficiency.
+Finally, we set $\delta=0.3$ for \Algorithm throughout the experiments.
+%In this way, we can compare the sample efficiency of \Algorithm with \Uniform and \AlgorithmBud.
+
+
 \begin{figure}[htbp]
 \centering
 \begin{subfigure}[c]{\imgsize\textwidth}
@@ -3231,39 +3283,6 @@ The experiment results show that the proposed algorithms are considerably more s
 \caption{Empirical probability of error of \AlgorithmBud and \Uniform with respect to budget size $T$.}
 \label{fig:exp3}
 \end{figure}
-
-
-\textbf{Setup.} 
-Our task is to identify the optimal routing tree from a networking system, which has the lowest expected latency,  in an exploration procedure, in which one can obtain noisy measurements of latencies between different nodes.
-We model this problem as a \Problem problem where the arms correspond to edges and the decision class corresponds to the set of spanning trees (which is a special case of matroids, as we have discussed in Example~\ref{example:matroid}).
-We use a real-world dataset called RocketFuel \citep{spring2002measuring}, which contains several ISP networks with routing information such as average latencies between nodes pairs. 
-We select three ISP networks with different numbers of edges ranging from $161$ to 328.
-%The number of nodes 
-%Among the six ISP networks, there are four fully connected networks which formed the dataset used in this experiment.
-For each network, we model the latency $X(e)$ of edge $e$ as the sum of the given average latency $l(e)$ and an additive random noise $\mathcal N(0, 1)$.
-Then we model the reward of edge $e$ as the negative latency $-X(e)$ and therefore the expected reward of $e$ is given by $w(e) = -l(e)$.
-Notice that we now need to find the spanning tree that maximizes the expected reward, which is exactly an instance of \Problem. 
-
-Since the ground-truth of expected reward $\vec w$ is known.
-We can compute the ground-truth of the optimal set $M_*$ and the hardness measures $\mathbf H$.
-Furthermore, in order to investigate the relationship between $\mathbf H$ and sample complexity empirically, we generate a number instances with different $\mathbf H$ by adjusting the expected reward of each arm $e\in M_*$ with a same amount $c_0$ while not changing the optimality of $M_*$.
-By definition of $\mathbf H$, we see that $\mathbf H$ decreases when $c_0$ increases.
-% and $\mathbf H$ increases if $c_0 < 0$.
-%We will translate the sample complexity of \Algorithm in units of $\mathbf H$ in the spirit of the sample complexity bound of Theorem~\ref{theorem:main}.
-
-
-\textbf{Evaluation method.} 
-We use the following evaluation procedure to compare the sample efficiency between \Algorithm,\AlgorithmBud and \Uniform.
-Since \AlgorithmBud and \Uniform are both learning algorithms in the fixed budget setting, the comparison between them is straightforward:
-for each given budget, we run both algorithms with this budget independently for 1000 times and compare their empirical probability of errors (the fraction of runs where a tested algorithm fails to report the ground-truth optimal set $M_*$).
-On the other hand, we use the following procedure to compare \Algorithm with other fixed budget algorithms.
-We run \Algorithm independently for 1000 times with a given confidence parameter.
-Suppose that the $i$-th run of \Algorithm uses $T_i$ samples, we also run \Uniform and \AlgorithmBud with budget $T_i$.
-Then we compare the empirical probability of errors of the tested algorithms after the 1000 runs are completed.
-In this way, we see the compared algorithms use an equal number of samples in each run, which allows us to compare their sample efficiency.
-Finally, we set $\delta=0.3$ for \Algorithm throughout the experiments.
-%In this way, we can compare the sample efficiency of \Algorithm with \Uniform and \AlgorithmBud.
-
 
 
 
