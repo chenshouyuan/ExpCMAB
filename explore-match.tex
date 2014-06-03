@@ -154,7 +154,7 @@ We prove problem-dependent upper bounds of our algorithms.
 Our analysis exploits the combinatorial structures of the decision classes and introduces a new analytic tool.
 We also establish a general problem-dependent lower bound for the \Problem problem.
 Our results show that the proposed algorithms achieve the optimal sample complexity (within logarithmic factors) for many decision classes. 
-In addition, applying our results back to the problems of top-$K$ arms identification and multiple bandit best arms identification, we recover the best available upper bounds and settles two open conjectures on the lower bounds.
+In addition, applying our results back to the problems of top-$K$ arms identification and multiple bandit best arms identification, we recover the best available upper bounds and settle two open conjectures on the lower bounds.
 
 %\wei{Currently not mentioning PAC result extension. Perhaps OK as long as we mention it in the intro.}
 
@@ -225,8 +225,17 @@ To our knowledge, there are no results available in the literature for these typ
 
 %Finding optimal objects from decision classes with non-trivial structures
 The \Problem framework raises several interesting challenges to the design and analysis of pure exploration algorithms. 
-One challenge is that, instead of solving each type of \Problem task in an ad-hoc way, one requires a unified algorithm and analysis that supports different decision classes.
-Another challenge stems from the combinatorial nature of \Problem, namely that the optimal set may contain some arms with very small expected rewards (e.g. it is possible that a maximum matching contains the edge with the smallest weight); hence arms with suboptimal rewards cannot be eliminated  during the learning process or be ignored in the analysis. This differs from many existing approach of pure exploration MABs.
+One challenge is that, instead of solving each type of \Problem task in an ad-hoc way, one requires a unified algorithm and analysis that support different decision classes.
+Another challenge stems from the combinatorial nature of \Problem, namely that the optimal set may contain some arms with very small expected rewards (e.g. it is possible that a maximum matching contains the edge with the smallest weight); 
+hence, arms cannot be simply eliminated purely based on their own rewards in the learning algorithm
+	or ignored in the analysis.
+%
+% no arm can be eliminated during the learning process based on its reward alone, and it has
+%	to be considered together with other arms  
+%
+%
+%hence arms with suboptimal rewards cannot be eliminated  during the learning process or be ignored in the analysis. 
+This differs from many existing approach of pure exploration MABs.
 %Another challenge stemming from the combinatorial nature of the \Problem problem is that 
 %Another challenge is that the arms with the largest mean rewards may not belong to the optimal set. 
 %This challenge stems from the combinatorial nature of the \Problem problem.
@@ -492,7 +501,7 @@ For any $M,M'\in \M$ such that $M\not = M'$  and for any $e\in (M\del M')$, ther
 
 Intuitively, constraints \textbf{(b)} and \textbf{(c)} resemble the concept of patches in the sense that $b_+$ contains only the ``new'' elements from $M'$ and $b_-$ contains only the ``old'' elements of $M$; constraints \textbf{(d)} and  \textbf{(e)} allow one to transform $M$ one step closer to $M'$ by applying  a patch $b\in \B$ to yield $(M\oplus b) \in \M$ (and similarly for $M'\ominus b$).
 These transformations are the basic building blocks of our analysis.
-Furthermore, as we will see later in our examples, for many decision classes, there are exchange classes embody natural combinatorial structures, e.g. augmenting paths and cycles of matchings.
+Furthermore, as we will see later in our examples, for many decision classes, there are exchange classes embodying natural combinatorial structures, e.g. augmenting paths and cycles of matchings.
 %One can repeat this step so that eventually $M'=M\oplus b_1 \oplus \ldots \oplus b_k$ for some $k$.
 %From our definition, one can see that, for any two elements $M,M' \in \M$, an exchange class $\B$ for $\M$ contains a collection of ``patches'' $b_1,\ldots,b_k \in \B$ such that transforms from $M$ to $M'$, i.e. $M'=M\oplus b_1 \oplus \ldots \oplus b_k$.
 %By property \textbf{(b)}, these patches are mutually disjoint and, by \textbf{(c)}, each intermediate step of the transformation $M\oplus b_1\ldots \oplus b_i \in \M$ yields a valid member of decision class.  
@@ -3188,7 +3197,7 @@ we see that $w_2(M_1) > w_2(M)$, which contradicts to the definition of $M$.
 Hence we have verified that $w(M) = \max_{M'\in\M_{A,B}} w(M')$.
 \end{proof}
 
-\section{Preliminary Experiments: Identifying the Minimal Spanning Tree}
+\section{Preliminary Experiments: Identifying the Minimum Spanning Tree}
 \label{section:experiment}
 
 In this section, we present some preliminary experimental results of our algorithms \Algorithm and \AlgorithmBud. 
@@ -3211,9 +3220,8 @@ For each network, we model the latency $X(e)$ of edge $e$ as the sum of the give
 Then we model the reward of edge $e$ as the negative latency $-X(e)$ and therefore the expected reward of $e$ is given by $w(e) = -l(e)$.
 Notice that we now need to find the spanning tree that maximizes the expected reward, which is exactly an instance of \Problem. 
 
-Since the ground-truth of expected reward $\vec w$ is known.
-We can compute the ground-truth of the optimal set $M_*$ and the hardness measures $\mathbf H$.
-Furthermore, in order to investigate the relationship between $\mathbf H$ and sample complexity empirically, we generate a number instances with different $\mathbf H$ by adjusting the expected reward of each arm $e\in M_*$ with a same amount $c_0$ while not changing the optimality of $M_*$.
+Since the ground-truth of expected reward $\vec w$ is known, we can compute the ground-truth of the optimal set $M_*$ and the hardness measures $\mathbf H$.
+Furthermore, in order to investigate the relationship between $\mathbf H$ and sample complexity empirically, we generate a number of instances with different $\mathbf H$ by adjusting the expected reward of each arm $e\in M_*$ with a same additive quantity $c_0$ while not changing the optimality of $M_*$.
 By definition of $\mathbf H$, we see that $\mathbf H$ decreases when $c_0$ increases.
 % and $\mathbf H$ increases if $c_0 < 0$.
 %We will translate the sample complexity of \Algorithm in units of $\mathbf H$ in the spirit of the sample complexity bound of Theorem~\ref{theorem:main}.
@@ -3227,7 +3235,7 @@ On the other hand, we use the following procedure to compare \Algorithm with oth
 For each instance, we run \Algorithm independently for 1000 times.
 Suppose that the $i$-th run of \Algorithm uses $T_i$ samples, we also run \Uniform and \AlgorithmBud with budget $T_i$.
 Then we compare the empirical probability of errors of the tested algorithms after the 1000 runs are completed.
-In this way, we see the compared algorithms use an equal number of samples in each run, which allows us to compare their sample efficiency.
+In this way, we see that the compared algorithms use an equal number of samples in each run, which allows us to compare their sample efficiency.
 Finally, we set $\delta=0.3$ for \Algorithm throughout the experiments.
 %In this way, we can compare the sample efficiency of \Algorithm with \Uniform and \AlgorithmBud.
 
