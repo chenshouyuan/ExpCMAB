@@ -145,16 +145,13 @@ We study the {\em combinatorial pure exploration (\Problem)} problem in the stoc
 	of a \emph{decision class}, which is a collection of subsets of arms with certain combinatorial structures 
 	such as size-$K$ subset, matching, spanning tree or path, etc.
 The \Problem problem represents a rich class of pure exploration tasks which covers not only many existing models but also novel cases where the object of interest has a non-trivial combinatorial structure.
-%The collection of subsets of arms which satisfy certain combinatorial constraint is referred as a \emph{decision class}.
-%We call such a collection of subsets of arms a {\em decision class}.	
 In this paper, we provide a series of results for the general \Problem problem.
 We present general learning algorithms that work for all decision classes that admit offline maximization oracles in both fixed confidence and fixed budget settings. 
-	%one for the fixed confidence setting and one for the fixed budget setting.
 We prove problem-dependent upper bounds of our algorithms. 
 Our analysis exploits the combinatorial structures of the decision classes and introduces a new analytic tool.
 We also establish a general problem-dependent lower bound for the \Problem problem.
 Our results show that the proposed algorithms achieve the optimal sample complexity (within logarithmic factors) for many decision classes. 
-In addition, applying our results back to the problems of top-$K$ arms identification and multiple bandit best arms identification, we recover the best available upper bounds and settle two open conjectures on the lower bounds.
+In addition, applying our results back to the problems of top-$K$ arms identification and multiple bandit best arms identification, we recover the best available upper bounds up to constant factors and settle a conjecture on the lower bounds.
 
 %\wei{Currently not mentioning PAC result extension. Perhaps OK as long as we mention it in the intro.}
 
@@ -214,7 +211,7 @@ Further, this framework  covers many more interesting cases where the decision c
 For example, suppose that the arms represent the edges in a graph.
 Then a decision class could be the set of all paths between two vertices, all spanning trees or all matchings of the graph. 
 And, in these cases, the objectives of \Problem become identifying the optimal paths, spanning trees and matchings through bandit explorations, respectively.
-To our knowledge, there are no results available in the literature for these types of combinatorial pure exploration problems.
+To our knowledge, there are no results available in the literature for these  pure exploration tasks.
 %As we have explained earlier, these types of combinatorial pure exploration problems admit potential applications in diverse domains.% including crowdsourcing, network routing and online advertising.
 %Therefore, due to its generality, our framework admits applications in diverse domains including the examples we previously explained.
 
@@ -259,7 +256,7 @@ The \Algorithm algorithm does not need to know the definition of the decision cl
 We upper bound the number of samples used by \Algorithm. 
 This sample complexity bound depends on both expected reward and the structure of decision class. 
 Our analysis relies on a novel combinatorial construction called \emph{exchange class} which may be of independent interest for other combinatorial optimization problems. 
-Specializing our result  to \MultiIdent and \MultiBandit, we recover previous sample complexity bounds \citep{kalyanakrishnan2012pac,gabillon2012best} up to constant factors.
+Specializing our result  to \MultiIdent and \MultiBandit, we recover the best available sample complexity bounds \citep{kalyanakrishnan2012pac,gabillon2012best,kaufmann2013information} up to constant factors.
 % with a small improvement in the logarithmic factors. 
 While for other decision classes in general, our result establishes the first sample complexity upper bound. 
 We further show that \Algorithm can be easily extended to the fixed budget setting and PAC learning setting and we provide related theoretical guarantees in the supplementary material.  
@@ -269,14 +266,14 @@ Our lower bound shows that the sample complexity of the proposed \Algorithm algo
 Therefore our upper and lower bounds  provide a near full characterization of the sample complexity of these \Problem problems. 
 For more general decision classes, our results show that the upper and lower bounds are within a relatively benign factor. 
 To the best of our knowledge, there are no problem-dependent lower bounds known for pure exploration MABs besides the case of identifying the single best arm \citep{mannor2004sample,audibert2010best}.
-We also notice that our result resolves the open conjectures of \citet{kalyanakrishnan2012pac} and \citet{bubeck2013multiple} on the problem-dependent sample complexity lower bounds of \MultiIdent and \MultiBandit problems.
+We also notice that our result resolves the conjecture of \citet{bubeck2013multiple} on the problem-dependent sample complexity lower bounds of \MultiIdent and \MultiBandit problems.
 
 In the fixed budget setting, we present a parameter-free algorithm called Combinatorial Successive Accept Reject (\AlgorithmBud) algorithm.
 We prove a probability of error bound of the \AlgorithmBud algorithm. 
 This bound can be shown to be equivalent to the sample complexity bound of \Algorithm within logarithmic factors, although the two algorithms are based on quite different techniques. 
 Our analysis of \AlgorithmBud re-uses exchange classes as tools. 
 This suggests that exchange class may be useful for the analysis of similar problems. 
-In addition, when applying the algorithm to back \MultiIdent and \MultiBandit, our bound recovers a recent result due to \citet{bubeck2013multiple}. 
+In addition, when applying the algorithm to back \MultiIdent and \MultiBandit, our bound recovers the best known result in the fixed budget setting due to \citet{bubeck2013multiple} up to constant factors. 
 
 \junk{
 \textbf{Useful notations.} Let $[n]$ denote the set $\{1,\ldots,n\}$. Suppose that $\vec w\in \RR^{n}$ is a vector and $E\subseteq[n]$ is a set. 
@@ -565,7 +562,7 @@ A detailed proof of \Cref{lemma:example-exchange-class} is deferred to the suppl
 Our main result of this section is a problem-dependent sample complexity bound of the \Algorithm algorithm, which shows that \Algorithm returns the optimal set with high probability and uses at most $\tilde O\big(\rank(\M)^2 \mathbf H\big)$ samples.
 \begin{restatable}{theorem}{mainresult}
 Given any $\delta \in (0,1)$, any decision class $\M \subseteq 2^{[n]}$ and any expected rewards $\vec w \in \RR^{n}$.
-Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ is  $R$-sub-Gaussian with mean $w(e)$.
+Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ has mean $w(e)$ with an $R$-sub-Gaussian tail.
 %Let $\B$ be an exchange class for $\M$ and let $\{\Delta_e\}_{e\in [n]}$ be the gaps defined in Eq.~\eqref{eq:define-delta}.
 Set $\rad_t(e) = R\sqrt{2\log\left(\frac{4n t^2}\delta\right)/ T_t(e) }$ for all $t > 0$ and $e\in[n]$.
 Then, with probability at least $1-\delta$, the \Algorithm algorithm (Algorithm~\ref{algo:pac}) returns the optimal set $\out=\argmax_{M\in \M} w(M)$ and
@@ -692,7 +689,7 @@ $\mathbf H$ is defined in Eq.~\eqref{eq:hardness}.
 %For clarity, we consider the case that $\epsilon=0$ which corresponds to the learning problem of finding the optimal set.
 %We see that \Algorithm algorithm uses at most $\tilde O(\rank(\B)^2 \mathbf H)$ samples.
 %Recall that, for \MultiIdent and \Matroid, Lemma~\ref{lemma:example-exchange-class} shows that $\rank(\B)=2$.
-Theorem~\ref{theorem:lower-bound} resolves the open conjectures of \citet{kalyanakrishnan2012pac} and \citet{bubeck2013multiple} that the lower bounds of sample complexity of \MultiIdent and \MultiBandit problem are $\Omega\big(\mathbf H\log(1/\delta)\big)$.
+Theorem~\ref{theorem:lower-bound} settles the  conjecture of \citet{bubeck2013multiple} that the lower bounds of sample complexity of \MultiIdent and \MultiBandit problem are $\Omega\big(\mathbf H\log(1/\delta)\big)$.
 Moreover, in \Cref{example:topk} and \Cref{example:matroid}, we have shown that the sample complexity of \Algorithm is $O(\mathbf H\log(n\mathbf H/\delta))$ for \MultiIdent, \MultiBandit and more generally the decision classes derived from matroids $\M_{\Matroid(T)}$ (including spanning trees).
 Hence, we see that the \Algorithm algorithm achieves the optimal sample complexity within logarithmic factors for these pure exploration tasks.
 
@@ -800,7 +797,7 @@ In the following theorem, we bound the probability of error of the \AlgorithmBud
 % is at most $\tilde O(\exp(-T\rank(\M)^{-2} \mathbf H^{-1}))$.
 \begin{restatable}{theorem}{realfixbudget}
 Given any $T>n$, any decision class $\M \subseteq 2^{[n]}$ and any expected rewards $\vec w \in \RR^{n}$.
-Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ is  $R$-sub-Gaussian with mean $w(e)$.
+Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ has mean $w(e)$ with an $R$-sub-Gaussian tail.
 %Use the same notations as in Theorem~\ref{theorem:main}.
 Let $\Delta_{(1)},\ldots,\Delta_{(n)}$ be a permutation of $\Delta_1,\ldots,\Delta_n$ (defined in Eq.~\eqref{eq:define-delta}) such that
 $\Delta_{(1)} \le \ldots \ldots \Delta_{(n)}$. 
@@ -839,7 +836,7 @@ Note that the objective of these work is to minimize the cumulative regret, whic
 In the literature of pure exploration MABs, the classical problem of identifying the single best arm has been well-studied in both fixed confidence and fixed budget settings \citep{mannor2004sample,even2006action,bubeck2010pure,audibert2010best,gabillon2012best,jamieson2013lil,jamieson2014best}.
 A flurry of recent work extend this classical problem to \MultiIdent and \MultiBandit problems and obtain algorithms, upper bounds \citep{kalyanakrishnan2010efficient,kalyanakrishnan2012pac,zhou2014optimal,bubeck2013multiple,NIPS2011_4478,gabillon2012best,kaufmann2013information} and worst-case lower bounds of \MultiIdent \citep{kalyanakrishnan2012pac,zhou2014optimal}.
 Our framework encompasses these two problems as special cases and covers a much larger class of combinatorial pure exploration problems, which are unaddressed in the current literature.
-Applying our results back to \MultiIdent and \MultiBandit, our upper bounds match best available problem-dependent bounds up to constant factors \citep{gabillon2012best,bubeck2013multiple,kalyanakrishnan2012pac} in both fixed confidence and fixed budget settings; and our lower bound provides the first problem-dependent lower bounds for these two problems, which are conjectured earlier by \citet{kalyanakrishnan2012pac} and \citet{bubeck2013multiple}.
+Applying our results back to \MultiIdent and \MultiBandit, our upper bounds match best available problem-dependent bounds up to constant factors \citep{gabillon2012best,bubeck2013multiple,kalyanakrishnan2012pac} in both fixed confidence and fixed budget settings; and our lower bound provides the first problem-dependent lower bounds for these two problems, which are conjectured earlier by \citet{bubeck2013multiple}.
 %We also notice that a very recent due to XXX improves 
 %In addition, to our knowledge, there is no known problem-dependent lower bounds for \MultiIdent and \MultiBandit. 
 %Therefore, when applying our general lower bound to \MultiIdent and \MultiBandit, we obtain the first problem-dependent lower bounds for these two problems. 
@@ -907,7 +904,7 @@ Let $\vec u\in \RR^n$ and $\vec v\in \RR^n$ be two vectors.
 Let $\inn{\vec u, \vec v}$ denote the inner product of $\vec u$ and $\vec v$.
 We define $\vec u \odot \vec v \triangleq \big(u(1)\cdot v(1),\ldots,u(n)\cdot v(n)\big)^T$ as the element-wise product of $\vec u$ and $\vec v$.
 For any $s\in \RR$, we also define $\vec u^s \triangleq \big(u(1)^s, \ldots, u(n)^s)^T$ as the element-wise exponentiation of $\vec u$.
-Let $|\vec u| = \big(|u(1)|, \ldots, |u(n)|\big)^T$ denote the element-wise absolute value of $\vec u$.
+Finally, we let $|\vec u| = \big(|u(1)|, \ldots, |u(n)|\big)^T$ denote the element-wise absolute value of $\vec u$.
 
 
 
@@ -1976,8 +1973,8 @@ Hence, we must have $\E_0[T_e] > t_e^* = \frac{1}{16\Delta_e^2}\log(1/4\delta)$.
 
 \subsection{Exchange set size dependent lower bound}
 \label{section:lowerbound-evidence}
-We show that, for any arm $e\in [n]$, there exists an exchange set $b$ which contains $e$ such that a $\delta$-correct algorithm must spend
-$\tilde \Omega\Big(\big(|b_+|+|b_-|\big)^2 / \Delta_e^2 \Big)$ samples on exploring the arms belonging to $b$.
+We show that, for any arm $e\in [n]$, there exists an exchange set $b=(b_+,b_-)$ which contains $e$ such that a $\delta$-correct algorithm must spend
+$\tilde \Omega\Big(\big(|b_+|+|b_-|\big)^2 / \Delta_e^2 \Big)$ samples on exploring the arms belonging to $b_+\cup b_-$.
 %any optimal exchange set $b\in\Bopt$ and any $\delta$-correct algorithm, the algorithm  must spend $\tilde \Omega\left(|b|^2/w(b)^2\right)$ samples on the arms belonging to $b$.
 This result is formalized in the following theorem.
 
@@ -2223,7 +2220,7 @@ We obtain
 \begin{align*}
   \E_0[T_b] &= \E_0[T_{b_-}]+\E_0[T_{b_+}] \\
   		    &\ge \frac{|b_+|^2+|b_-|^2}{16 w(b)^2}\log(1/4\delta) \\
-  		    &\ge \frac{|b|^2}{32 w(b)^2}\log(1/4\delta).
+  		    &\ge \frac{(|b_+|+|b_-|)^2}{32 w(b)^2}\log(1/4\delta).
 \end{align*}
 \end{proof}
 
@@ -2688,7 +2685,7 @@ The pseudo-code of the \Uniform algorithm is listed in Algorithm~\ref{algo:unifo
 The next theorem upper bounds the probability of error of \Uniform.
 \begin{theorem}
 Given any $T>n$, any decision class $\M \subseteq 2^{[n]}$ and any expected rewards $\vec w \in \RR^{n}$.
-Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ is  $R$-sub-Gaussian with mean $w(e)$.
+Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ has mean $w(e)$ with an $R$-sub-Gaussian tail.
 %Use the same notations as in Theorem~\ref{theorem:main}.
 Define $\Delta_{(1)}=\min_{i\in[n]}\Delta_i$ and $\mathbf H_3 = n\Delta_{(1)}^{-2}$.
 Then, the output $\out$ of the \Uniform algorithm satisfies
@@ -2729,7 +2726,7 @@ In addition, using an argument very similar to Lemma~\ref{lemma:fbudget:ciproert
 |\inn{\vec{\bar w}, \vec a}-\inn{\vec{w}, \vec a}|\le \frac{\Delta_{(1)}}{3\rank(\M)}\nor{\vec a}_1.
 \end{equation}
 
-Now we claim that, on the event $\xi$, we have $\out=M_*$, where $M_*=\argmax_{M\in \M} w(M)$.
+Now we claim that, on the event $\xi$, we have $\out=M_*$.
 Note that theorem follows immediately from the claim. 
 Next, we prove this claim.
 
@@ -2811,7 +2808,9 @@ Conversely, for all $M\subseteq[n]$, we define $\sigma^{-1}(M) \triangleq \{\sig
 
 \begin{fact}[Matroid]
 \label{fact:matroid}
-Let $T=(E,\mathcal I)$ be an arbitrary matroid, where $E$ is the ground set of $n$ elements and $\mathcal I$ is the family of independent sets.
+Let $T=(E,\mathcal I)$ be an arbitrary matroid, where $E$ is the ground set of $n$ elements 
+and $\mathcal I$ is the family of subsets of $E$ called in the independent sets which satisfy the axioms of matroids
+\footnote{The three axioms of matroid are (1) $\emptyset\in \mathcal I$ and $\mathcal I\not=\{\emptyset\}$; (2) Every subsets of an independent set are independent (heredity property); (3) For all $A,B\in \mathcal I$ such that $|B|=|A|+1$ there exists an element $e\in B\del A$ such that $A\cup \{e\} \in \mathcal I$ (augmentation property). We refer interested readers to \citep{oxley2006matroid} for a general introduction to the matroid theory.}.
 Let $\sigma\colon E\rightarrow [n]$ be a bijection from $E$ to $[n]$.
 Let $\M_{\Matroid(T)}$ correspond to the collection of all bases of matroid $T$ and formally we define
 \begin{equation}
@@ -3278,15 +3277,15 @@ Finally, we set $\delta=0.3$ for \Algorithm throughout the experiments.
 \centering
 \begin{subfigure}[c]{\imgsize\textwidth}
 	\includegraphics[width=\textwidth]{fig/exp/mst-1755}
-	\caption{Network 1755}
+	\caption{Network 1755 ($\mathbf H=117.6$)}
 \end{subfigure}
 \begin{subfigure}[c]{\imgsize\textwidth}
 	\includegraphics[width=\textwidth]{fig/exp/mst-3257}
-	\caption{Network 3257}
+	\caption{Network 3257 ($\mathbf H=181.5$)}
 \end{subfigure}
 \begin{subfigure}[c]{\imgsize\textwidth}
 	\includegraphics[width=\textwidth]{fig/exp/mst-3967}
-	\caption{Network 3967}
+	\caption{Network 3967 ($\mathbf H=108.7$)}
 \end{subfigure}
 \caption{Empirical probability of error of \AlgorithmBud and \Uniform with respect to budget size $T$.}
 \label{fig:exp3}
