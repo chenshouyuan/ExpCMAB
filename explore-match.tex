@@ -1364,7 +1364,7 @@ Eq.~\eqref{eq:u-c-1-3} and Eq.~\eqref{eq:u-c-1-4} follow from Lemma~\ref{lemma:v
 Eq.~\eqref{eq:u-c-1-5} follows from Eq.~\eqref{eq:u-c-1-0};
 and Eq.~\eqref{eq:u-c-1-6} holds since $b\in\B$ and $\nor{\vec\chi_b}_1 = |b_+|+|b_-| \le \rank(\B)$.
 
-Applying Lemma~\ref{lemma:tilde} by setting $M' = M_t' \oplus b$ and using the fact that $\tilde w_t(\tilde M_t) \ge \tilde w_t(M_t' \oplus b)$, we have 
+Applying Lemma~\ref{lemma:tilde} by setting $M' = \tilde M_t$ and using the fact that $\tilde w_t(\tilde M_t) \ge \tilde w_t(M_t' \oplus b)$ (since $\tilde w_t(\tilde M_t) = \max_{M\in \M} \tilde w_t(M)$, we have 
 \begin{align}
 \inn{\vec {\bar w}_t, \vec d}+\inn{\vec \rad_t, |\vec d|}
 & = \inn{\vec {\bar w}_t, \vec \chi_{\tilde M_t}-\vec\chi_{M_t}}+\inn{\vec \rad_t, |\vec \chi_{\tilde M_t}-\vec\chi_{M_t}|}\nonumber\\
@@ -2183,7 +2183,7 @@ $$
 \Pr_0[\mathcal S_2] \ge 1/4.
 $$
 
-Then, we show that if $\E_0[T_{b_+}] \le t_{b_+}^*$, then $\Pr_2[\mathcal B] \ge \delta$.
+Then, we show that if $\E_0[T_{b_+}] < t_{b_+}^*$, then $\Pr_2[\mathcal B] \ge \delta$.
 We bound likelihood ratio $L_2(W)/L_0(W)$ under the assumption that $\mathcal S_2$ occurred as follows
 \begin{align}
   \frac{L_2(W)}{L_0(W)} 
@@ -2287,7 +2287,7 @@ Then, we have
 \begin{proof}
 Let us consider an arbitrary phase $t\in [n]$ and an arbitrary active arm $i\in [n]\del (A_t\cup B_t)$ of phase $t$.
 
-Notice that the arm $e$ has been pulled for $\tilde T_t$ times during phases $1,\ldots, t$. 
+Notice that the arm $i$ has been pulled for $\tilde T_t$ times during phases $1,\ldots, t$. 
 Therefore,
 by Hoeffding's inequality, we have
 \begin{align}
@@ -2325,7 +2325,7 @@ The following lemma builds the confidence bound of inner products.
 \begin{lemma}
 Fix a phase $t\in[n]$, suppose that random event $\tau_t$ occurs.
 For any vector $\vec a \in \RR^n$, suppose that $\supp(\vec a) \cap (A_t\cup B_t) = \emptyset$, where 
-$\supp(\vec a) \triangleq \{i\;|\; a(i) \not=0\}$ is support of $\vec a$.
+$\supp(\vec a) \triangleq \{i\;|\; a(i) \not=0\}$ is the support of $\vec a$.
 Then, we have
 $$
 \left| \inn{\vec{\bar w}_t, \vec a} - \inn{\vec w, \vec a} \right|
@@ -2347,7 +2347,7 @@ Then, similar to the proof of \Cref{lemma:ci-property}, we have
 &< \frac{\Delta_{(n-t+1)}}{3\rank(\M)} \sum_{i\in[n]\del (A_t\cup B_t)} |a(i)| \label{eq:fcip-1}\\
 &= \frac{\Delta_{(n-t+1)}}{3\rank(\M)} \nor{\vec a}_1, \nonumber
 \end{align}
-where Eq.~\eqref{eq:fcip-0} follows from the assumption that $\vec a$ supported on $[n] \del (A_t\cup B_t)$;
+where Eq.~\eqref{eq:fcip-0} follows from the assumption that $\vec a$ is supported on $[n] \del (A_t\cup B_t)$;
 Eq.~\eqref{eq:fcip-1} follows from the definition of $\tau_t$ (Eq.~\eqref{eq:define-tau}).
 \end{proof}
 
@@ -2487,7 +2487,7 @@ The next lemma takes a step further.
 It shows that if $\Delta_e \ge \Delta_{(t-n+1)}$ for some arm $e$, then the empirical gap of arm $e$ is greater than $\frac23 \Delta_{(t-n+1})$.
 \begin{lemma}
 \label{lemma-budget-c}
-Fix any round $t>0$. 
+Fix any phase $t>0$. 
 Suppose that event $\tau_t$ occurs.
 Also assume that $A_t \subseteq M_*$ and $B_t \cap M_* = \emptyset$.
 Let $e \in [n] \del (A_t\cup B_t)$ be an active arm such that $\Delta_{(t-n+1)} \le \Delta_e$.
@@ -2563,8 +2563,8 @@ Fix an exchange class $\B\in \argmin_{\B'\in \Exchange(\M)} \rank(\B')$.
 
 The assumption that $e\in (M_*\cap \neg M_t) \cup (\neg M_* \cap M_t)$ can be rewritten as 
 $e \in (M_* \del M_t) \cup (M_t\del M_*)$.
-This shows that $M_t\not=M_*$
-Hence \Cref{lemma:exchange} applies here. 
+This shows that $M_t\not=M_*$,
+hence \Cref{lemma:exchange} applies here. 
 Therefore we know that there exists $b=(b_+,b_-)\in \B$ such that
 $e\in (b_+\cup b_-)$, $b_+\subseteq M_* \del M_t$, $b_- \subseteq M_t \del M_*$, $M_t \oplus b \in \M$ and $\inn{\vec w,\vec\chi_b}\ge \Delta_e \ge 0$.
 
@@ -2574,12 +2574,12 @@ We claim that
 \label{eq:lbe-0}
 \bar w_t(\tilde M_{t,e}) \ge \bar w_t(M_{t,e}').
 \end{equation}
-By definition of $\tilde M_{t,e}$, we only need to show that \textbf{(a):} $e\in (M_{t,e}' \del M_t) \cup (M_t \del M_{t,e}')$ and \textbf{(b):} $A_t \subseteq M_{t,e}'$ and $B_t \cap M_{t,e}' = \emptyset$.
+From the definition of $\tilde M_{t,e}$ in Algorithm~\ref{algo:budget}, we only need to show that \textbf{(a):} $e\in (M_{t,e}' \del M_t) \cup (M_t \del M_{t,e}')$ and \textbf{(b):} $A_t \subseteq M_{t,e}'$ and $B_t \cap M_{t,e}' = \emptyset$.
 First we prove \textbf{(a)}. Notice that $b_+\cap b_- = \emptyset$ and $b_- \subseteq M_t$. 
 Hence we see that $M_{t,e}' \del M_t = (M_t\del b_-\cup b_+) \del M_t = b_+$ and
 $M_t \del M_{t,e}' = M_t \del (M_t \del b_-\cup b_+) = b_-$. 
-In addition, we have that $e\in (b_-\cup b_+)$. Therefore we see that \textbf{(a)} holds by combining these relations. 
-Next, we notice that \textbf{(b)} follows directly from Lemma~\ref{lemma:set-tech}.
+In addition, we have that $e\in (b_-\cup b_+) = (M_{t,e}' \del M_t) \cup (M_t \del M_{t,e}')$, therefore we see that \textbf{(a)} holds. 
+Next, we notice that \textbf{(b)} follows directly from Lemma~\ref{lemma:set-tech} by setting $M = M_t$.
 Hence we have shown that Eq.~\eqref{eq:lbe-0} holds.
 
 Hence, we have
@@ -2599,7 +2599,7 @@ and Eq.~\eqref{eq:lbe-3} follows from the fact $\nor{\vec\chi_b}_1 \le \rank(\M)
 \subsection{Proof of Theorem~\ref{theorem:budget}}
 
 Using these technical lemmas, we are now ready to prove Theorem~\ref{theorem:budget}.
-For reader's convenience, we first restate Theorem~\ref{theorem:budget} in the following.
+For reader's convenience, we first restate Theorem~\ref{theorem:budget} as follows.
 \realfixbudget*
 
 \begin{proof}
@@ -2625,7 +2625,7 @@ We prove by induction. Fix a phase $t \in [t]$.
 Suppose that the algorithm does not make any error before phase $t$, i.e. $A_t \subseteq M_*$ and $B_t \cap M_* = \emptyset$.
 We show that the algorithm does not err at phase $t$.
 
-In the beginning phase $t$, there are exactly $t-1$ inactive arms $|A_t \cup B_t| = t-1$. 
+At the beginning of phase $t$, there are exactly $t-1$ inactive arms $|A_t \cup B_t| = t-1$. 
 Therefore there must exists an active arm $e_1 \in [n]\del (A_t\cup B_t)$ such that 
 $\Delta_{e_1} \ge \Delta_{(n-t+1)}$.
 Hence, by Lemma~\ref{lemma-budget-c}, we have
@@ -2634,9 +2634,9 @@ Hence, by Lemma~\ref{lemma-budget-c}, we have
 \bar w_t(M_t)- \bar w_t(M_{t,e_1}) \ge \frac23\Delta_{(n-t+1)}.
 \end{equation}
 
-Notice that the algorithm makes an error on phase $t$ if and only if it accepts an arm $p_t \not\in M_*$ or rejects an arm $p_t \in M_*$.
+Notice that the algorithm makes an error in phase $t$ if and only if it accepts an arm $p_t \not\in M_*$ or rejects an arm $p_t \in M_*$.
 On the other hand, by design, arm $p_t$ is accepted when $p_t\in M_t$ and  is rejected when $p_t \not \in M_t$.
-Therefore, we see that the algorithm makes an error on phase $t$ if and only if
+Therefore, we see that the algorithm makes an error in phase $t$ if and only if
 $p_t \in (M_* \cap \neg M_t) \cup (\neg M_* \cap M_t)$.
 
 Suppose that $p_t \in (M_* \cap \neg M_t) \cup (\neg M_* \cap M_t)$.
@@ -2655,7 +2655,7 @@ Therefore we have proved that $p_t \not\in (M_* \cap \neg M_t) \cup (\neg M_* \c
 This means that the algorithm does not err at phase $t$, or equivalently $A_{t+1} \subseteq M_*$ and $B_{t+1}\cap M_* = \emptyset$.
 By induction, we have proved that the algorithm does not err at any phase $t\in[n]$.
 
-Hence we have $A_{n+1} \subseteq M_*$ and $B_{n+1}\subseteq  \neg M_*$.
+Hence we have $A_{n+1} \subseteq M_*$ and $B_{n+1}\subseteq \neg M_*$ in the final phase.
 Notice that $|A_{n+1}| + |B_{n+1}| = n$ and $A_{n+1}\cap B_{n+1}=\emptyset$. This means that $A_{n+1} = M_*$ and $B_{n+1} = \neg M_*$.
 Therefore the algorithm outputs $\out=A_{n+1}=M_*$ after phase $n$.
 \end{proof}
@@ -3054,7 +3054,7 @@ Moreover, since \Matroid encompasses both \MultiIdent and \MultiBandit types of 
 \label{section:equivalence-constrained-oracle}
 
 In this section, we present a general method to implement constrained oracles using maximization oracles.
-The idea of the reduction is simple: one can impose the negative constrains $B$ by setting the corresponding weights to be sufficiently small; and one can impose the positive constrains $A$ by setting the corresponding weights to very large.
+The idea of the reduction is simple: one can impose the negative constrains $B$ by setting the corresponding weights to be sufficiently small; and one can impose the positive constrains $A$ by setting the corresponding weights sufficiently large.
 The reduction method is shown in Algorithm~\ref{algo:reduction}.
 The correctness of the reduction is proved in \Cref{fact:coracle}.
 %We show that our reduction works efficiently for many decision classes which admit efficient maximization oracles, including the examples we examined in the last section.
@@ -3118,8 +3118,7 @@ Therefore Algorithm~\ref{algo:reduction} is a valid constrained oracle.
 Let $\vec w_1$ and $\vec w_2$ be defined as in Algoritm~\ref{algo:reduction}.
 Let $M=\Oracle(\vec w_2)$.
 Let $\M_{A,B} = \{M\in \M \mid A\subseteq M, B\cap M =\emptyset \}$ be the subset of $\M$ which satisfies the constraints.
-If $\M_{A,B} = \emptyset$. 
-Then it is clear $M$ cannot satisfy both of the constraints $A \subseteq M$ and $B \cap M =\emptyset$. 
+If $\M_{A,B} = \emptyset$, then it is clear $M$ cannot satisfy both of the constraints $A \subseteq M$ and $B \cap M =\emptyset$. 
 Therefore Algorithm~\ref{algo:reduction} returns $\bot$ in this case.
 
 In the rest of the proof, we assume that $\M_{A,B} \not=\emptyset$. 
