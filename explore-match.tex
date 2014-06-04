@@ -2771,9 +2771,41 @@ Let $\mathcal A$ the set of all bases of a matroid $T=(E,\mathcal I)$.
 Let $A_1,A_2 \in \mathcal A$ be two members of $\mathcal A$.
 Then for all $x \in A_1\del A_2$, there exists $y\in A_2\del A_1$ 
 such that $A_1\del \{x\} \cup \{y\} \in \mathcal A$ and $A_2\del\{y\}\cup\{x\} \in \mathcal A$.
-\end{lemma}
+\end{lemma}   
 We refer readers to \citep{oxley2006matroid} for a proof of \Cref{lemma:basis-exchange}.
 
+\tian{
+I find Strong basis exchange property is sometimes assumed to be an axiom, when one studies a special kind of matroids,
+such as matroids defined by rank function. So I am not sure whether the strong basis exchange is a standard property.
+
+For the rest cases, one similar lemma I find is in the book edited by Neil White,
+which seems to be a better source than a lecture note.
+This lemma looks suitable, and you may check whether it works as well.
+
+\begin{lemma}[Proposition~4.1.1: Symmetric basis-exchange axiom]
+Let $\mathcal A$ the set of all bases of a matroid $T=(E,\mathcal I)$. 
+Let $A_1, A_2 \in \mathcal A$ be two members of $\mathcal A$.
+Then for all $x \in A_1$, there exists $y \in A_2$,
+such that $A_1 \del \{x\} \cup \{y\} \in \mathcal A$ and $A_2 \del\{y\}\cup\{x\} \in \mathcal A$.
+\end{lemma}
+And in Theorem~4.3.1, $x, y$ are generalized to two subsets $X, Y$.
+
+\begin{lemma}[Theorem~4.3.1: Multiple basis-exchange theorem]
+Let $\mathcal A$ the set of all bases of a matroid $T=(E,\mathcal I)$. 
+Let $A_1, A_2 \in \mathcal A$ be two members of $\mathcal A$.
+Then for all $X \subseteq A_1$, there exists $Y \subseteq A_2$,
+such that $A_1 \del X \cup Y \in \mathcal A$ and $A_2 \del Y \cup X \in \mathcal A$.
+\end{lemma}
+
+%Here is the bib:
+%@book{white1986theory,
+%  title={Theory of matroids},
+%  editor={White, Neil},
+%  number={26},
+%  year={1986},
+%  publisher={Cambridge University Press}
+%}
+}
 
 \begin{proof}[Proof of \Cref{fact:matroid}]
 Fix a matroid $T=(E,\mathcal I)$ where $|E|=n$ and fix the bijection $\sigma\colon E\rightarrow [n]$.
