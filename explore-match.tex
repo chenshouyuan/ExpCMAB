@@ -103,6 +103,9 @@
 
 \DeclareMathOperator{\supp}{supp}
 
+\DeclareMathOperator{\Var}{Var}
+
+\DeclareMathOperator{\Ber}{Ber}
 \DeclareMathOperator{\rank}{width}
 \DeclareMathOperator{\rad}{rad}
 \DeclareMathOperator{\decomp}{decomp}
@@ -224,7 +227,7 @@ To our knowledge, there are no results available in the literature for these  pu
 The \Problem framework raises several interesting challenges to the design and analysis of pure exploration algorithms. 
 One challenge is that, instead of solving each type of \Problem task in an ad-hoc way, one requires a unified algorithm and analysis that support different decision classes.
 Another challenge stems from the combinatorial nature of \Problem, namely that the optimal set may contain some arms with very small expected rewards (e.g. it is possible that a maximum matching contains the edge with the smallest weight); 
-hence, arms cannot be simply eliminated purely based on their own rewards in the learning algorithm
+hence, arms cannot be eliminated solely based on their own rewards in the learning algorithm
 	or ignored in the analysis.
 %
 % no arm can be eliminated during the learning process based on its reward alone, and it has
@@ -498,7 +501,7 @@ For any $M,M'\in \M$ such that $M\not = M'$  and for any $e\in (M\del M')$, ther
 
 Intuitively, constraints \textbf{(b)} and \textbf{(c)} resemble the concept of patches in the sense that $b_+$ contains only the ``new'' elements from $M'$ and $b_-$ contains only the ``old'' elements of $M$; constraints \textbf{(d)} and  \textbf{(e)} allow one to transform $M$ one step closer to $M'$ by applying  a patch $b\in \B$ to yield $(M\oplus b) \in \M$ (and similarly for $M'\ominus b$).
 These transformations are the basic building blocks of our analysis.
-Furthermore, as we will see later in our examples, for many decision classes, there are exchange classes embodying natural combinatorial structures, e.g. augmenting paths and cycles of matchings.
+Furthermore, as we will see later in our examples, for many decision classes, there are exchange classes representing natural combinatorial structures, e.g. augmenting paths and cycles of matchings.
 %One can repeat this step so that eventually $M'=M\oplus b_1 \oplus \ldots \oplus b_k$ for some $k$.
 %From our definition, one can see that, for any two elements $M,M' \in \M$, an exchange class $\B$ for $\M$ contains a collection of ``patches'' $b_1,\ldots,b_k \in \B$ such that transforms from $M$ to $M'$, i.e. $M'=M\oplus b_1 \oplus \ldots \oplus b_k$.
 %By property \textbf{(b)}, these patches are mutually disjoint and, by \textbf{(c)}, each intermediate step of the transformation $M\oplus b_1\ldots \oplus b_i \in \M$ yields a valid member of decision class.  
@@ -673,7 +676,7 @@ For any $\delta \in (0,1)$, we call an algorithm $\mathbb A$ a $\delta$-correct 
 We show that, for any decision class $\M$ and any expected rewards $\vec w$, any $\delta$-correct algorithm $\mathbb A$ must use at least $\Omega\big(\mathbf H \log(1/\delta) \big)$ samples in expectation.
 \begin{restatable}{theorem}{lowerbound}
 Fix any decision class $\M\subseteq 2^{[n]}$ and any vector $\vec w \in \RR^n$.
-Suppose that, for each arm $e\in [n]$, the reward distribution $\Rew_e$ is given by $\Rew_e=\mathcal N(w(e),1)$, where $\mathcal N(\mu, \sigma^2)$ denotes a Gaussian distribution with mean $\mu$ and variance $\sigma^2$. 
+Suppose that, for each arm $e\in [n]$, the reward distribution $\Rew_e$ is given by $\Rew_e=\mathcal N(w(e),1)$, where we let $\mathcal N(\mu, \sigma^2)$ denote the Gaussian distribution with mean $\mu$ and variance $\sigma^2$. 
 Then, for any $\delta \in (0,e^{-16}/4)$ and any $\delta$-correct algorithm $\mathbb A$, we have
 \begin{equation}
 \label{eq:lower-bound}
@@ -1770,10 +1773,96 @@ Hence the theorem follows by summing up Eq.~\eqref{eq:bound-pac-te-2} for all $e
 
 \section{Proof of Lower Bound (Theorem~\ref{theorem:lower-bound})}
 \label{section:lowerbound-proof}
+In this section, we prove the problem-dependent lower bound of the general \Problem problem (Theorem~\ref{theorem:lower-bound}). 
+In addition, we provide evidence on the conjecture that the sample complexity should hinge on the size of exchange sets (Theorem~\ref{theorem:lowerboundspecial}), which is relevant for decision classes with non-constant widths.
 
+\textbf{Notations.} In this section, we will use a notation of ``next-to-optimal set'' defined as follows. 
+Fix a decision class $\M\subseteq 2^{[n]}$ and an expected reward vector $\vec w\in \RR^n$.
+Let $M_*  =\argmin_{M\in \M}$ denote the optimal set.
+Then, for any $e\in [n]$, we define the next-to-optimal set associated with $e$ as follows
+\begin{equation}
+\label{eq:next-to-optimal}
+M_e = \begin{cases}
+		 \argmax_{M\in \M: e \in M} w(M) & \text{if } e\not \in M_*, \\
+	     \argmax_{M\in \M: e \not\in M} w(M) & \text{if } e\in M_*.
+	  \end{cases}
+\end{equation}
+We note that, by definition of $\Delta_e$ in Eq.~\eqref{eq:define-delta}, we have
+$w(M_*)-w(M_e) = \Delta_e$.
+
+
+\subsection{Proof of Theorem~\ref{theorem:lower-bound}}
+For reader's convenience, we restate \Cref{theorem:lower-bound} in the following.
 \lowerbound*
 
+Before stating our proof, we first introduce two technical lemmas.
+The first lemma is the well-known Kolmogrov's inequality.
+\begin{lemma}\emph{(Kolmogrov's inequality \citep[Corollary 7.66]{ross1996stochastic})}
+\label{lemma:kolmogrov}
+Let $Z_1,\ldots, Z_n$ be independent zero-mean random variables with $\Var[Z_k] \le +\infty$ for all $k\in [n]$.
+Then, for any $\lambda > 0$,
+$$
+\Pr\left[\max_{1\le k \le n} |S_k| \ge \lambda \right]
+\le \frac{1}{\lambda^2} \sum_{i=1}^n \Var[Z_k],
+$$
+where $S_k = X_1+\ldots+X_k$.
+\end{lemma}
+
+
+The second technical lemma shows that 
+the joint likelihood of Gaussian distributions on a sequence of variables 
+does not change much 
+when the mean of the distribution shifts by a sufficiently small value.
+\begin{lemma}
+\label{lemma:lower-bound-likelihood-gaussian}
+Given any $d \in \RR$ and $\theta \in (0,1)$.
+Define $t = \frac{1}{16 d^2}\log(1/\theta)$.
+Given any integer $T \le 4t$  and any sequence $s_1,\ldots, s_T$.
+Let $X_1,\ldots, X_T$ be $T$ real numbers which satisfy the following
+\begin{equation}
+\label{eq:lemma:lower-bound-likelihood-gaussian}
+\left|\sum_{i=1}^T X_i -  \sum_{i=1}^T s_i \right| \le \sqrt{t\log(1/\theta)}.
+\end{equation}
+Then, we have
+$$
+\prod_{i=1}^T \frac{\mathcal N(X_i | s_i+d, 1)}{\mathcal N(X_i | s_i, 1)} \ge \theta,
+$$
+where we let $\mathcal N(x | \mu,\sigma^2)=\frac{1}{\sigma\sqrt{2\pi}}\exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)$ 
+denote the probability density function of normal distribution with mean $\mu$ and variance $\sigma^2$.
+\end{lemma}
 \begin{proof}
+We define $v_i = X_i-s_i$ for all $i\in [T]$. Then, we have
+\begin{align}
+  \prod_{i=1}^T \frac{\mathcal N(X_i | s_i+d, 1)}{\mathcal N(X_i | s_i, 1)} 
+  &= 
+  \prod_{i=1}^{T}
+  \exp\left(\frac{-\left(X_i-s_i-d\right)^2+(X_i-s_i)^2}{2}\right) \nonumber \\
+  &= 
+  \prod_{i=1}^{T}
+  \exp\left(- v_i d- \frac{1}{2} d^2 \right) \nonumber\\
+  &=
+  \exp\left(-\sum_{i=1}^T v_id \right)
+  \exp\left(-\frac{Td^2}{2} \right). \label{eq:r64-t-1}
+\end{align}
+We now bound each term on the right-hand side of Eq.~\eqref{eq:r64-t-1} as follows
+\begin{align}
+	\exp\left(-\sum_{i=1}^T v_id \right) & \ge \exp\left(-\left|\sum_{i=1}^T v_i \right| \cdot |d| \right)\nonumber\\
+																			 & \ge \exp\left(-\sqrt{t\log(1/\theta)} d) \label{eq:r64-t-3}\\
+																			 & = \exp\left(-\frac12 \log(1/\theta) \right) = \theta^{1/2}, \label{eq:r64-t-4}
+\end{align}
+where Eq.~\eqref{eq:r64-t-3} follows from Eq.~\eqref{eq:lemma:lower-bound-likelihood-gaussian};
+and Eq.~\eqref{eq:r64-t-4} follows from the definition of $t$.
+Next we have
+\begin{align}
+	\exp\left(-\frac{Td^2}{2} \right) & \ge \exp\left(-2t d ^2\right) \label{eq:r64-t-5}\\
+																		& = \exp\left(-\frac12 \log(1/\theta) \right) = \theta^{1/2},\label{eq:r64-t-6}
+\end{align}
+where Eq.~\eqref{eq:r64-t-5} follows from $T \le 4t$ and Eq.~\eqref{eq:r64-t-6} follows from the definition of $t$.
+The lemma follows immediate by combining Eq.~\eqref{eq:r64-t-1}, Eq.~\eqref{eq:r64-t-4} and Eq.~\eqref{eq:r64-t-6}.
+\end{proof}
+
+
+\begin{proof}[Proof of Theorem~\ref{theorem:lower-bound}]
 Fix $\delta >0$, $\vec w =\big(w(1),\ldots,w(n)\big)^T$ and a $\delta$-correct algorithm $\mathbb A$.
 For each $e\in [n]$, assume that the reward distribution is given by $\Rew_e=\mathcal N(w(e),1)$.
 For any $e\in [n]$, let $T_e$ denote the  number of trials of arm $e$ used by algorithm $\mathbb A$.
@@ -1784,15 +1873,19 @@ In the rest of the proof, we will show that for any $e\in [n]$, the number of tr
 \end{equation}
 Notice that the theorem follows immediately by summing up Eq.~\eqref{eq:lower-each} for all $e\in[n]$.
 
+Now fix an arm $e\in [n]$.  
+We define $\theta=\delta/4$ and $t_e^* = \frac{1}{16\Delta_e^2}\log(1/4\delta)$
+We prove Eq.~\eqref{eq:lower-each} by contradiction. 
+Therefore we assume the opposite that $\E[T_e] < t_e^*$ in the rest of the proof.
 
-Fix an arm $e\in [n]$. We now focus on proving Eq.~\eqref{eq:lower-each}.
-Suppose, in the contrary, that $\E[T_e] < \frac{1}{16\Delta_e^2}\log(1/4\delta)$.
-Consider two hypothesis $H_0$ and $H_1$. 
-Under hypothesis $H_0$, all reward distributions are same with our assumption before
+
+\textbf{Step (1): An alternative hypothesis.}
+We consider two hypothesis $H_0$ and $H_1$. 
+Under hypothesis $H_0$, all reward distributions are same with our assumption in the theorem as follows
 $$
 H_0: \Rew_l = \mathcal N(w(l),1) \quad \text{for all } l \in [n].
 $$
-Under hypothesis $H_1$, we change the means of reward distributions such that 
+On the other hand, under hypothesis $H_1$, we change the means of reward distributions such that 
 $$
 H_1: 
 	\Rew_e = \begin{cases}
@@ -1804,15 +1897,9 @@ $$
 For $l\in \{0,1\}$, we use $\E_l$ and $\Pr_l$ to denote the expectation and probability, respectively, under the hypothesis $H_l$.
 
 
-Define $M_e$ be the ``next-to-optimal'' set as follows 
-$$
-M_e = \begin{cases}
-		 \argmax_{M\in \M: e \in M} w(M) & \text{if } e\not \in M_*, \\
-	     \argmax_{M\in \M: e \not\in M} w(M) & \text{if } e\in M_*.
-	  \end{cases}
-$$
+Now we claim that $M_*$ is no longer the optimal set under hypothesis $H_1$. 
+Let $M_e$ denote the next-to-optimal set defined Eq.~\eqref{eq:next-to-optimal}.
 By definition of $\Delta_e$ in Eq.~\eqref{eq:define-delta}, we know that $w(M_*)-w(M_e)=\Delta_e$.
-
 Let $\vec w_0$ and $\vec w_1$ be expected reward vectors under $H_0$ and $H_1$ respectively.
 Notice that $w_0(M_*)-w_0(M_e)=\Delta_e > 0$.
 On the other hand, we have
@@ -1822,49 +1909,38 @@ w_1(M_*)-w_1(M_e) &= w(M_*)-w(M_e)-2\Delta_e \\
 \end{align*}
 This means that under $H_1$, the set $M_*$ is not the optimal set.
 
-Define $\theta=4\delta$. Define
-\begin{equation}
-t_e^* = \frac{1}{16\Delta^2_e}\log\left(\frac{1}{\theta}\right).
-\label{eq:define-tstar}
-\end{equation}
+\textbf{Step (2): Three random events.}
+Let $X_1,\ldots,X_{T_e}$ denote the sequence of reward outcomes of arm $e$.
+Now we define three random events $\mathcal A$, $\mathcal B$ and $\mathcal C$ as follows
+$$
+\mathcal A = \{T_e \le 4t_e^* \},\;\mathcal B=\{\out=M_*\}\;\text{and}\;\mathcal C=\left\{\max_{1\le t \le 4t_e^*} \left|\sum_{i=1}^t X_t - t\cdot w(e)\right|  < \sqrt{t_e^*\log(1/\theta)} \right\},
+$$
+where $\out$ is the output of algorithm~$\mathbb A$.
 
-Recall that $T_e$ denotes the total number of samples of arm $e$.
-Define the event
-$\mathcal A = \{T_e \le 4t_e^* \}$.
-
+Now we bound the probability of these events under hypothesis $H_0$.
 First, we show that $\Pr_0[\mathcal A] \ge 3/4$. 
 This can be proved by Markov inequality as follows.
 \begin{align*}
-\Pr_0[T_e > 4t_e^*] &\le \frac{\E_0[T_e]}{4t_e^*} \\
-					  &\le \frac{t_e^*}{4t_e^*} = \frac14.
+\Pr_0[T_e > 4t_e^*] &\le \frac{\E_0[T_e]}{4t_e^*} \le \frac{t_e^*}{4t_e^*} = \frac14.
 \end{align*}
 
-Let $X_1,\ldots,X_{T_e}$ denote the sequence of reward outcomes of arm $e$.
-For all $t>0$, we define $K_t= \sum_{i\in [t]} X_i$ as the sum of outcomes of arm $e$ up to round $t$.
-Next, we define the event 
-$$
-\mathcal C=\left\{\max_{1\le t \le 4t_e^*} \left|K_t-t\cdot w(e)\right|  < \sqrt{t_e^*\log(1/\theta)} \right\}.
-$$
 We now show that $\Pr_0[\mathcal C] \ge 3/4$.
-First, notice that $\{K_t-t\cdot w(e)\}_{t=1,\ldots}$ is a martingale under $H_0$.
-Then, by Kolmogorov's inequality, we have
+Notice that $\Big\{\sum_{i=1}^t X_t-t\cdot w(e)\Big\}_{t=1,\ldots}$ is a martingale under $H_0$.
+Define $K_t = \sum_{i=1}^t X_t$.
+Then, by Kolmogorov's inequality (\Cref{lemma:kolmogrov}), we have
 \begin{align*}
 \Pr_0\left[\max_{1\le t \le 4t_e^*} \left|K_t-t\cdot w(e)\right| \ge \sqrt{t_e^*\log(1/\theta)} \right]
 &\le \frac{\E_0[ (K_{4t_e^*}-4w(e)t_e^*)^2]}{t_e^*\log(1/\theta)}\\
-&= \frac{4t_e^*}{t_e^*\log(1/\theta)}\\
-&< \frac14,
+&= \frac{4t_e^*}{t_e^*\log(1/\theta)} < \frac14,
 \end{align*}
 where the second inequality follows from the fact that the variance of $\Rew_e$ equals to 1 and therefore $\E_0[(K_{4t_e^*}-4w(e)t_e^*)^2] = 4t_e^*$; the last inequality follows 
 since $\theta < e^{-16}$.
 
-Then, we define the event $\mathcal B$ as the event that the algorithm eventually returns $M_*$, i.e.
-$$
-\mathcal B=\{\out=M_*\}.
-$$
 Since the probability of error of the algorithm is smaller than $\delta < 1/4$, we have $\Pr_0[\mathcal B] \ge 3/4$.
-Define $\mathcal S$ be $\mathcal S=\mathcal A\cap \mathcal B \cap \mathcal C$. 
+Define random event $\mathcal S=\mathcal A\cap \mathcal B \cap \mathcal C$. 
 Then, by union bound, we have $\Pr_0[\mathcal S]\ge 1/4$.
 
+\textbf{Step (3): A change of measure.}
 Now, we show that if $\E_0[T_e] \le t_e^*$, then $\Pr_1[\mathcal B] \ge \delta$.
 Let $W$ be the history of the sampling process until the algorithm stops (including the sequence of arms chosen at each time and the sequence of observed outcomes).
 Define the likelihood function $L_l$ as 
@@ -1872,84 +1948,23 @@ $$
 L_l(w) = p_l(W=w),
 $$
 where $p_l$ is the probability density function under hypothesis $H_l$.
-Let $K$ be the shorthand of $K_{T_e}$.
+%Let $K$ be the shorthand of $K_{T_e}$.
 
-Assume that the event $\mathcal S$ occurred.
+Now assume that the event $\mathcal S$ occurred.
 We will bound the likelihood ratio $L_1(W)/L_0(W)$ under this assumption. 
-To do this, we divide our analysis into two different cases.
-
-\textbf{Case (1): $e\not \in M_*$.}
-In this case, the reward distribution of arm $e$ under $H_1$ is a Gaussian distribution with mean $w(e)+2\Delta_e$ and variance 1. 
-Recall that the probability density function of a Gaussian distribution with mean $\mu$ and variance $\sigma^2$ is given by
-$\mathcal N(x | \mu,\sigma^2)=\frac{1}{\sigma\sqrt{2\pi}}\exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)$.
-Note $H_1$ and $H_0$ only differs in reward distribution $\Rew_e$ and the rest of reward distributions are identical.
-Hence, we have
-\begin{align}
-  \frac{L_1(W)}{L_0(W)} &= \prod_{i=1}^{T_e} \exp\left(\frac{-(X_i-w(e)-2\Delta_e)^2+(X_i-w(e))^2}{2}\right) \nonumber \\
-  						&= \prod_{i=1}^{T_e} \exp\big(\Delta_e(2X_i-2w(e))-2\Delta_e^2\big) \nonumber \\
-  						&= \exp\big(\Delta_e(2K-2w(e)T_e)-2\Delta_e^2T_e\big) \nonumber \\
-  						&= \exp\big(\Delta_e(2K-2w(e)T_e)\big)\exp(-2\Delta_e^2T_e) \label{eq:lower-bound-case-1}.
-\end{align}
-
-Next, we bound each individual term on the right-hand side of Eq.~\eqref{eq:lower-bound-case-1}.
-We begin with bounding the second term of Eq.~\eqref{eq:lower-bound-case-1}
-\begin{align}
-	\exp(-2\Delta_e^2T_e) &\ge \exp(-8\Delta_e^2t_e^*) \label{eq:lower-bound-case-1-1.1} \\
-						  &=\exp\left(-\frac{8}{16}\log(1/\theta)\right) \label{eq:lower-bound-case-1-1.2}\\
-						  &= \theta^{1/2}\label{eq:lower-bound-case-1-1.3},
-\end{align}
-where Eq.~\eqref{eq:lower-bound-case-1-1.1} follows from the assumption that event $\mathcal S$ occurred, which implies that event $\mathcal A$ occurred and therefore $T_e \le 4t_e^*$; Eq.~\eqref{eq:lower-bound-case-1-1.2} follows from the definition of $t_e^*$.
-
-Then, we bound the first term on the right-hand side of Eq.~\eqref{eq:lower-bound-case-1} as follows
-\begin{align}
-	\exp\big(\Delta_e(2K-2w(e)T_e)\big) & \ge \exp\left(-2\Delta_e\sqrt{t_e^*\log(1/\theta)}\right) \label{eq:lower-bound-case-1-2.1}\\
-								       & = \exp\left(-\frac{2}{4}\log(1/\theta)\right) \label{eq:lower-bound-case-1-2.2}\\
-								       &=\theta^{1/2},  \label{eq:lower-bound-case-1-2.3}
-\end{align}
-where Eq.~\eqref{eq:lower-bound-case-1-2.1} follows from the assumption that event $\mathcal S$ occurred, which implies that event $\mathcal C$ and therefore $|2K-2w(e)T_e| \le \sqrt{t_e^*\log(1/\theta)}$; 
-Eq.~\eqref{eq:lower-bound-case-1-2.2} follows from the definition of $t_e^*$.
-
-Combining Eq.~\eqref{eq:lower-bound-case-1-1.3} and Eq.~\eqref{eq:lower-bound-case-1-2.3}, we can bound $L_1(W)/L_0(W)$ for this case as follows
+Since $H_1$ and $H_0$ only differs on the reward distribution of arm $e$, we have
 \begin{equation}
-\label{eq:ll-case1-final} 
-\frac{L_1(W)}{L_0(W)} \ge \theta. 
+\label{eq:r64-1}
+\frac{L_1(W)}{L_0(W)} = \prod_{i=1}^{T_e} \frac{\mathcal N(X_i | w_1(e), 1)}{\mathcal N(X_i | w_0(e), 1)}.
+\end{equation}
+By definition of $H_1$ and $H_0$, we see that $w_1(e) = w_0(e)\pm \Delta_e$ (where the sign depends on whether $e\in M_*$).
+Therefore, when event $\mathcal S$ occurs, it easy to verify that we can apply Lemma~\ref{lemma:lower-bound-likelihood-gaussian} (by setting $d=w_1(e)-w_0(e)$, $T=T_e$ and $s_i=w_0(e)$ for all $i$).
+Hence, by Lemma~\ref{lemma:lower-bound-likelihood-gaussian} and Eq.~\eqref{eq:r64-1}, we have, on event $\mathcal S$,
+\begin{equation}
+\frac{L_1(W)}{L_0(W)} \ge \theta = 4\delta.
 \end{equation}
 
-
-\emph{(End of Case (1).)}
-
-\textbf{Case (2): $e\in M_*$.}
-In this case, we know that the mean reward of arm $e$ under $H_1$ is $w(e)-2\Delta$.
-Similar to Case (1), the likelihood ratio $L_1(W)/L_0(W)$ is given by
-\begin{align}
-  \frac{L_1(W)}{L_0(W)} &= \prod_{i=1}^{T_e} \exp\left(\frac{-(X_i-w(e)+2\Delta_e)^2+(X_i-w(e))^2}{2}\right) \nonumber \\
-  						&= \prod_{i=1}^{T_e} \exp\big(\Delta_e(2w(e)-2X_i)-2\Delta_e^2\big) \nonumber \\
-  						&= \exp\big(\Delta_e(2w(e)T_e-2K)\big)\exp(-2\Delta_e^2T_e) \label{eq:lower-bound-case-2}.
-\end{align}
-
-Notice that the right-hand side of Eq.~\eqref{eq:lower-bound-case-2} differs from Eq.~\eqref{eq:lower-bound-case-1} only in its first term.
-Now, we bound the first term as follows
-\begin{align}
-	\exp\big(\Delta_e(2w(e)T_e-2K)\big) & \ge \exp\left(-2\Delta_e\sqrt{t_e^*\log(1/\theta)}\right) \label{eq:lower-bound-case-2-2.1}\\
-								       & = \exp\left(-\frac{2}{4}\log(1/\theta)\right) \label{eq:lower-bound-case-2-2.2}\\
-								       &=\theta^{1/2},  \label{eq:lower-bound-case-2-2.3}
-\end{align}
-where the inequalities hold due to reasons similar to Case (1): Eq.~\eqref{eq:lower-bound-case-2-2.1} follows from the assumption that event $\mathcal S$ occurred, which implies that event $\mathcal C$ and therefore $|2K-2w(e)T_e| \le \sqrt{t_e^*\log(1/\theta)}$; 
-Eq.~\eqref{eq:lower-bound-case-2-2.2} follows from the definition of $t_e^*$.
-
-Combining Eq.~\eqref{eq:lower-bound-case-1-1.3} and Eq.~\eqref{eq:lower-bound-case-1-2.3}, we  can obtain the same bound of $L_1(W)/L_0(W)$ as in Eq.~\eqref{eq:ll-case1-final}, i.e. $L_1(W)/L_0(W) \ge \theta$.
-
-\emph{(End of Case (2).)}
-
-At this point, we have proved that, if the event $\mathcal S$ occurred, then the bound of likelihood ratio Eq.~\eqref{eq:ll-case1-final} holds, i.e. $\frac{L_1(W)}{L_0(W)} \ge \theta$.
-Hence, we have
-\begin{align}
-\frac{L_1(W)}{L_0(W)} &\ge \theta \nonumber \\
-					  &= 4\delta.	
-\end{align}
-
-
-Define $1_S$ as the indicator variable of event $\mathcal S$, i.e. $1_S = 1$ if and only if $\mathcal S$ occurs and otherwise $1_S = 0$.
+Then, define $1_S$ as the indicator variable of event $\mathcal S$, i.e. $1_S = 1$ if and only if $\mathcal S$ occurs and otherwise $1_S = 0$.
 Then, we have
 \begin{align*}
 \frac{L_1(W)}{L_0(W)} 1_S \ge 4\delta 1_S
@@ -1962,16 +1977,123 @@ Therefore, we can obtain
 				  &\ge 4\delta \E_0[1_S] \\
 				  &= 4\delta \Pr_0[\mathcal S] > \delta.
 \end{align*}
-Now we have proved that, if $\E_0[T_e] \le t_e^*$, then $\Pr_1[\mathcal B]>\delta$.
-This means that, if $\E_0[T_e] \le t_e^*$, algorithm $\mathbb A$ will choose $M_*$ as the output with probability at least $\delta$, under hypothesis $H_1$.
+Now we have proved that, if $\E_0[T_e] < t_e^*$, then $\Pr_1[\mathcal B]>\delta$.
+This means that, if $\E_0[T_e] < t_e^*$, algorithm $\mathbb A$ will choose $M_*$ as the output with probability at least $\delta$, under hypothesis $H_1$.
 However, under $H_1$, we have shown that $M_*$ is not the optimal set since $w_1(M_e) > w_1(M_*)$.
 Therefore, algorithm $\mathbb A$ has a probability of error at least $\delta$ under $H_1$. 
 This contradicts to the assumption that algorithm $\mathbb A$ is a $\delta$-correct algorithm.
-Hence, we must have $\E_0[T_e] > t_e^* = \frac{1}{16\Delta_e^2}\log(1/4\delta)$.
+Hence, we must have $\E_0[T_e] \ge t_e^* = \frac{1}{16\Delta_e^2}\log(1/4\delta)$.
 \end{proof}
 
 
-\subsection{Exchange set size dependent lower bound}
+\subsection{A lower bound in the Bernoulli reward case}
+NOT COMPLETED!
+
+Our main lower bound Theorem~\ref{theorem:lower-bound} covers the cases where the reward distributions are normal distributions, which have unbounded supports. 
+The techniques used in Theorem~\ref{theorem:lower-bound} can be adapt to establish the lower bounds for many other types of distributions with unbounded support.
+
+In this part, we prove Theorem~\ref{theorem:lower-bound-bounded}, a bounded support version of Theorem~\ref{theorem:lower-bound} accounting for Bernoulli reward distribution, using a proof idea similar with Theorem~\ref{theorem:lower-bound}. 
+Therefore, the two versions of lower bounds settle the conjecture of \citet{bubeck2013multiple} in both bounded and unbounded support cases. 
+On the other hand, Theorem~\ref{theorem:lower-bound-bounded} only works for decision classes with constant width and therefore is more restricted than the lower bound for the unbounded support case.
+
+\begin{theorem}
+\label{theorem:lower-bound-bounded}
+Let $\M\subseteq 2^{[n]}$ be a decision class such that $\rank(\M) = 2$.
+Fix some $p_0 \in (0,1/2)$. 
+There exists a positive constant $\delta_0$, and a positive constant $c_1$ that only depends on $p_0$ which satisfying the following. 
+For any $\vec w \in [p_0, 1/2]^n$, suppose that for each arm $e\in[n]$, the reward distribution $\Rew_e$ is given by $\Rew_e=\Ber(w(e))$,
+where we let $\Ber(p)$ denote the Bernoulli distribution with parameter $p$.
+Then, for any $\delta \in (0,\delta_0)$ and any $\delta$-correct algorithm $\mathbb A$, we have
+\begin{equation}
+\label{eq:lower-bound-bound}
+\E[T] \ge  c_1 \mathbf H \log\left(\frac{1}{8\delta}\right),
+\end{equation}
+where 
+$T$ denote the number of total samples used by algorithm $\mathbb A$.
+\end{theorem}
+
+We require two technical lemmas in order to prove \Cref{theorem:lower-bound-bounded}.
+The first lemma upper bounds the gaps of arms in terms of the width of decision class when the expected reward is bounded.
+\begin{lemma}
+\label{lemma:lower-bound-bound-gap}
+Fix some decision class $\M\subseteq 2^{[n]}$ and some expected reward vector $\vec w \in [A,B]^n$.
+Then, for any $e\in [n]$ we have
+$$
+\Delta_e \le \rank(\M) \max\{|A|,|B|\}.
+$$
+\end{lemma}
+\begin{proof}
+Let $M_e$ denote the ``next-to-optimal'' set as defined in Eq.~XXX.
+By definition of gaps Eq.~\eqref{eq:define-delta}, we know that $\Delta_e = w(M_*)-w(M_e)$.
+We fix an exchange class $\B\in \Exchange(\M)$ such that $\rank(\B)=\rank(\M)$.
+We notice that $e\in (M_* \del M_e) \cup (M_e \del M_*)$ therefore we can apply Lemma~\ref{lemma:exchange}.
+Hence there exists an exchange set $b=(b_+,b_-)\in \B$ such that 
+$e \in b_+ \cup b_-$, $b_-\subseteq M_e\del M_*$, $b_+\subseteq M_*\del M_e$, $M_* \ominus b \in \M$ and $\inn{\vec w,\vec\chi_b}\ge \Delta_e > 0$.
+Hence we have
+\begin{align}
+	\Delta_e &\le \inn{\vec w, \vec \chi_b} = w(M_*) - w(M_*\ominus b) \label{eq:r65-1}\\
+					 &= \sum_{i\in M_*} w(i) - \sum_{i\in M_* \del b_+ \cup b_-} w(i) \nonumber\\
+					 &= \sum_{i \in b_+} w(i) - \sum_{i\in b_-} w(i) \label{eq:r65-2}\\
+					 &\le |b_+| \cdot |B| + |b_-| \cdot |A| \le (|b_+|+|b_-|) \max\{|A|,|B|\} \noumber\\
+					 &\le \rank(\M)\max\{|A|,|B|\},\label{eq:r65-3}
+\end{align}
+where Eq.~\eqref{eq:r65-1} follows from Lemma~\ref{lemma:exchange-char};
+Eq.~\eqref{eq:r65-2} follows from  the fact that $b_+\subseteq M_*$ and $b_-\cap M_* = \emptyset$;
+and Eq.~\eqref{eq:r65-3} holds since $b\in \B$ and $\rank(\B)=\rank(\M)$.
+\end{proof}
+
+
+
+The second technical lemma is a counterpart of Lemma~\ref{lemma:lower-bound-likelihood-gaussian} for the Bernoulli distribution.
+The lemma was first discovered by \citet{mannor2004sample} for analyzing the lower bound of identifying the single best arm.
+In the following, we rephrase their result using the notations of our proof.
+\begin{lemma}
+\label{lemma:lower-bound-likelihood-bernoulli}
+Fix some $p_0 \in (0,1/2)$. 
+There exists a positive constant $\delta_0$, and a positive constant $c_1$ that only depends on $p_0$ such that the following holds.
+Given any $w_0 \in [p_0, 1/2]$, $\Delta \in (0,1/2)$ and $\theta \in (0, \delta_0/8)$.
+Define $t= \frac{c_1}{\Delta^2}\log(1/\theta)$.
+Let $X_1,\ldots, X_T \in \{0,1\}$ be $T$ binary variables which satisfy the following
+\begin{equation}
+\label{eq:lemma:lower-bound-likelihood-gaussian}
+T \le 4t \quad\text{ and }\quad \left|\sum_{i=1}^T X_T -  Tw_0 \right| \le \sqrt{t\log(1/\theta)}.
+\end{equation}
+Then, for any $w_1 \in [p_0, 1/2]$ such that $|w_0-w_1| \le \Delta$, we have
+$$
+\prod_{i=1}^T \frac{\Ber(X_i | w_1)}{\Ber(X_i | w_0)} \ge \theta,
+$$
+where $\Ber(x | p) = p^{x}(1-p)^{1-x}$ denotes the probability mass function of Bernoulli distribution.
+\end{lemma}
+The proof of Lemma~\ref{lemma:lower-bound-likelihood-bernoulli} can be extracted from \citep[Theorem~4]{mannor2004sample} and therefore is omitted.
+
+We are now ready to prove Theorem~\ref{theorem:lower-bound-bounded} using an argument which is almost identical to Theorem~\ref{theorem:lower-bound}. 
+There are only two noticeable differences: (1) we use \Cref{lemma:lower-bound-likelihood-bernoulli} instead of \Cref{lemma:lower-bound-likelihood-gaussian} for bounding the likelihood loss; (2) we use \Cref{lemma:lower-bound-bound-gap} to ensure the constructed alternative hypothesis still contains valid Bernoulli reward distributions.
+In the following, we give a proof sketch of \Cref{theorem:lower-bound-bounded} highlighting these differences and omitting some redundant arguments.
+\begin{proof}[Proof Sketch of Theorem~\ref{theorem:lower-bound-bounded}]
+
+aa
+
+
+\textbf{Step (1): An alternative hypothesis.}
+We consider two hypotheses $H_0$ and $H_1$. 
+The hypothesis $H_0$ is identical to the assumption of the theorem, i.e. $\Rew_l = \Ber(w(l))$ for all $l\in [n]$.
+On the other hand, under hypothesis $H_1$, we change the means of reward distributions such that 
+$$
+H_1: 
+	\Rew_e = \begin{cases}
+	\Ber(w(e)-2\Delta_e) & \text{if } e\in M_*\\
+	\Ber(w(e)+2\Delta_e) & \text{if } e\not\in M_*
+\end{cases} 
+\quad\text{and } \Rew_l=\Ber(w(l)) \quad\text{for all } l\not = e.
+$$
+By Lemma~\ref{lemma:lower-bound-bound-gap}, we see that 
+$\Delta_e \le 2ZZZ$.
+
+\end{proof}
+
+
+
+\subsection{An exchange set size dependent lower bound}
 \label{section:lowerbound-evidence}
 We show that, for any arm $e\in [n]$, there exists an exchange set $b=(b_+,b_-)$ which contains $e$ such that a $\delta$-correct algorithm must spend
 $\tilde \Omega\Big(\big(|b_+|+|b_-|\big)^2 / \Delta_e^2 \Big)$ samples on exploring the arms belonging to $b_+\cup b_-$.
@@ -1979,6 +2101,7 @@ $\tilde \Omega\Big(\big(|b_+|+|b_-|\big)^2 / \Delta_e^2 \Big)$ samples on explor
 This result is formalized in the following theorem.
 
 \begin{restatable}{theorem}{lowerboundspecial}
+\label{theorem:lowerboundspecial}
 Fix any $\M\subseteq 2^{[n]}$ and any vector $\vec w \in \RR^n$.
 Suppose that, for each arm $e\in [n]$, the reward distribution $\Rew_e$ is given by $\Rew_e=\mathcal N(w(e),1)$, where $\mathcal N(\mu, \sigma^2)$ denotes a Gaussian distribution with mean $\mu$ and variance $\sigma^2$. 
 Fix any $\delta \in (0,e^{-16}/4)$
@@ -1993,26 +2116,31 @@ where $T_i$ is the number of samples of arm $i$.
 
 %\lowerboundspecial*
 \begin{proof}
-Fix $\delta >0$, $\vec w\in \RR^{n}$ and a $\delta$-correct algorithm $\mathbb A$.
-Assume that $\Rew_e(i)=\mathcal N(w(i),1)$ for all $i\in[n]$.
-Fix $e\in [n]$, define $M_e$ be the ``next-to-optimal'' set as follows 
-$$
-M_e = \begin{cases}
-		 \argmax_{M\in \M: e \in M} w(M) & \text{if } e\not \in M_*, \\
-	     \argmax_{M\in \M: e \not\in M} w(M) & \text{if } e\in M_*.
-	  \end{cases}
-$$
+Fix $\delta >0$, $\vec w =\big(w(1),\ldots,w(n)\big)^T$ and a $\delta$-correct algorithm $\mathbb A$.
+For each $i\in [n]$, assume that the reward distribution is given by $\Rew_i=\mathcal N(w(i),1)$.
+For any $i \in [n]$, let $T_i$ denote the  number of trials of arm $i$ used by algorithm $\mathbb A$.
+
+
+\textbf{Step (0): Setup.} 
+Fix an arm $e\in[n]$. 
+As the first step, we construct the exchange set $b=(b_+,b_-)$ claimed in the theorem.
+Let $M_e$ denote the next-to-optimal set defined Eq.~\eqref{eq:next-to-optimal}.
 By definition of $\Delta_e$ in Eq.~\eqref{eq:define-delta}, we know that $w(M_*)-w(M_e)=\Delta_e$.
-Construct the exchange set $b=(b_+, b_-)$ where $b_+ = M_*\del M_e$ and $b_- = M_e \del M_*$. 
-It is easy to check that $M_e \oplus b = M_*$ and $\inn{\vec w, \vec\chi_b}=\Delta_e$.
+We construct the exchange set $b=(b_+, b_-)$ where $b_+ = M_*\del M_e$ and $b_- = M_e \del M_*$. 
+It is easy to check that $M_e \oplus b = M_*$ and $\inn{\vec w, \vec\chi_b}=\Delta_e > 0$.
 
+We have now constructed the exchange set. 
+We define $T_{b_-}= \sum_{i\in b_-} T_i$ and $T_{b_+}=\sum_{i\in b_+} T_i$.
+Now we claim that
+\begin{equation}
+\label{eq:lower-special-claim}
+\textbf{(a) }\; \E\left[T_{b_-}\right] \ge \frac{|b_-|^2}{16\Delta_e^2} \log(1/4\delta)\quad\text{and}\quad\textbf{(b) }\; \E\left[T_{b_+}\right] \ge \frac{|b_+|^2}{16\Delta_e^2} \log(1/4\delta).
+\end{equation}
+It is easy to check that theorem follows immediately from  claims \textbf{(a)} and \textbf{(b)}.
+In the rest of the proof, we focus on claim \textbf{(a)}; the claim \textbf{(b)} can proved using an almost identical similar argument.
 
-
-
-%the reward distribution of an arm $i\in [n]$ is a Gaussian distribution with mean $p_i$ and variance 1.
-
-
-We define three hypotheses $H_0$, $H_1$ and $H_2$. 
+\textbf{Step (1): An alternative hypothesis.} 
+We define two hypotheses $H_0$ and $H_1$.
 %Under each of these hypotheses, the reward distribution of each arm is Gaussian with different means. 
 Under hypothesis $H_0$, the reward distribution 
 $$
@@ -2020,208 +2148,60 @@ H_0: \Rew_l = \mathcal N(w(l),1) \quad \text{for all } l \in [n].
 $$
 Under hypothesis $H_1$, the mean reward of each arm is given by 
 $$
-H_1: \Rew_e = \begin{cases}
-	\mathcal N\left(w(e)+2\frac{w(b)}{|b_-|},1\right) & \text{if } e\in b_-,\\
-	\mathcal N(w(e), 1) & \text{if } e\not\in b_-.\\
-    \end{cases}
+H_1: \Rew_i = \begin{cases}
+	\mathcal N\left(w(i)+\frac{2\Delta_e}{|b_-|},1\right) & \text{if } i\in b_-,\\
+	\mathcal N(w(i), 1) & \text{if } i \not\in b_-.\\
+\end{cases}
 $$
-And under hypothesis $H_2$, the mean reward of each arm is given by 
-$$
-H_2: \Rew_e = \begin{cases}
-	\mathcal N\left(w(e)-2\frac{w(b)}{|b_-|},1\right)  & \text{if } e\in b_+,\\
-	\mathcal N(w(e), 1)  & \text{if } e\not\in b_+.\\
-    \end{cases}
-$$
-%Since $b\in \Bopt$, it is clear that $\neg b \diffvalid M_*$. Hence we define $M = M_* \ominus b$.
-Let $w_0, w_1$ and $w_2$ be the expected reward vectors under $H_0,H_1$ and $H_2$ respectively.
-It is easy to check that 
-$w_1(M_*)-w_1(M_e) = -w(b) < 0$ and
-$w_2(M_*)-w_2(M_e) = -w(b) < 0$.
-This means that under $H_1$ or $H_2$, $M_*$ is not the optimal set.
-Further, for $l\in \{0,1,2\}$, we use $\E_l$ and $\Pr_l$ to denote the expectation and probability, respectively, under the hypothesis $H_l$.
-In addition, let $W$ be the history of the sampling process until algorithm $\mathbb A$ stops.
-Define the likelihood function $L_l$ as 
-$$
-L_l(w) = p_l(W=w),
-$$
-where $p_l$ is the probability density function under $H_l$.
+Similar to the proof of \Cref{theorem:lower-bound}, we let $\vec w_0$ and $\vec w_1$ denote the expected reward vectors under $H_0$ and $H_1$ respectively.
+One can verify that $w_1(M_*)-w_1(M_e) = -\Delta_e < 0$.
+This means that under $H_1$, the set $M_*$ is not the optimal set.
 
-
-Define $\theta=4\delta$.
-Let $T_{b_-}$ and $T_{b_+}$ denote the number of trials of arms belonging to $b_-$ and $b_+$, respectively. 
-In the rest of the proof, we will bound $\E_0[T_{b_-}]$ and $\E_0[T_{b_+}]$ individually.
-
-
-
-\textbf{Part (1): Lower bound of $\E_0[T_{b_-}]$.}
-In this part, we will show that $\E_0[T_{b_-}]\ge t_{b_-}^*$, where we define $t_{b_-}^* = \frac{|b_-|^2}{16 w(b)^2}\log(1/\theta)$.
-We will prove this by contradiction, thus assume the opposite, that is, $\E_0[T_{b_-}] < t_{b_-}^*$.
-
-Consider the complete sequence of sampling process by algorithm $\mathbb A$.
+\textbf{Step (2): Three random events.}
+First we consider the complete sequence of sampling process by algorithm $\mathbb A$.
 Formally, let $W=\{(\tilde I_1,\tilde X_1),\ldots, (\tilde I_T, \tilde X_T)\}$ be the sequence of all trials by algorithm $\mathbb A$, where $\tilde I_i$ denotes the arm played in $i$-th trial and $\tilde X_i$ be the reward outcome of $i$-th trial.
 Then, consider the subsequence $W_1$ of $W$ which consists all the trials of arms in $b_-$.
 Specifically, we write $W=\{(I_1,X_1),\ldots,(I_{T_{b_-}}, X_{T_{b_-}})\}$ such that $W_1$ is a subsequence of $W$ and $I_i \in b_-$ for all $i$.
 
-Next, we define several random events in a way similar to the proof of Theorem~\ref{theorem:lower-bound}.
-Define event
-$\mathcal A_1 = \{T_{b_-} \le 4t_{b_-}^* \}$.
-Define event 
+Now we  define three random events $\mathcal A$, $\mathcal B$ and $\mathcal C$ as follows
 $$
-\mathcal C_1 = \left\{\max_{1\le t \le 4t_{b_-}^*} \left|\sum_{i=1}^t X_i - \sum_{i=1}^t w(I_i)\right|  < \sqrt{t_{b_-}^*\log(1/\theta)} \right\}.
+\mathcal A = \{T_{b_-} \le 4t_{b_-}^* \},\;\mathcal B=\{\out=M_*\}\;\text{ and }\;
+\mathcal C=\left\{\max_{1\le t \le 4t_{b_-}^*} \left|\sum_{i=1}^t X_i -\sum_{i=1}^t w(I_i)\right|  < \sqrt{t_{b_-}^*\log(1/\theta)} \right\},
 $$
-Define event 
-\begin{equation}
-\label{eq:lower-sum-b-define}
-\mathcal B = \{\out=M_*\}.
-\end{equation}
-Define event
-$\mathcal S_1 = \mathcal A_1 \cap \mathcal B \cap \mathcal C_1$.
-Then, we bound the probability of events $\mathcal A_1$, $\mathcal B$, $\mathcal C_1$ and $\mathcal S_1$ under $H_0$ using methods similar to Theorem~\ref{theorem:lower-bound}.
-First, we show that $\Pr_0[\mathcal A_1] \ge 3/4$. 
-This can be proved by Markov inequality as follows.
+where $\out$ is the output of algorithm~$\mathbb A$. We now bound the probability of each event.
+First, by Markov's inequality, we have
 \begin{align*}
-\Pr_0[T_{b_-} > 4t_{b_-}^*] &\le \frac{\E_0[T_{b_-}]}{4t_{b_-}^*} \\
-					  &= \frac{t_{b_-}^*}{4t_{b_-}^*} = \frac14.
+\Pr_0[T_{b_-} > 4t_{b_-}^*] &\le \frac{\E_0[T_{b_-}]}{4t_{b_-}^*} = \frac{t_{b_-}^*}{4t_{b_-}^*} = \frac14.
 \end{align*}
-Next, we show that $\Pr_0[\mathcal C_1] \ge 3/4$.
-Notice that the sequence $\Big\{\sum_{i=1}^t X_i - \sum_{i=1}^t p_{I_i}\Big\}_{t\in[4t_{b_-}^*]}$ is a martingale.
-Hence, by Kolmogorov's inequality, we have
+Next, using Kolmogrov's inequality (\Cref{lemma:kolmogrov}), we obtain
 \begin{align*}
 \Pr_0\left[\max_{1\le t \le 4t_{b_-}^*} \left|\sum_{i=1}^t X_i - \sum_{i=1}^t w(I_i) \right| \ge \sqrt{t_e^*\log(1/\theta)} \right]
 &\le \frac{\E_0\left[ \left(\sum_{i=1}^{4t_{b_-}^*} X_i - \sum_{i=1}^{4t_{b_-}^*} w(I_i)\right)^2\right]}{t_e^*\log(1/\theta)}\\
-&= \frac{4t_{b_-}^*}{t_{b_-}^*\log(1/\theta)}\\
-&< \frac14,
+&= \frac{4t_{b_-}^*}{t_{b_-}^*\log(1/\theta)} < \frac14,
 \end{align*}
 where the second inequality follows from the fact that all reward distributions have unit variance and hence
 $\E_0\left[ \left(\sum_{i=1}^{4t_{b_-}^*} X_i - \sum_{i=1}^{4t_{b_-}^*} p_{I_i}\right)^2\right] = 4t_{b_-}^*$; the last inequality follows 
 since $\theta < e^{-16}$.
-Last, since algorithm $\mathbb A$ is a $\delta$-correct algorithm with $\delta < 1/4$. 
-Therefore, it is easy to see that 
-$\Pr_0[\mathcal B] \ge 3/4$.
-And by union bound, we have
+
+
+Since $\mathbb A$ is $\delta$-correct algorithm and $\delta < 1/4$, we have $\Pr_0[\mathcal B]\ge 3/4$. Therefore, we have that the random event $\mathcal S=\mathcal A \cap \mathcal B \cap \mathcal C$ occurs with probability at least $1/4$ under $H_0$.
+
+
+\textbf{Step (3): A change of measure.} Similar to the proof of Theorem~\ref{theorem:lower-bound}, we let $L_l$ denote the likelihood function under hypothesis $H_l$ for some $l\in\{0,1\}$. 
+Since the difference of $H_0$ and $H_1$ only lies in the arms belonging to $b_-$, we have
 $$
-\Pr_0[\mathcal S_1] \ge 1/4.
+\frac{L_1(W)}{L_0(W)} = \prod_{i=1}^{T_l} \frac{\mathcal N(X_i | w_1(I_i), 1)}{\mathcal N(X_i | w_0(I_i), 1)},
 $$
-
-Now, we show that if $\E_0[T_{b_-}] \le t_{b_-}^*$, then $\Pr_1[\mathcal B] \ge \delta$.
-Assume that the event $\mathcal S_1$ occurred.
-%Define $K(e) = \sum_{t=1}^{T_e} $ 
-We bound the likelihood ratio $L_1(W)/L_0(W)$ under this assumption as follows
-\begin{align}
-  \frac{L_1(W)}{L_0(W)} 
-  &= \prod_{i=1}^{T_{b_-}}
-  \exp\left(\frac{-\left(X_i-w(I_i)-\frac{2w(b)}{|b_-|}\right)^2+(X_i-w(I_i)^2}{2}\right) \nonumber \\
-  &= \prod_{i=1}^{T_{b_-}}
-  \exp\left(\frac{w(b)}{|b_-|}(2X_i-2w(I_i))-\frac{2w(b)^2}{|b_-|^2}\right) \nonumber \\
-  &= \exp\left(\frac{w(b)}{|b_-|}\left(\sum_{i=1}^{T_{b_-}}2X_i-2w(I_i)\right)-\frac{2w(b)^2}{|b_-|^2}T_{b_-}\right) \nonumber \\
-  &= \exp\left(\frac{w(b)}{|b_-|}\left(\sum_{i=1}^{T_{b_-}}2X_i-2w(I_i)\right)\right)\exp\left(-\frac{2w(b)^2}{|b_-|^2}T_{b_-}\right) \label{eq:lower-sum-case-1}.
-\end{align}
-Then, we bound each term on the right-hand side of Eq.~\eqref{eq:lower-sum-case-1}.
-First, we bound the second term of Eq.~\eqref{eq:lower-sum-case-1}.
-\begin{align}
-	\exp\left(-\frac{2w(b)^2}{|b_-|^2} T_{b_-}\right) 
-	 &\ge \exp\left(-\frac{2w(b)^2}{|b_-|^2} 4t_b^*\right) \label{eq:lower-sum-case-1-1.1} \\
-     &=\exp\left(-\frac{8}{16}\log(1/\theta)\right) \label{eq:lower-sum-case-1-1.2}\\
-     &= \theta^{1/2}\label{eq:lower-sum-case-1-1.3},
-\end{align}
-where Eq.~\eqref{eq:lower-sum-case-1-1.1} follows from the assumption that events $\mathcal S_1$ and $\mathcal A_1$ occurred and therefore $T_{b_-} \le 4t_{b_-}^*$; 
-Eq.~\eqref{eq:lower-sum-case-1-1.2} follows from the definition of $t_{b_-}^*$.
-Next, we bound the first term of Eq.~\eqref{eq:lower-sum-case-1} as follows
-\begin{align}
-	\exp\left(\frac{w(b)}{|b_-|}\left(\sum_{i=1}^{T_{b_-}}2X_i-2w(I_i)\right)\right)
-	&\ge \exp\left(-\frac{2w(b)}{|b_-|}\sqrt{t_b^*\log(1/\theta)}\right) \label{eq:lower-sum-case-1-2.1}\\
-    & = \exp\left(-\frac{2}{4}\log(1/\theta)\right) \label{eq:lower-sum-case-1-2.2}\\
-    &=\theta^{1/2},  \label{eq:lower-sum-case-1-2.3}
-\end{align}
-where Eq.~\eqref{eq:lower-sum-case-1-2.1} follows since event $\mathcal S_1$ and $\mathcal C_1$ occurred and therefore $|2K-2p_eT_e| \le \sqrt{t_e^*\log(1/\theta)}$; 
-Eq.~\eqref{eq:lower-sum-case-1-2.2} follows from the definition of $t_{b_-}^*$.
-
-Hence, if event $\mathcal S_1$ occurred, we can bound the likelihood ratio as follows
-\begin{align}
-\frac{L_1(W)}{L_0(W)} &\ge \theta = 4\delta.
-\end{align}
-Let $1_{S_1}$ denote the indicator variable of event $\mathcal S_1$.
-Then, we have $
-\frac{L_1(W)}{L_0(W)} 1_{S_1} \ge 4\delta 1_{S_1}$.
-Therefore, we can bound $\Pr_1[\mathcal B]$ as follows
-\begin{align}
-\Pr_1[\mathcal B] &\ge \Pr_1[\mathcal S_1] = \E_1[1_{S_1}] \nonumber \\
-				  &= \E_0\left[\frac{L_1(W)}{L_0(W)} 1_{S_1}\right] \nonumber \\
-				  &\ge 4\delta \E_0[1_{S_1}] \nonumber \\
-				  &= 4\delta \Pr_0[\mathcal S_1] > \delta \label{eq:lower-sum-case-1-final}.
-\end{align}
-This means that, if $\E_0[T_{b_-}] \le t_{b_-}^*$, then, under $H_1$, the probability of algorithm $\mathbb A$ returning $M_*$ as output is at least $\delta$. 
-But $M_*$ is not the optimal set under $H_1$. Hence this contradicts to the assumption that $\mathbb A$ is a $\delta$-correct algorithm.
-Hence we have proved that 
-\begin{equation}
-\label{eq:lower-sum-case-1-a}
-\E_0[T_{b_-}] \ge t_{b_-}^* = \frac{|b_-|^2}{16 w(b)^2}\log(1/4\delta).
-\end{equation}
-
-\emph{(End of Part (1).)}
-
-\textbf{Part (2): Lower bound of $\E_0[T_{b_+}]$.} In this part, we will show that $\E_0[T_{b_+}]\ge t_{b_+}^*$, where we define $t_{b_+}^* = \frac{|b_+|^2}{16 w(b)^2}\log(1/\theta)$.
-We will prove this by contradiction, thus assume the opposite, that is, $\E_0[T_{b_+}] < t_{b_+}^*$.
-The arguments used in this part are similar to that of Part (1). 
-Hence, we will omit the redundant parts and highlight the differences.
-
-Recall that we have defined that $W$ to be the history of all trials by algorithm $\mathbb A$.
-We define $W$ be the subsequence of $\tilde S$ which contains the trials of arms belonging to $b_+$.
-We write $S_2=\{(J_1,Y_1),\ldots,(J_{T_{b_+}}, Y_{T_{b_+}})\}$, where $J_i$ is $i$-th played arm in sequence $S_2$ and $Y_i$ is the associated reward outcome.
-
-We define the random events $\mathcal A_2$ and $\mathcal C_2$ similar to Part (1).
-Specifically, we define 
+where $X_i$ and $I_i$ is as defined in Step (2).
+Assume that $\mathcal S$ occurs.
+Since $w_1(e)-w_0(e) = d$ for all $e\in b_-$ and $d=\pm\frac{2\Delta_e}{|b_-|}$, we can apply Lemma~\ref{lemma:lower-bound-likelihood-gaussian} here.
+Therefore, on event $\mathcal S$, we have
 $$
-\mathcal A_2 = \{T_{b_+} \le 4t_{b_+}^* \} \quad\text{and}\quad
-\mathcal C_2 = \left\{\max_{1\le t \le 4t_{b_+}^*} \left|\sum_{i=1}^t Y_i - \sum_{i=1}^t w(J_i)\right|  < \sqrt{t_{b_+}^*\log(1/\theta)} \right\}.
-$$
-Using the similar arguments, we can show that 
-$\Pr_0[\mathcal A_2] \ge 3/4$ and $\Pr_0[\mathcal C_2] \ge 3/4$.
-Define event $\mathcal S_2 = \mathcal A_2 \cap \mathcal B \cap \mathcal C_2$, where $\mathcal B$ is defined in Eq.~\eqref{eq:lower-sum-b-define}.
-By union bound, we see that 
-$$
-\Pr_0[\mathcal S_2] \ge 1/4.
+\frac{L_1(W)}{L_0(W)} \ge \theta.
 $$
 
-Then, we show that if $\E_0[T_{b_+}] < t_{b_+}^*$, then $\Pr_2[\mathcal B] \ge \delta$.
-We bound likelihood ratio $L_2(W)/L_0(W)$ under the assumption that $\mathcal S_2$ occurred as follows
-\begin{align}
-  \frac{L_2(W)}{L_0(W)} 
-  &= \prod_{i=1}^{T_{b_+}}
-  \exp\left(\frac{-\left(Y_i-w(J_i))+\frac{2w(b)}{|b_-|}\right)^2+(Y_i-w(J_i))^2}{2}\right) \nonumber \\
-  &= \prod_{i=1}^{T_{b_+}}
-  \exp\left(\frac{w(b)}{|b_+|}(2w(J_i)- 2Y_i)-\frac{2w(b)^2}{|b_+|^2}\right) \nonumber \\
-  &= \exp\left(\frac{w(b)}{|b_+|}\left(\sum_{i=1}^{T_{b_+}}2w(J_i)-2Y_i\right)-\frac{2w(b)^2}{|b_+|^2}T_{b_+}\right) \nonumber \\
-  &= \exp\left(\frac{w(b)}{|b_+|}\left(\sum_{i=1}^{T_{b_+}}2w(J_i)-2Y_i\right)\right)\exp\left(-\frac{2w(b)^2}{|b_+|^2}T_{b_+}\right) \nonumber \\
-  &\ge \theta \label{eq:lower-sum-case-2}\\
-  & = 4\delta \nonumber,
-\end{align}
-where Eq.~\eqref{eq:lower-sum-case-2} can be obtained using same method as in Part (1) as well as the assumption that $\mathcal S_2$ occurred.
-
-Next, similar to the derivation in Eq.~\eqref{eq:lower-sum-case-1-final}, we see that
-$$
-\Pr_2[\mathcal B] \ge \Pr_2[\mathcal S_2] = \E_2[1_{S_2}] 
-				  = \E_0\left[\frac{L_2(W)}{L_0(W)} 1_{S_2}\right]
-				  \ge 4\delta \E_0[1_{S_2}] > \delta,
-$$
-where $1_{S_2}$ is the indicator variable of event $\mathcal S_2$.
-Therefore, we see that if $\E_0[T_{b_+}] \le t_{b_+}^*$, then, under $H_2$, the probability of algorithm $\mathbb A$ returning $M_*$ as output is at least $\delta$, which is not the optimal set under $H_2$. 
-This contradicts to the assumption that algorithm $\mathbb A$ is a $\delta$-correct algorithm. 
-In sum, we have proved that 
-\begin{equation}
-\label{eq:lower-sum-case-2-a}
-\E_0[T_{b_+}] \ge t_{b_+}^* = \frac{|b_+|^2}{16 w(b)^2}\log(1/4\delta).
-\end{equation}
-
-\emph{(End of Part (2))}
-
-Finally, we combine the results from both parts, i.e. Eq.~\eqref{eq:lower-sum-case-1-a} and Eq.~\eqref{eq:lower-sum-case-2-a}.
-We obtain
-\begin{align*}
-  \E_0[T_b] &= \E_0[T_{b_-}]+\E_0[T_{b_+}] \\
-  		    &\ge \frac{|b_+|^2+|b_-|^2}{16 w(b)^2}\log(1/4\delta) \\
-  		    &\ge \frac{(|b_+|+|b_-|)^2}{32 w(b)^2}\log(1/4\delta).
-\end{align*}
+The rest of the proof is identical to Step (3) in the proof of Theorem~\ref{theorem:lower-bound}, and one can show that $\Pr_1[\mathcal B] \ge \delta$, which means the probability of error of algorithm~$\mathbb A$ is at least $\delta$, which contradicts to the assumption of $\mathbb A$. 
+Therefore we have $\E[T_{b_-}]\ge t_{b_-}^*$ which proves claim \textbf{(a)} in Eq.~\eqref{eq:lower-special-claim}.
 \end{proof}
 
 %Now we prove a lower bound on the probability of error in the fixed budget setting.
@@ -2351,7 +2331,7 @@ where Eq.~\eqref{eq:fcip-0} follows from the assumption that $\vec a$ is support
 Eq.~\eqref{eq:fcip-1} follows from the definition of $\tau_t$ (Eq.~\eqref{eq:define-tau}).
 \end{proof}
 
-\subsubsection{Main Lemmas}
+\subsection{Main Lemmas}
 
 We begin with a technical lemma which characterizes several useful properties of $A_t$ and $B_t$.
 
@@ -3050,7 +3030,7 @@ Moreover, since \Matroid encompasses both \MultiIdent and \MultiBandit types of 
 }
 
 
-\section{Equivalence between Constrained Oracles and Maximization Oracles}
+\section{Equivalence Between Constrained Oracles and Maximization Oracles}
 \label{section:equivalence-constrained-oracle}
 
 In this section, we present a general method to implement constrained oracles using maximization oracles.
