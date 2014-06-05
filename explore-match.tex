@@ -227,7 +227,7 @@ To our knowledge, there are no results available in the literature for these  pu
 The \Problem framework raises several interesting challenges to the design and analysis of pure exploration algorithms. 
 One challenge is that, instead of solving each type of \Problem task in an ad-hoc way, one requires a unified algorithm and analysis that support different decision classes.
 Another challenge stems from the combinatorial nature of \Problem, namely that the optimal set may contain some arms with very small expected rewards (e.g. it is possible that a maximum matching contains the edge with the smallest weight); 
-hence, arms cannot be eliminated solely based on their own rewards in the learning algorithm
+hence, arms cannot be eliminated simply based on their own rewards in the learning algorithm
 	or ignored in the analysis.
 %
 % no arm can be eliminated during the learning process based on its reward alone, and it has
@@ -1580,7 +1580,7 @@ There are several PAC learning algorithms dedicated for the \MultiIdent problem 
 \citet{zhou2014optimal} proposed an $(\epsilon,\delta)$-PAC algorithm for the \MultiIdent problem with a problem-independent sample complexity bound of $O(\frac{K^2n}{\epsilon^2}+\frac{Kn\log(1/\delta)}{\epsilon^2})$.\footnote{We notice that the definition of \citet{zhou2014optimal} allow an $(\epsilon',\delta)$-PAC algorithm to produce an output with \emph{average} sub-optimality of $\epsilon'$. This is equivalent to our definition of $(\epsilon,\delta)$-PAC algorithm with $\epsilon=K\epsilon'$ for the \MultiIdent problem.
 In this paper, we translate their guarantees to our definition of PAC algorithm.}
 % which is $\tilde O(\frac{K^2n}{\epsilon^2})$ after ignoring logarithmic factors.
-If we ignore logarithmic factors, then the sample complexity bound of \AlgorithmPAC for the \MultiIdent problem is better than theirs since $\tilde O(\sum_{e\in[n]}\min\{\Delta_e^{-2}, K^2\epsilon^{-2}\}) \le  \tilde O(nK^2\epsilon^{-2})$.
+If we ignore logarithmic factors, then the sample complexity bound of \AlgorithmPAC for the \MultiIdent problem is better than theirs since $\sum_{e\in[n]}\min\{\Delta_e^{-2}, K^2\epsilon^{-2}\}  \le  nK^2\epsilon^{-2} $.
 %Our bound is always smaller than or equal to the sample complexity bound $\tilde O(nK^2\epsilon^{-2})$ of \citet{zhou2014optimal}, regardless the value of gaps $\Delta_1,\ldots,\Delta_n$ and $\epsilon$.
 On the other hand, the algorithms of \citet{kalyanakrishnan2012pac} and \citet{gabillon2012best} guarantee to find $K$ arms such that each of them is better than the $K$-th optimal arm within a factor of $\epsilon$ with probability $1-\delta$.
 Unless $\epsilon=0$, their guarantee is different from ours which concerns the optimality of the sum of $K$ arms.
@@ -1778,7 +1778,7 @@ In addition, we provide evidence on the conjecture that the sample complexity sh
 
 \textbf{Notations.} In this section, we will use a notation of ``next-to-optimal set'' defined as follows. 
 Fix a decision class $\M\subseteq 2^{[n]}$ and an expected reward vector $\vec w\in \RR^n$.
-Let $M_*  =\argmin_{M\in \M}$ denote the optimal set.
+Let $M_*  =\argmax_{M\in \M} w(M)$ denote the optimal set.
 Then, for any $e\in [n]$, we define the next-to-optimal set associated with $e$ as follows
 \begin{equation}
 \label{eq:next-to-optimal}
@@ -1874,7 +1874,7 @@ In the rest of the proof, we will show that for any $e\in [n]$, the number of tr
 Notice that the theorem follows immediately by summing up Eq.~\eqref{eq:lower-each} for all $e\in[n]$.
 
 Now fix an arm $e\in [n]$.  
-We define $\theta=\delta/4$ and $t_e^* = \frac{1}{16\Delta_e^2}\log(1/4\delta)$
+We define $\theta=4\delta$ and $t_e^* = \frac{1}{16\Delta_e^2}\log(1/\theta)$
 We prove Eq.~\eqref{eq:lower-each} by contradiction. 
 Therefore we assume the opposite that $\E[T_e] < t_e^*$ in the rest of the proof.
 
@@ -1925,7 +1925,8 @@ This can be proved by Markov inequality as follows.
 \end{align*}
 
 We now show that $\Pr_0[\mathcal C] \ge 3/4$.
-Notice that $\Big\{\sum_{i=1}^t X_t-t\cdot w(e)\Big\}_{t=1,\ldots}$ is a martingale under $H_0$.
+Notice that $\big\{X_t-w(e)\big\}_{t=1,\ldots,}$ is a sequence of zero-mean independent random variables under $H_0$.
+%Notice that $\Big\{\sum_{i=1}^t X_t-t\cdot w(e)\Big\}_{t=1,\ldots}$ is a martingale under $H_0$.
 Define $K_t = \sum_{i=1}^t X_t$.
 Then, by Kolmogorov's inequality (\Cref{lemma:kolmogrov}), we have
 \begin{align*}
@@ -1940,7 +1941,7 @@ Since the probability of error of the algorithm is smaller than $\delta < 1/4$, 
 Define random event $\mathcal S=\mathcal A\cap \mathcal B \cap \mathcal C$. 
 Then, by union bound, we have $\Pr_0[\mathcal S]\ge 1/4$.
 
-\textbf{Step (3): A change of measure.}
+\textbf{Step (3): The loss of likelihood.}
 Now, we show that if $\E_0[T_e] \le t_e^*$, then $\Pr_1[\mathcal B] \ge \delta$.
 Let $W$ be the history of the sampling process until the algorithm stops (including the sequence of arms chosen at each time and the sequence of observed outcomes).
 Define the likelihood function $L_l$ as 
@@ -1975,7 +1976,7 @@ Therefore, we can obtain
 \Pr_1[\mathcal B] &\ge \Pr_1[\mathcal S] = \E_1[1_S] \\
 				  &= \E_0\left[\frac{L_1(W)}{L_0(W)} 1_S\right] \\
 				  &\ge 4\delta \E_0[1_S] \\
-				  &= 4\delta \Pr_0[\mathcal S] > \delta.
+				  &= 4\delta \Pr_0[\mathcal S]\ge \delta.
 \end{align*}
 Now we have proved that, if $\E_0[T_e] < t_e^*$, then $\Pr_1[\mathcal B]>\delta$.
 This means that, if $\E_0[T_e] < t_e^*$, algorithm $\mathbb A$ will choose $M_*$ as the output with probability at least $\delta$, under hypothesis $H_1$.
@@ -1986,6 +1987,7 @@ Hence, we must have $\E_0[T_e] \ge t_e^* = \frac{1}{16\Delta_e^2}\log(1/4\delta)
 \end{proof}
 
 
+\junk{
 \subsection{A lower bound in the Bernoulli reward case}
 NOT COMPLETED!
 
@@ -2090,7 +2092,7 @@ By Lemma~\ref{lemma:lower-bound-bound-gap}, we see that
 $\Delta_e \le 2ZZZ$.
 
 \end{proof}
-
+}
 
 
 \subsection{An exchange set size dependent lower bound}
@@ -2113,6 +2115,7 @@ $$
 $$
 where $T_i$ is the number of samples of arm $i$.
 \end{restatable}
+The proof is quite similar to that of Theorem~\ref{theorem:lower-bound} except for the construction of alternative hypothesis.
 
 %\lowerboundspecial*
 \begin{proof}
@@ -2138,6 +2141,9 @@ Now we claim that
 \end{equation}
 It is easy to check that theorem follows immediately from  claims \textbf{(a)} and \textbf{(b)}.
 In the rest of the proof, we focus on claim \textbf{(a)}; the claim \textbf{(b)} can proved using an almost identical similar argument.
+
+Now we define $\theta = 4\delta$ and $t_{b_-}^* = \frac{|b_-|^2}{16\Delta_e^2} \log(1/\theta)$. 
+We prove claim \textbf{(a)} by contradiction, that is to assume the opposite that $\E[T_{b_-}] < t_{b_-}^*$.
 
 \textbf{Step (1): An alternative hypothesis.} 
 We define two hypotheses $H_0$ and $H_1$.
@@ -2179,28 +2185,28 @@ Next, using Kolmogrov's inequality (\Cref{lemma:kolmogrov}), we obtain
 &\le \frac{\E_0\left[ \left(\sum_{i=1}^{4t_{b_-}^*} X_i - \sum_{i=1}^{4t_{b_-}^*} w(I_i)\right)^2\right]}{t_e^*\log(1/\theta)}\\
 &= \frac{4t_{b_-}^*}{t_{b_-}^*\log(1/\theta)} < \frac14,
 \end{align*}
-where the second inequality follows from the fact that all reward distributions have unit variance and hence
-$\E_0\left[ \left(\sum_{i=1}^{4t_{b_-}^*} X_i - \sum_{i=1}^{4t_{b_-}^*} p_{I_i}\right)^2\right] = 4t_{b_-}^*$; the last inequality follows 
+where the second inequality follows from the fact that all reward distributions have unit variance; and the last inequality follows 
 since $\theta < e^{-16}$.
 
 
 Since $\mathbb A$ is $\delta$-correct algorithm and $\delta < 1/4$, we have $\Pr_0[\mathcal B]\ge 3/4$. Therefore, we have that the random event $\mathcal S=\mathcal A \cap \mathcal B \cap \mathcal C$ occurs with probability at least $1/4$ under $H_0$.
 
 
-\textbf{Step (3): A change of measure.} Similar to the proof of Theorem~\ref{theorem:lower-bound}, we let $L_l$ denote the likelihood function under hypothesis $H_l$ for some $l\in\{0,1\}$. 
-Since the difference of $H_0$ and $H_1$ only lies in the arms belonging to $b_-$, we have
+\textbf{Step (3): The loss of likelihood.} Similar to the proof of Theorem~\ref{theorem:lower-bound}, we let $L_l$ denote the likelihood function under hypothesis $H_l$ for some $l\in\{0,1\}$. 
+Since the difference of $H_0$ and $H_1$ only lies in the reward distributions of arms belonging to $b_-$, we have
 $$
-\frac{L_1(W)}{L_0(W)} = \prod_{i=1}^{T_l} \frac{\mathcal N(X_i | w_1(I_i), 1)}{\mathcal N(X_i | w_0(I_i), 1)},
+\frac{L_1(W)}{L_0(W)} = \prod_{i=1}^{T_{b_-}} \frac{\mathcal N(X_i | w_1(I_i), 1)}{\mathcal N(X_i | w_0(I_i), 1)},
 $$
 where $X_i$ and $I_i$ is as defined in Step (2).
 Assume that $\mathcal S$ occurs.
-Since $w_1(e)-w_0(e) = d$ for all $e\in b_-$ and $d=\pm\frac{2\Delta_e}{|b_-|}$, we can apply Lemma~\ref{lemma:lower-bound-likelihood-gaussian} here.
+Since, for all $i \in [T_{b_-}]$, we have $w_1(I_i)-w_0(I_i) = \frac{2\Delta_e}{|b_-|}$, we can apply Lemma~\ref{lemma:lower-bound-likelihood-gaussian} here.
 Therefore, on event $\mathcal S$, we have
 $$
 \frac{L_1(W)}{L_0(W)} \ge \theta.
 $$
 
-The rest of the proof is identical to Step (3) in the proof of Theorem~\ref{theorem:lower-bound}, and one can show that $\Pr_1[\mathcal B] \ge \delta$, which means the probability of error of algorithm~$\mathbb A$ is at least $\delta$, which contradicts to the assumption of $\mathbb A$. 
+The rest of the proof is identical to Step (3) in the proof of Theorem~\ref{theorem:lower-bound}, and one can show that $\Pr_1[\mathcal B] \ge \delta$, which means the probability of error of algorithm~$\mathbb A$ is at least $\delta$. 
+This contradicts to the assumption of $\mathbb A$. 
 Therefore we have $\E[T_{b_-}]\ge t_{b_-}^*$ which proves claim \textbf{(a)} in Eq.~\eqref{eq:lower-special-claim}.
 \end{proof}
 
@@ -2217,7 +2223,7 @@ Therefore we have $\E[T_{b_-}]\ge t_{b_-}^*$ which proves claim \textbf{(a)} in 
 \textbf{Notations.}
 For convenience, we will use the following additional notations in the rest of this section.
 Let $\vec w \in \RR^n$ be the vector expected rewards of arms.
-Let $M_* = \argmax_{M\in \M} w(M)$ be the optimal solution.
+Let $M_* = \argmax_{M\in \M} w(M)$ be the optimal set.
 Let $T$ be the budget of samples.
 Let $\Delta_{(1)},\ldots,\Delta_{(n)}$ be a permutation of $\Delta_1,\ldots,\Delta_n$ such that
 $\Delta_{(1)} \le \ldots \ldots \Delta_{(n)}$.
@@ -3290,6 +3296,4 @@ We also see that the probability of error of \Algorithm is always smaller than t
 
 
 
-\bibliography{bandit}
-\bibliographystyle{my-plainnat}
 \end{document}
