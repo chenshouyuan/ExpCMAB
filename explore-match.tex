@@ -1847,7 +1847,7 @@ We define $v_i = X_i-s_i$ for all $i\in [T]$. Then, we have
 We now bound each term on the right-hand side of Eq.~\eqref{eq:r64-t-1} as follows
 \begin{align}
 	\exp\left(-\sum_{i=1}^T v_id \right) & \ge \exp\left(-\left|\sum_{i=1}^T v_i \right| \cdot |d| \right)\nonumber\\
-																			 & \ge \exp\left(-\sqrt{t\log(1/\theta)} d) \label{eq:r64-t-3}\\
+																			 & \ge \exp\left(-\sqrt{t\log(1/\theta)} d \right) \label{eq:r64-t-3}\\
 																			 & = \exp\left(-\frac12 \log(1/\theta) \right) = \theta^{1/2}, \label{eq:r64-t-4}
 \end{align}
 where Eq.~\eqref{eq:r64-t-3} follows from Eq.~\eqref{eq:lemma:lower-bound-likelihood-gaussian};
@@ -2034,7 +2034,7 @@ Hence we have
 	\Delta_e &\le \inn{\vec w, \vec \chi_b} = w(M_*) - w(M_*\ominus b) \label{eq:r65-1}\\
 					 &= \sum_{i\in M_*} w(i) - \sum_{i\in M_* \del b_+ \cup b_-} w(i) \nonumber\\
 					 &= \sum_{i \in b_+} w(i) - \sum_{i\in b_-} w(i) \label{eq:r65-2}\\
-					 &\le |b_+| \cdot |B| + |b_-| \cdot |A| \le (|b_+|+|b_-|) \max\{|A|,|B|\} \noumber\\
+					 &\le |b_+| \cdot |B| + |b_-| \cdot |A| \le (|b_+|+|b_-|) \max\{|A|,|B|\} \nonumber\\
 					 &\le \rank(\M)\max\{|A|,|B|\},\label{eq:r65-3}
 \end{align}
 where Eq.~\eqref{eq:r65-1} follows from Lemma~\ref{lemma:exchange-char};
@@ -2833,7 +2833,7 @@ By \Cref{lemma:basis-exchange}, we see that there exists $y \in \sigma^{-1}(M') 
 such that 
 \begin{equation}
 \label{eq:fm1}
-\sigma^{-1}(M) \del \{x\} \cup \{y\} \in \mathcal A\quad\text{ and }\quad\sigma^{-1}(M') \del \{y\} \cup \{x\} \in \mathcal B.
+\sigma^{-1}(M) \del \{x\} \cup \{y\} \in \mathcal A\quad\text{ and }\quad\sigma^{-1}(M') \del \{y\} \cup \{x\} \in \mathcal A.
 \end{equation}
 Now we define exchange set $b=(b_+,b_-)$ where $b_+ = \{\sigma(y)\}$ and $b_-=\{\sigma(x)\}$. 
 By Eq.~\eqref{eq:fm1} and the fact that $\sigma$ is a bijection, we see that $M\oplus b \in \M_{\Matroid(T)}$ and $M'\ominus b \in \M_{\Matroid(T)}$. We also have $b\in \B_{\Matroid(n)}$.
