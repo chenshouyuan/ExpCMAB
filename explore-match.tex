@@ -2724,7 +2724,7 @@ The proof is straightforward using tools of exchange classes.
 Define $\Delta_{(1)} = \min_{i\in [n]} \Delta_{i}$.
 Define random event $\xi$ as follows
 $$
-\xi = \left\{ \forall i\in [n], \quad |\bar w(i) - w(i)| \le \frac{\Delta_{(1)}}{3\rank(\M)} \right\}.
+\xi = \left\{ \forall i\in [n], \quad |\bar w(i) - w(i)| < \frac{\Delta_{(1)}}{3\rank(\M)} \right\}.
 $$
 
 %Define $t = \lfloor \frac{T}{n} \rfloor$. 
@@ -2732,7 +2732,7 @@ Notice that each arm is sampled for $\lfloor \frac{T}{n} \rfloor$ times.
 Therefore, using Hoeffding's inequality and union bound, we can bound $\Pr[\xi]$ as follows.
 Fix any $i\in[n]$, by Hoeffding's inequality, we have
 $$
-\Pr\left[ |\bar w(i)-w(i)| > \frac{\Delta_{(1)}}{3\rank(\M)} \right] 
+\Pr\left[ |\bar w(i)-w(i)| \ge  \frac{\Delta_{(1)}}{3\rank(\M)} \right] 
 \le 2\exp\left(-\frac{T\Delta_{(1)}^2}{18R^2n\rank(\M)^2} \right).
 $$
 Then, using a union bound, we obtain
@@ -2742,7 +2742,7 @@ $$
 In addition, using an argument very similar to Lemma~\ref{lemma:fbudget:ciproerty}, one can show that, on event $\xi$, for any vector $\vec a \in \RR^n$, it holds that 
 \begin{equation}
 \label{eq:uni0}
-|\inn{\vec{\bar w}, \vec a}-\inn{\vec{w}, \vec a}|\le \frac{\Delta_{(1)}}{3\rank(\M)}\nor{\vec a}_1.
+|\inn{\vec{\bar w}, \vec a}-\inn{\vec{w}, \vec a}|< \frac{\Delta_{(1)}}{3\rank(\M)}\nor{\vec a}_1.
 \end{equation}
 
 Now we claim that, on the event $\xi$, we have $\out=M_*$.
@@ -2751,7 +2751,7 @@ Next, we prove this claim.
 
 
 Suppose that, on the contrary, $\out\not=M_*$.
-First, we write $M = \out$.
+In this case, let us write $M = \out$.
 We also fix $\B\in\argmin_{\B'\in\Exchange(\M)} \rank(\B)$.
 Notice that by definition $\rank(\B) = \rank(\M)$.
 
@@ -2764,14 +2764,14 @@ Consider $M'\triangleq M\oplus b$. We have
 \begin{align}
 \bar w(M')-\bar w(M) &= \inn{\vec{\bar w}, \vec \chi_{M'}}-\inn{\vec{\bar w}, \vec \chi_{M}} \nonumber\\
                      &=\inn{\vec{\bar w}, \vec \chi_{b}} \label{eq:uni1} \\
-                     &\ge \inn{\vec{w}, \vec \chi_{b}}-\frac{\Delta_{(1)}}{3\rank(\M)} \nor{\vec\chi_{b}}_1 \label{eq:uni2}\\
+                     &> \inn{\vec{w}, \vec \chi_{b}}-\frac{\Delta_{(1)}}{3\rank(\M)} \nor{\vec\chi_{b}}_1 \label{eq:uni2}\\
                      &\ge \Delta_{(1)} - \frac{\Delta_{(1)}}{3}\label{eq:uni3}\\
                      &= \frac{2}{3} \Delta_{(1)} > 0,
 \end{align}
 where Eq.~\eqref{eq:uni1} follows from Lemma~\ref{lemma:exchange-char}; Eq.~\eqref{eq:uni2} follows from Eq.~\eqref{eq:uni0}; and Eq.~\eqref{eq:uni3} follows from the fact that $b\in \B$ and hence $\nor{\vec\chi_b}_1 = |b_+|+|b_-| \le \rank(\B) = \rank(\M)$.
 
 Hence, we have shown that $\bar w(M') > \bar w(M)$. 
-However this contradicts to the fact that $w(M)=\max_{M_1\in \M} \bar w(M_1)$ (by the definition of maximization oracle). 
+However this contradicts to the fact that $\bar w(M)=\max_{M_1\in \M} \bar w(M_1)$ (by the definition of maximization oracle). 
 Hence, by contradiction, we have proven that $\out=M_*$.
 \end{proof}
 
