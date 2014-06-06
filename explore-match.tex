@@ -154,7 +154,9 @@ We prove problem-dependent upper bounds of our algorithms.
 Our analysis exploits the combinatorial structures of the decision classes and introduces a new analytic tool.
 We also establish a general problem-dependent lower bound for the \Problem problem.
 Our results show that the proposed algorithms achieve the optimal sample complexity (within logarithmic factors) for many decision classes. 
-In addition, applying our results back to the problems of top-$K$ arms identification and multiple bandit best arms identification, we recover the best available upper bounds up to constant factors and settle a conjecture on the lower bounds.
+In addition, applying our results back to the problems of top-$K$ arms identification and multiple bandit best arms identification, we recover the best available upper bounds up to constant factors and 
+%settle a conjecture on the lower bounds.
+partially resolve a conjecture on the lower bounds.
 
 %\wei{Currently not mentioning PAC result extension. Perhaps OK as long as we mention it in the intro.}
 
@@ -258,7 +260,8 @@ The \Algorithm algorithm does not need to know the definition of the decision cl
 %Algorithm is an efficient and practical algorithm that works for a very wide range of decision classes. 
 We upper bound the number of samples used by \Algorithm. 
 This sample complexity bound depends on both the expected rewards and the structure of decision class. 
-Our analysis relies on a novel combinatorial construction called \emph{exchange class} which may be of independent interest for other combinatorial optimization problems. 
+Our analysis relies on a novel combinatorial construction called \emph{exchange class}, which may be of independent interest for other combinatorial optimization problems. 
+
 Specializing our result  to \MultiIdent and \MultiBandit, we recover the best available sample complexity bounds \citep{kalyanakrishnan2012pac,gabillon2012best,kaufmann2013information} up to constant factors.
 % with a small improvement in the logarithmic factors. 
 While for other decision classes in general, our result establishes the first sample complexity upper bound. 
@@ -266,10 +269,12 @@ We further show that \Algorithm can be easily extended to the fixed budget setti
 
 Moreover, we establish a problem-dependent sample complexity lower bound for the \Problem problem.  
 Our lower bound shows that the sample complexity of the proposed \Algorithm algorithm is optimal (to within logarithmic factors) for many  decision classes, including \MultiIdent, \MultiBandit and the decision classes derived from matroids (e.g., spanning tree). 
-Therefore our upper and lower bounds  provide a near full characterization of the sample complexity of these \Problem problems. 
+Therefore our upper and lower bounds  provide a nearly full characterization of the sample complexity of these \Problem problems. 
+
 For more general decision classes, our results show that the upper and lower bounds are within a relatively benign factor. 
 To the best of our knowledge, there are no problem-dependent lower bounds known for pure exploration MABs besides the case of identifying the single best arm \citep{mannor2004sample,audibert2010best}.
-We also notice that our result resolves the conjecture of \citet{bubeck2013multiple} on the problem-dependent sample complexity lower bounds of \MultiIdent and \MultiBandit problems.
+We also notice that our result resolves the conjecture of \citet{bubeck2013multiple} on the problem-dependent sample complexity lower bounds of \MultiIdent and \MultiBandit problems, for the case
+	of Gaussian reward distributions on arms.
 
 In the fixed budget setting, we present a parameter-free algorithm called Combinatorial Successive Accept Reject (\AlgorithmBud) algorithm.
 We prove a probability of error bound of the \AlgorithmBud algorithm. 
@@ -692,7 +697,7 @@ $\mathbf H$ is defined in Eq.~\eqref{eq:hardness}.
 %For clarity, we consider the case that $\epsilon=0$ which corresponds to the learning problem of finding the optimal set.
 %We see that \Algorithm algorithm uses at most $\tilde O(\rank(\B)^2 \mathbf H)$ samples.
 %Recall that, for \MultiIdent and \Matroid, Lemma~\ref{lemma:example-exchange-class} shows that $\rank(\B)=2$.
-Theorem~\ref{theorem:lower-bound} settles the  conjecture of \citet{bubeck2013multiple} that the lower bounds of sample complexity of \MultiIdent and \MultiBandit problem are $\Omega\big(\mathbf H\log(1/\delta)\big)$.
+Theorem~\ref{theorem:lower-bound} resolves the  conjecture of \citet{bubeck2013multiple} that the lower bounds of sample complexity of \MultiIdent and \MultiBandit problem are $\Omega\big(\mathbf H\log(1/\delta)\big)$, for the case of Gaussian reward distributions on arms.
 Moreover, in \Cref{example:topk} and \Cref{example:matroid}, we have shown that the sample complexity of \Algorithm is $O(\mathbf H\log(n\mathbf H/\delta))$ for \MultiIdent, \MultiBandit and more generally the decision classes derived from matroids $\M_{\Matroid(T)}$ (including spanning trees).
 Hence, we see that the \Algorithm algorithm achieves the optimal sample complexity within logarithmic factors for these pure exploration tasks.
 
@@ -700,7 +705,7 @@ Hence, we see that the \Algorithm algorithm achieves the optimal sample complexi
 On the other hand, for general decision classes with non-constant widths, we see that there is a gap of $\tilde \Theta(\rank(\M)^2)$ between the upper bound Eq.~\eqref{eq:sample-complexity} and the lower bound Eq.~\eqref{eq:lower-bound}.
 Notice that we have $\rank(\M) \le n$ for any decision class $\M$ and therefore the gap is relatively benign.
 %Ignoring the logarithmic factors, this gap only depends on the underlying combinatorial structure of $\M$.
-Our lower bound also suggests that the dependency on $\mathbf H$ of the sample complexity of \Algorithm cannot be improved up to logarithmic factors.
+Our lower bound also suggests that the dependency on $\mathbf H$ of the sample complexity of \Algorithm cannot be improven up to logarithmic factors.
 Furthermore, we conjecture that the sample complexity lower bound might inherently depend on the size of exchange sets. 
 In the supplementary material (\Cref{section:lowerbound-evidence}), we provide evidences on this conjecture which is a lower bound on the sample complexity of exploration of the exchange sets.
  %dependency on $\rank(\M)$ of the sample complexity might be intrinsic. 
@@ -839,7 +844,9 @@ Note that the objective of these work is to minimize the cumulative regret, whic
 In the literature of pure exploration MABs, the classical problem of identifying the single best arm has been well-studied in both fixed confidence and fixed budget settings \citep{mannor2004sample,even2006action,bubeck2010pure,audibert2010best,gabillon2012best,jamieson2013lil,jamieson2014best}.
 A flurry of recent work extend this classical problem to \MultiIdent and \MultiBandit problems and obtain algorithms, upper bounds \citep{kalyanakrishnan2010efficient,NIPS2011_4478,gabillon2012best,kalyanakrishnan2012pac,zhou2014optimal,bubeck2013multiple,kaufmann2013information,zhou2014optimal} and worst-case lower bounds of \MultiIdent \citep{kalyanakrishnan2012pac,zhou2014optimal}.
 Our framework encompasses these two problems as special cases and covers a much larger class of combinatorial pure exploration problems, which are unaddressed in the current literature.
-Applying our results back to \MultiIdent and \MultiBandit, our upper bounds match best available problem-dependent bounds up to constant factors \citep{gabillon2012best,kalyanakrishnan2012pac,bubeck2013multiple} in both fixed confidence and fixed budget settings; and our lower bound provides the first problem-dependent lower bounds for these two problems, which are conjectured earlier by \citet{bubeck2013multiple}.
+Applying our results back to \MultiIdent and \MultiBandit, our upper bounds match best available problem-dependent bounds up to constant factors \citep{gabillon2012best,kalyanakrishnan2012pac,bubeck2013multiple} in both fixed confidence and fixed budget settings; and our lower bound is the first proven problem-dependent lower bound for these two problems,
+%provides the first problem-dependent lower bounds for these two problems, 
+which are conjectured earlier by \citet{bubeck2013multiple}.
 %We also notice that a very recent due to XXX improves 
 %In addition, to our knowledge, there is no known problem-dependent lower bounds for \MultiIdent and \MultiBandit. 
 %Therefore, when applying our general lower bound to \MultiIdent and \MultiBandit, we obtain the first problem-dependent lower bounds for these two problems. 
@@ -855,7 +862,7 @@ In this paper, we proposed a general framework called combinatorial pure explora
 We have shown a number of results for the framework, including two novel learning algorithms, their related upper bounds and a novel lower bound.
 The proposed algorithms support a wide range of decision classes in a unifying way and our analysis introduced a novel tool called exchange class which may be of independent interest.
 Our upper and lower bounds characterize the complexity of the \Problem problem: the sample complexity of our algorithm is optimal (up to a logarithmic factor) for the decision classes derived from matroids (including \MultiIdent and \MultiBandit), while for general decision classes, our upper and lower bounds are within a relatively benign factor.
-%We presented two learning algorithms  for the \Problem problem in both fixed confidence (\Algorithm) and fixed budget settings (\AlgorithmBud) and proved problem-dependent performance guarantees using a novel tool called exchange class.
+%We presented two learning algorithms  for the \Problem problem in both fixed confidence (\Algorithm) and fixed budget settings (\AlgorithmBud) and proven problem-dependent performance guarantees using a novel tool called exchange class.
 %The proposed algorithms support a wide range of decision classes and only require accesses to a maximization oracle.
 %We also established a general sample complexity lower bound for the \Problem problem, which shows that the sample complexity of our algorithm is optimal (up to a logarithmic factor) for the decision classes derived from matroids (including \MultiIdent and \MultiBandit), while for general decision classes, our upper and lower bound are within a relatively benign factor.
 %Furthermore, we extended \Algorithm to fixed budget setting and PAC learning setting.
@@ -1450,7 +1457,7 @@ Eq.~\eqref{eq:u-c-2-3.5} follows from Lemma~\ref{lemma:vector-technical}  and H\
 Eq.~\eqref{eq:u-c-2-4} is due to Eq.~\eqref{eq:u-c-2-0};
 and Eq.~\eqref{eq:u-c-2-5} follows from $\inn{\vec w,\vec\chi_b} \ge \Delta_e >0$.
 
-Therefore, we have proved that 
+Therefore, we have proven that 
 \begin{equation}
 \label{eq:exk-tmp-11}
 \inn{\vec {\bar w}_t, \vec d}+\inn{\vec \rad_t,  |\vec d|} < \inn{\vec {\bar w}_t, \vec d_1}+\inn{\vec \rad_t, |\vec d_1|}.
@@ -1847,7 +1854,7 @@ We define $v_i = X_i-s_i$ for all $i\in [T]$. Then, we have
 We now bound each term on the right-hand side of Eq.~\eqref{eq:r64-t-1} as follows
 \begin{align}
 	\exp\left(-\sum_{i=1}^T v_id \right) & \ge \exp\left(-\left|\sum_{i=1}^T v_i \right| \cdot |d| \right)\nonumber\\
-																			 & \ge \exp\left(-\sqrt{t\log(1/\theta)} d) \label{eq:r64-t-3}\\
+																			 & \ge \exp\left(-\sqrt{t\log(1/\theta)} d \right) \label{eq:r64-t-3}\\
 																			 & = \exp\left(-\frac12 \log(1/\theta) \right) = \theta^{1/2}, \label{eq:r64-t-4}
 \end{align}
 where Eq.~\eqref{eq:r64-t-3} follows from Eq.~\eqref{eq:lemma:lower-bound-likelihood-gaussian};
@@ -1919,7 +1926,7 @@ where $\out$ is the output of algorithm~$\mathbb A$.
 
 Now we bound the probability of these events under hypothesis $H_0$.
 First, we show that $\Pr_0[\mathcal A] \ge 3/4$. 
-This can be proved by Markov inequality as follows.
+This can be proven by Markov inequality as follows.
 \begin{align*}
 \Pr_0[T_e > 4t_e^*] &\le \frac{\E_0[T_e]}{4t_e^*} \le \frac{t_e^*}{4t_e^*} = \frac14.
 \end{align*}
@@ -1978,7 +1985,7 @@ Therefore, we can obtain
 				  &\ge 4\delta \E_0[1_S] \\
 				  &= 4\delta \Pr_0[\mathcal S]\ge \delta.
 \end{align*}
-Now we have proved that, if $\E_0[T_e] < t_e^*$, then $\Pr_1[\mathcal B]>\delta$.
+Now we have proven that, if $\E_0[T_e] < t_e^*$, then $\Pr_1[\mathcal B]>\delta$.
 This means that, if $\E_0[T_e] < t_e^*$, algorithm $\mathbb A$ will choose $M_*$ as the output with probability at least $\delta$, under hypothesis $H_1$.
 However, under $H_1$, we have shown that $M_*$ is not the optimal set since $w_1(M_e) > w_1(M_*)$.
 Therefore, algorithm $\mathbb A$ has a probability of error at least $\delta$ under $H_1$. 
@@ -2140,7 +2147,8 @@ Now we claim that
 \textbf{(a) }\; \E\left[T_{b_-}\right] \ge \frac{|b_-|^2}{16\Delta_e^2} \log(1/4\delta)\quad\text{and}\quad\textbf{(b) }\; \E\left[T_{b_+}\right] \ge \frac{|b_+|^2}{16\Delta_e^2} \log(1/4\delta).
 \end{equation}
 It is easy to check that theorem follows immediately from  claims \textbf{(a)} and \textbf{(b)}.
-In the rest of the proof, we focus on claim \textbf{(a)}; the claim \textbf{(b)} can proved using an almost identical similar argument.
+In the rest of the proof, we focus on claim \textbf{(a)}; the claim \textbf{(b)} can be
+	 proven using an almost identical similar argument.
 
 Now we define $\theta = 4\delta$ and $t_{b_-}^* = \frac{|b_-|^2}{16\Delta_e^2} \log(1/\theta)$. 
 We prove claim \textbf{(a)} by contradiction, that is to assume the opposite that $\E[T_{b_-}] < t_{b_-}^*$.
@@ -2637,9 +2645,9 @@ By combining Eq.~\eqref{eq-fbdg-upper} and Eq.~\eqref{eq-fbdg-lower}, we see tha
 \label{eq-fdbg-contract}
 \end{equation}
 However Eq.~\eqref{eq-fdbg-contract} is contradictory to the definition of $p_t \triangleq \argmax_{i\in [n]\del (A_t\cup B_t)} \bar w_t(M_t)- \bar w_t(\tilde M_{t,i})$.
-Therefore we have proved that $p_t \not\in (M_* \cap \neg M_t) \cup (\neg M_* \cap M_t)$.
+Therefore we have proven that $p_t \not\in (M_* \cap \neg M_t) \cup (\neg M_* \cap M_t)$.
 This means that the algorithm does not err at phase $t$, or equivalently $A_{t+1} \subseteq M_*$ and $B_{t+1}\cap M_* = \emptyset$.
-By induction, we have proved that the algorithm does not err at any phase $t\in[n]$.
+By induction, we have proven that the algorithm does not err at any phase $t\in[n]$.
 
 Hence we have $A_{n+1} \subseteq M_*$ and $B_{n+1}\subseteq \neg M_*$ in the final phase.
 Notice that $|A_{n+1}| + |B_{n+1}| = n$ and $A_{n+1}\cap B_{n+1}=\emptyset$. This means that $A_{n+1} = M_*$ and $B_{n+1} = \neg M_*$.
@@ -3042,7 +3050,7 @@ Moreover, since \Matroid encompasses both \MultiIdent and \MultiBandit types of 
 In this section, we present a general method to implement constrained oracles using maximization oracles.
 The idea of the reduction is simple: one can impose the negative constrains $B$ by setting the corresponding weights to be sufficiently small; and one can impose the positive constrains $A$ by setting the corresponding weights sufficiently large.
 The reduction method is shown in Algorithm~\ref{algo:reduction}.
-The correctness of the reduction is proved in \Cref{fact:coracle}.
+The correctness of the reduction is proven in \Cref{fact:coracle}.
 %We show that our reduction works efficiently for many decision classes which admit efficient maximization oracles, including the examples we examined in the last section.
 Furthermore, it is trivial to reduce from maximization oracles to constrained oracles. 
 Therefore, \Cref{fact:coracle} shows that maximization oracles are equivalent to constrained oracles up to a transformation on the weight vector. 
