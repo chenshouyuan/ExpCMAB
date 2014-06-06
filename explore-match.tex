@@ -133,7 +133,8 @@
 
 \renewcommand{\odot}{\circ}
 
-\setlength{\textfloatsep}{1.2em}% Remove \textfloatsep
+\setlength{\textfloatsep}{0.5em}% Remove \textfloatsep
+\setlength{\bibsep}{3.5pt}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -283,14 +284,14 @@ In this section,  we formally define the \Problem problem.
 Suppose that there are $n$ arms and the arms are numbered $1,2,\ldots,n$.
 Assume that each arm $e\in[n]$ is associated with a reward distribution $\Rew_e$.
 % and we let $w(e)=\E_{X\sim \Rew_e}[X]$ denote the expected reward. 
-Let $\vec w = \big(w(1),\ldots, w(n)\big)^T$ denote the vector of expected rewards, where each entry $w(e)=\E_{X\sim \Rew_e}[X]$ denote the expected reward of arm $e$.
+Let $\vec w = \big(w(1),\ldots, w(n)\big)^T$ denote the vector of expected rewards, where each entry $w(e)=\E_{X\sim \Rew_e}[X]$ denotes the expected reward of arm $e$.
 Following standard assumptions of stochastic MABs, we assume that all reward distributions have $R$-sub-Gaussian tails for some known constant $R>0$. 
 Formally, if $X$ is a random variable drawn from $\Rew_e$ for some $e\in[n]$, then, for all $t\in \RR$, one has $\mathbb E\big[\exp(tX-t\mathbb E[X])\big] \le \exp(R^2t^2/2)$.
-It is well-known that the family of $R$-sub-Gaussian tail distributions encompasses all distributions that are supported on $[0,R]$ as well as many unbounded distributions such as Gaussian distributions with variance $R^2$ (cf. \citep{pollard2000asymptopia}).
+It is known that the family of $R$-sub-Gaussian tail distributions encompasses all distributions that are supported on $[0,R]$ as well as many unbounded distributions such as Gaussian distributions with variance $R^2$ (see e.g., \citep{pollard2000asymptopia,rivasplata2012subgaussian}).
 
 
 We define a \emph{decision class} $\M \subseteq 2^{[n]}$ as a  collection of sets of arms.
-Let $M_*=\argmax_{M\in \M} w(M)$ denote the optimal set belonging to the decision class $\M$ which maximizes the sum of expected rewards\footnote{We define $v(S)\triangleq \sum_{i\in S} v(i)$ for any vector $\vec v\in\RR^{n}$ and any set $S \subseteq[n]$. In addition, for convenience, we will assume that $M_*$ is unique.}.
+Let $M_*=\argmax_{M\in \M} w(M)$ denote the optimal member of the decision class $\M$ which maximizes the sum of expected rewards\footnote{We define $v(S)\triangleq \sum_{i\in S} v(i)$ for any vector $\vec v\in\RR^{n}$ and any set $S \subseteq[n]$. In addition, for convenience, we will assume that $M_*$ is unique.}.
 A learner's objective is to identify $M_*$ from $\M$ by playing the following game with the stochastic environment.
 %Let $\M\subseteq 2^{[n]}$ be the family of all feasible solutions to a combinatorial problem.
 %Let $M_* = \argmax_{M\in \M} w(M)$ denote the optimal set of arms which max
@@ -389,7 +390,7 @@ Intuitively, the adjusted expectation vector $\vec {\tilde w}_t$ penalizes arms 
 \Algorithm then calls the oracle using the adjusted expectation vector $\vec {\tilde w}_t$ as input to compute a refined set $\tilde M_t = \Oracle(\vec {\tilde w}_t)$.
 If $\tilde w_t(\tilde M_t) = \tilde w_t(M_t)$ then \Algorithm stops and returns $\out=M_t$.
 %\wei{Is there a difference of using $\tilde w_t(\tilde M_t) = \tilde w_t(M_t)$ or using
-Otherwise, \Algorithm pulls the arm belonging to the symmetric difference  between $M_t$ and $\tilde M_t$ with the largest confidence radius (intuitively the largest uncertainty).
+Otherwise, \Algorithm pulls the arm that belongs to the symmetric difference  between $M_t$ and $\tilde M_t$ and has the largest confidence radius (intuitively the largest uncertainty).
 This ends the $t$-th round of \Algorithm.
 We note that \Algorithm generalizes and unifies the ideas of several different fixed confidence algorithms dedicated to the \MultiIdent and \MultiBandit problems in the literature \citep{kalyanakrishnan2012pac,gabillon2012best,kaufmann2013information}.
 
@@ -580,7 +581,7 @@ By combining Lemma~\ref{lemma:example-exchange-class} and Theorem~\ref{theorem:m
 %In our proof, we use exchange classes build gadgets that interpolate between sets of decision classes. This enables the analysis for general decision classes.
 
 
-\vspace{-0.5em}
+\vspace{-0.8em}
 \subsection{Examples of decision classes}
 \vspace{-0.5em}
 \label{section:example}
@@ -696,9 +697,9 @@ In the supplementary material (\Cref{section:lowerbound-evidence}), we provide e
  %dependency on $\rank(\M)$ of the sample complexity might be intrinsic. 
 %In the supplementary material, we provide evidence showing that the sample complexity of any $\delta$-correct algorithm should be related to size of exchange sets. 
 
-\vspace{-0.5em}
+\vspace{-0.8em}
 \section{Fixed Budget Algorithm}
-\vspace{-0.5em}
+\vspace{-0.8em}
 In this section, we present Combinatorial Successive Accept Reject (\AlgorithmBud) algorithm, which is a parameter-free learning algorithm for the \Problem problem in the fixed budget setting.
 Then, we upper bound the probability of error \AlgorithmBud in terms of gaps and $\rank(\M)$.
 %Recall that, in the fixed budget setting, an algorithm is given a budget $T>0$ such that the algorithm can use at most $T$ pulls.
@@ -738,13 +739,14 @@ We resolve this challenge by using a novel gap estimation method for decision ma
 Now we describe the procedure of the \AlgorithmBud algorithm for choosing an arm to accept/reject.
 Let $A_t$ denote the set of accepted arms before phase $t$ and let $B_t$ denote the set of rejected arms before phase $t$.
 We call an arm $e$ to be active if $e\not\in A_t\cup B_t$.
-Then, in phase $t$, \AlgorithmBud samples each active arm for $\tilde T_t -\tilde T_{t-1}$ times, where the definition of $\tilde T_t$ is given in Algorithm~\ref{algo:budget}.
-Next, \AlgorithmBud calls the constrained oracle to compute an optimal set $M_t$ with respect to the empirical means $\bar w_t$, accepted arms $A_t$ and rejected arms $B_t$, i.e., let $M_t = \COracle(\vec {\bar w}_t, A_t,B_t)$.
+In the beginning of phase $t$, \AlgorithmBud samples each active arm for $\tilde T_t -\tilde T_{t-1}$ times, where the definition of $\tilde T_t$ is given in Algorithm~\ref{algo:budget}.
+Next, \AlgorithmBud calls the constrained oracle to compute an optimal set $M_t$ with respect to the empirical means $\vec {\bar w}_t$, accepted arms $A_t$ and rejected arms $B_t$, i.e., $M_t = \COracle(\vec {\bar w}_t, A_t,B_t)$.
+It is clear that the output of $\COracle(\vec {\bar w}_t, A_t,B_t)$ is independent from the input $\bar w_t(i)$ for any $i\in A_t\cup B_t$.
 Then, for each active arm $e$, \AlgorithmBud estimates the ``empirical gap'' of $e$ in the following way.
 If $e\in M_t$, then \AlgorithmBud computes an optimal set $\tilde M_{t,e}$ that does not include $e$, i.e., $\tilde M_{t,e} = \COracle(\vec {\bar w}_t, A_t, B_t \cup \{e\})$.
 Conversely, if $e\not\in M_t$, then \AlgorithmBud computes an optimal $\tilde M_{t,e}$ which includes $e$, i.e., $\tilde M_{t,e} = \COracle(\vec {\bar w}_t, A_t \cup \{e\}, B_t)$.
 Then, the empirical gap of $e$ is calculated as $\bar w_t(M_t)-\bar w_t(\tilde M_{t,e})$.
-Finally, \AlgorithmBud chooses the  arm $p_t$ with the largest empirical gap.
+Finally, \AlgorithmBud chooses the  arm $p_t$ which has the largest empirical gap.
 If $p_t\in M_t$ then $p_t$ is accepted, otherwise $p_t$ is rejected.
 The pseudo-code \AlgorithmBud is shown in Algorithm~\ref{algo:budget}.
 We note that \AlgorithmBud can be considered as a generalization of the ideas of the two versions of SAR algorithm due to \citet{bubeck2013multiple}, which are designed specifically for the \MultiIdent and \MultiBandit problems respectively.
@@ -783,7 +785,7 @@ We note that \AlgorithmBud can be considered as a generalization of the ideas of
 \label{algo:budget}
 }
 \end{algorithm}
-\vspace{-0.5em}
+\vspace{-0.8em}
 \subsection{Probability of error}
 \vspace{-0.5em}
 In the following theorem, we bound the probability of error of the \AlgorithmBud algorithm.
@@ -823,7 +825,7 @@ In addition, applying Theorem~\ref{theorem:budget} back to \MultiIdent and \Mult
 The multi-armed bandit problem has been extensively studied in both stochastic and adversarial settings \citep{lai1985asymptotically,auer2002nonstochastic,auer2002finite}.
 We refer readers to \citep{bubeck2012regret} for a survey on recent advances.
 Many work in MABs focus on minimizing the cumulative regret, which is an objective known to be fundamentally different from the objective of pure exploration MABs \citep{bubeck2010pure}.
-Among these work, a recent line of research considers a generalized setting called combinatorial bandits in which a set of arms (satisfying certain combinatorial constraints) are played on each round \citep{cesa2012combinatorial,audibert2009minimax,kale2010non,neu2010online,Bubeck12towardsminimax,chen2013combinatorial,gopalan2014thompson,lin2014,kveton2014matroid}.
+Among these work, a recent line of research considers a generalized setting called combinatorial bandits in which a set of arms (satisfying certain combinatorial constraints) are played on each round \citep{cesa2012combinatorial,kale2010non,neu2010online,Bubeck12towardsminimax,chen2013combinatorial,gopalan2014thompson,lin2014,kveton2014matroid}.
 Note that the objective of these work is to minimize the cumulative regret, which differs from ours.
 
 In the literature of pure exploration MABs, the classical problem of identifying the single best arm has been well-studied in both fixed confidence and fixed budget settings \citep{mannor2004sample,even2006action,bubeck2010pure,audibert2010best,gabillon2012best,jamieson2014best,jamieson2013lil}.
@@ -888,7 +890,11 @@ Finally, we present some preliminary experimental results in \Cref{section:exper
 In this section, we analyze the sample complexity of \Algorithm and prove Theorem~\ref{theorem:main}.
 
 \textbf{Notations.} 
-We need some additional notations for our analysis.
+Fix some decision class $\M\subseteq 2^{[n]}$ and fix some expected reward vector $\vec w\in \RR^n$. 
+Recall that $M_* = \argmax_{M\in \M} w(M)$ is the optimal set.
+Since we assume that $M_*$ is unique, one can verify that, for every $e\in [n]$, the gap defined in Eq.~\eqref{eq:define-delta} is positive, i.e., $\Delta_e > 0$.
+
+We will also need some additional notations for our analysis.
 For any set $a\subseteq [n]$, let $\vec \chi_a \in \{0,1\}^n$ denote the incidence vector of set $a \subseteq [n]$, i.e., $\chi_a(e) = 1$ if and only if $e\in a$.
 For an exchange set $b=(b_+,b_-)$, we define $\vec \chi_b \triangleq \vec \chi_{b_+}- \vec \chi_{b_-}$ as the incidence vector of $b$.
 We notice that $\vec \chi_b \in \{-1,0,1\}^n$.
@@ -899,8 +905,10 @@ Let $\vec u\in \RR^n$ and $\vec v\in \RR^n$ be two vectors.
 Let $\inn{\vec u, \vec v}$ denote the inner product of $\vec u$ and $\vec v$.
 We define $\vec u \odot \vec v \triangleq \big(u(1)\cdot v(1),\ldots,u(n)\cdot v(n)\big)^T$ as the element-wise product of $\vec u$ and $\vec v$.
 For any $s\in \RR$, we also define $\vec u^s \triangleq \big(u(1)^s, \ldots, u(n)^s)^T$ as the element-wise exponentiation of $\vec u$.
-Finally, we let $|\vec u| = \big(|u(1)|, \ldots, |u(n)|\big)^T$ denote the element-wise absolute value of $\vec u$.
+We let $|\vec u| = \big(|u(1)|, \ldots, |u(n)|\big)^T$ denote the element-wise absolute value of $\vec u$.
 
+Finally, let us recall that for any exchange class $b=(b_+,b_-)$ and any set $M\subseteq [n]$, we have defined
+$M\oplus b = M\del b_- \cup b_+$ and $M\ominus b = M \del b_+ \cup b_-$.
 
 
 \subsection{Preparatory Lemmas}
@@ -931,14 +939,17 @@ Hence, we have
 \end{align*}
 \end{proof}
 
+
 The next lemma serves as a basic tool derived from exchange classes, which allows us to interpolate between different members of a decision class $\M$.
-It also characterizes the relationship between gaps and exchange sets.
+Moreover, it characterizes the relationship between gaps and exchange sets.
+In Figure~\ref{fig:zzz}, we illustrate the intuitions of the interpolations characterized in Lemma~\ref{lemma:exchange}.
 \begin{lemma}[Interpolation Lemma]
 \label{lemma:exchange}
 Let $\M\subseteq 2^{[n]}$ and let $\B$ be an exchange class for $\M$.
-Then, for any two different members $M,M'$ of $\M$ and any $e \in (M\del M')\cup(M'\del M)$, there exists an exchange set $b=(b_+,b_-) \in \B$ such that
-$e\in (b_+\cup b_-)$, $b_-\subseteq (M\del M')$, $b_+\subseteq (M'\del M)$, 
-$(M\oplus b) \in \M$ and  $(M'\ominus b) \in \M$.
+Then, for any two different members $M,M'$ of $\M$ and any $e \in (M\del M')\cup(M'\del M)$, there exists an exchange set $b=(b_+,b_-) \in \B$ which satisfies five constraints: 
+\textbf{(a)}
+$e\in (b_+\cup b_-)$, \textbf{(b)} $b_-\subseteq (M\del M')$, \textbf{(c)} $b_+\subseteq (M'\del M)$, 
+\textbf{(d)} $(M\oplus b) \in \M$ and \textbf{(e)} $(M'\ominus b) \in \M$.
 %In addition, the incidence vectors are related by $\vec \chi_M +\vec \chi_b = \vec \chi_{M \oplus b}$.
 Moreover, if $M' = M_*$, then we have $\inn{\vec w, \vec \chi_b} \ge \Delta_e$,
 where $\Delta_e$ is the gap defined in Eq.~\eqref{eq:define-delta}.
@@ -952,12 +963,13 @@ We decompose our proof into two cases.
 By the definition of exchange class, we know that 
 there exists $b=(b_+, b_-) \in \B$ which satisfies that
 $e\in b_-$, $b_- \subseteq (M\del M') $, $b_+\subseteq (M' \del M)$, $(M\oplus b) \in \M$ and $(M'\ominus b) \in \M$.
+Therefore the five constraints are satisfied.
 
 Next, if $M'=M_*$, we see that $e\not \in M_*$.
 Let us consider the set $M_1 = \argmax_{S \in \M\colon e\in S} w(S)$.
-Note that, by definition of gaps, one has that $w(M_*)-w(M_1) = \Delta_e$.
+Note that, by the definition of gaps (Eq.~\eqref{eq:define-delta}), one has $w(M_*)-w(M_1) = \Delta_e$.
 Now we define $M_0 = M_*\ominus b$. 
-Note that we already have that $M_0=M_* \ominus b \in \M$.  
+Note that we already have  $M_* \ominus b \in \M$.  
 %Since $e\in M_1$, we see that $M_1\not= M_*$.
 By combining this with the fact that $e\in M_0$, we see that $w(M_0) \le \max_{S\in \M\colon e\in S} w(S) = w(M_1)$. 
 Therefore, we obtain that
@@ -980,7 +992,7 @@ and $(M\ominus c)\in \M$.
 
 We construct $b=(b_+,b_-)$ by setting $b_+=c_-$ and $b_-=c_+$. 
 Notice that, by the construction of $b$, we have $M\oplus b = M\ominus c$ and $M'\ominus b = M'\oplus c$.
-Therefore, it is clear that $b$ satisfies the requirement of the lemma.
+Therefore, it is clear that $b$ satisfies the five constraints of the lemma.
 
 
 Now, suppose that $M'=M_*$. 
@@ -996,6 +1008,25 @@ $$
 \inn{\vec w,\vec \chi_b} = w(M_*)-w(M_2) \ge \Delta_e.
 $$
 \end{proof}
+
+
+
+\begin{figure}[t]
+\centering
+\begin{subfigure}[b]{0.23\textwidth}
+	\includegraphics[width=\textwidth]{fig/interpolate-venn}
+	\caption{}
+\end{subfigure}
+\hspace{3em}
+\begin{subfigure}[b]{0.54\textwidth}
+	\includegraphics[width=\textwidth]{fig/interpolate-basic}
+	\caption{}
+\end{subfigure}
+\caption{Illustration of Lemma~\ref{lemma:exchange}: (a) A venn diagram for the relationships among $M,M',b_-$ and~$b_+$. Note that $e\in b_-\cup b_+$. (b) An illustration for the relationships among $M$, $M'$, $M\oplus b$ and $M'\ominus b$.
+We recall that $M\oplus b = M\del b_-\cup b_+$ and $M'\ominus b = M' \del b_+ \cup b_-$. We use dotted line to represent an application of Lemma~\ref{lemma:exchange} between two sets.}
+\label{fig:zzz}
+\end{figure}
+
 
 Next we state two basic lemmas that help us to convert set-theoretical arguments to linear algebraic arguments.
 \begin{lemma}
@@ -1014,7 +1045,7 @@ Therefore, we have
 \begin{align*}
 |\vec\chi_{M'\del M}-\vec\chi_{M\del M'}| 
 &= (\vec\chi_{M'\del M}-\vec\chi_{M\del M'})^2\\
-&=\vec\chi_{M'\del M}^2+\vec\chi_{M\del M'}^2+2\vec \chi_{M'\del M} \odot \vec\chi_{M\del M'} \\
+&=\vec\chi_{M'\del M}^2+\vec\chi_{M\del M'}^2-2\vec \chi_{M'\del M} \odot \vec\chi_{M\del M'} \\
 &=\vec\chi_{M'\del M}+\vec\chi_{M\del M'}\\
 & = \vec\chi_{(M' \del M) \cup (M\del M')},
 \end{align*}
@@ -1042,7 +1073,7 @@ Let $M' \in \M$ be an arbitrary member of decision class.
 We have
 $$
 \tilde w_t(M')-\tilde w_t(M_t) = 
-\inn{\vec{\tilde w}_t, \vec \chi_{M'}-\vec \chi_{M_t}} = \inn{\vec {\bar w}_t, \vec \chi_{M'}-\vec\chi_{M_t}}+\inn{\vec \rad_t, |\vec \chi_{M'}-\vec\chi_{M_t}|}.
+\inn{\tilde{\vec{ w}}_t, \vec \chi_{M'}-\vec \chi_{M_t}} = \inn{\vec {\bar w}_t, \vec \chi_{M'}-\vec\chi_{M_t}}+\inn{\vec \rad_t, |\vec \chi_{M'}-\vec\chi_{M_t}|}.
 $$
 \label{lemma:tilde}
 \end{lemma}
@@ -1051,8 +1082,8 @@ We begin with proving the first part.
 It is easy to verify that $\vec {\tilde w_t} = \vec {\bar w}_t+ \vec \rad_t \odot (\vec 1_n-2\vec\chi_{M_t})$.
 Then, we have
 \begin{align}
-\inn{\vec{\tilde w}_t, \vec \chi_{M'}-\vec \chi_{M_t}}
-&= \inn{\vec {\bar w}_t+ \vec \rad_t \odot (1-2\vec\chi_{M_t}), \;\vec \chi_{M'}-\vec \chi_{M_t}} \nonumber \\
+\inn{\tilde{\vec{w}}_t, \vec \chi_{M'}-\vec \chi_{M_t}}
+&= \inn{\vec {\bar w}_t+ \vec \rad_t \odot (\vec 1_n-2\vec\chi_{M_t}), \;\vec \chi_{M'}-\vec \chi_{M_t}} \nonumber \\
 &= \inn{\vec {\bar w}_t,\vec \chi_{M'}-\vec \chi_{M_t}}+\inn{\vec \rad_t, (\vec 1_n-2\vec\chi_{M_t}) \odot (\vec \chi_{M'}-\vec \chi_{M_t})}
 \label{eq:l-d-1}\\
 &= \inn{\vec {\bar w}_t,\vec \chi_{M'}-\vec \chi_{M_t}}+\inn{\vec \rad_t, \vec\chi_{M'}-\vec\chi_{M_t}-2\vec\chi_{M_t}\odot\vec\chi_{M'}+2\vec\chi_{M_t}^2 } \nonumber\\
@@ -1232,17 +1263,33 @@ However, this contradicts to the stopping condition of \Algorithm: $\tilde w_t(\
 
 
 The next lemma shows that if the confidence interval of an arm is sufficiently small, then this arm will not be played by the algorithm. 
+In the proof, we construct a number of gadgets using Lemma~\ref{lemma:exchange}. We illustrate the relationships among the gadgets in Figure~\ref{fig:zzz-1}.
 \begin{lemma}
 \label{lemma:key-technical}
 Given any $t>0$ and suppose that event $\xi_t$ (defined in Eq.~\eqref{eq:define-xi})  occurs.
 %Let $\B$ be an exchange class for $\M$.
 For any $e\in [n]$, if $\rad_t(e) < \frac{\Delta_e}{3\rank(\M)}$, then, arm $e$ will not be pulled on round $t$, i.e., $p_t\not= e$.
 \end{lemma}
-
+\begin{figure}[t]
+\centering
+\begin{subfigure}[b]{0.55\textwidth}
+	\includegraphics[width=\textwidth]{fig/interpolate-exp-1}
+	\caption{Gadgets $M_t'$ and $M_t'\oplus b$ for Case (1)}
+\end{subfigure}
+\hspace{1em}
+\begin{subfigure}[b]{0.35\textwidth}
+	\includegraphics[width=\textwidth]{fig/interpolate-exp-2}
+	\caption{Gadget $\tilde M_t\oplus b$ for Case (2)}
+\end{subfigure}
+\caption{An illustration of the relationship among the gadgets used the proof of Lemma~\ref{lemma:key-technical};
+We use dotted line to represent an application of Lemma~\ref{lemma:exchange} between two sets.}
+\label{fig:zzz-1}
+\end{figure}
 \begin{proof}
-Fix an exchange class $\B\in \argmin_{\B'\in \Exchange(\M)} \rank(\B')$.
+We prove by contradiction. Therefore we shall assume the opposite that $p_t = e$ in the rest of the proof.
+
+First let us fix an exchange class $\B\in \argmin_{\B'\in \Exchange(\M)} \rank(\B')$.
 Note that $\rank(\B) = \rank(\M)$.
-Suppose, on the contrary, that $p_t = e$.
 By Lemma~\ref{lemma:exchange}, there exists an exchange set $c=(c_+,c_-) \in \B$
 such that $e\in (c_+\cup c_-)$, $c_- \subseteq (M_t \del \tilde M_t)$, $c_+ \subseteq (\tilde M_t \del M_t)$, $(M_t\oplus c) \in \M$ and $(\tilde M_t \ominus c) \in \M$.
 
@@ -1252,10 +1299,10 @@ Now, we decompose our proof into two cases.
 
 \textbf{Case (1): $(e \in M_* \wedge e\in c_+) \vee (e \not \in M_* \wedge e\in c_-)$.}
 
-First we construct a gadget $M_t'$ as $M_t' = \tilde M_t \ominus c = \tilde M_t \del c_+ \oplus c_-$ and recall that $M_t' \in \M$ due to the definition of exchange class.
+First we construct a gadget $M_t' = \tilde M_t \ominus c$ and recall that $M_t' \in \M$.
 
 We claim that $M_t'\not= M_*$.
-The assumption of Case (1) means that either (a) $e\in M_*$ and $e\in c_+$, or (b) $e\not \in M_*$ and $e\in c_-$ holds.
+The assumption of Case (1) means that either (a) $e\in M_*$ and $e\in c_+$; or (b) $e\not \in M_*$ and $e\in c_-$ holds.
 Suppose that $e\in M_*$ and $e\in c_+$.
 Then, we see that $e\not\in M_t'$ and hence $M_t'\not=M_*$.
 On the other hand, if $e\not \in M_*$ and $e\in c_-$, then $e\in M_t'$ which also means that $M_t'\not= M_*$.
@@ -1274,7 +1321,7 @@ By the definition of $M_t'$ and Lemma~\ref{lemma:exchange-char}, we see that $\v
 
 
 Then, we claim that $\nor{\vec \rad_t \odot (\vec d-\vec \chi_c)}_\infty < \frac{\Delta_e}{3\rank(\B)}$.
-Using standard set-algebraic manipulations, we have
+To prove this claim, we first appeal to standard set-algebraic manipulations. We obtain
 \begin{align}
 M_t \del M_t' &= M_t \del (\tilde M_t \ominus c) \nonumber\\
               &= M_t \del (\tilde M_t \del c_+ \cup c_-) \nonumber \\
@@ -1383,7 +1430,7 @@ Eq.~\eqref{eq:u-c-1-3} and Eq.~\eqref{eq:u-c-1-4} follow from Lemma~\ref{lemma:v
 Eq.~\eqref{eq:u-c-1-5} follows from Eq.~\eqref{eq:u-c-1-0};
 and Eq.~\eqref{eq:u-c-1-6} holds since $b\in\B$ and $\nor{\vec\chi_b}_1 = |b_+|+|b_-| \le \rank(\B)$.
 
-Applying Lemma~\ref{lemma:tilde} by setting $M' = \tilde M_t$ and using the fact that $\tilde w_t(\tilde M_t) \ge \tilde w_t(M_t' \oplus b)$ (since $\tilde w_t(\tilde M_t) = \max_{M\in \M} \tilde w_t(M)$, we have 
+Applying Lemma~\ref{lemma:tilde} by setting $M' = \tilde M_t$, we have 
 \begin{align}
 \inn{\vec {\bar w}_t, \vec d}+\inn{\vec \rad_t, |\vec d|}
 & = \inn{\vec {\bar w}_t, \vec \chi_{\tilde M_t}-\vec\chi_{M_t}}+\inn{\vec \rad_t, |\vec \chi_{\tilde M_t}-\vec\chi_{M_t}|}\nonumber\\
@@ -1432,7 +1479,7 @@ $e \in (b_+ \cup b_-)$, $b_-\subseteq  (\tilde M_t \del M_*)$, $b_+ \subseteq (M
 $(\tilde M_t \oplus b) \in \M$.
 Lemma~\ref{lemma:exchange} also indicates that $\inn{\vec w, \vec \chi_b} \ge \Delta_e > 0$.
 We will use $\tilde M_t \oplus b$ as a gadget for this case.
-
+Note that the exchange set $b$ defined here is different from the definition in Case (1).
 
 Next, we define vectors $\vec d = \vec \chi_{\tilde M_t} - \vec \chi_{M_t}$ and $\vec d_1 = \vec\chi_{\tilde M_t\oplus b}-\vec\chi_{M_t}$.
 Notice that Lemma~\ref{lemma:exchange-char} gives that $\vec d_1= \vec d+\vec \chi_b$.
@@ -1636,7 +1683,7 @@ By a union bound over all arms $e\in[n]$, we see that $\Pr[\xi_t] \ge 1-2n\exp(-
 The lemma follows immediately by using union bound again over all round $t\in [T]$.
 \end{proof}
 
-Then, Theorem~\ref{theorem:main-budget} can be obtained from the key lemmas (Lemma~\ref{lemma:correct} and Lemma~\ref{lemma:key-technical}) and Lemma~\ref{lemma:ci-budget}.
+Theorem~\ref{theorem:main-budget} can be obtained from the key lemmas (Lemma~\ref{lemma:correct} and Lemma~\ref{lemma:key-technical}) and Lemma~\ref{lemma:ci-budget}.
 %\resultbudget*
 \begin{proof}[Proof of Theorem~\ref{theorem:main-budget}]
 Define random event $\xi=\bigcap_{t=1}^T \xi_t$. 
@@ -1866,7 +1913,7 @@ We now bound each term on the right-hand side of Eq.~\eqref{eq:r64-t-1} as follo
 																			 & = \exp\left(-\frac12 \log(1/\theta) \right) = \theta^{1/2}, \label{eq:r64-t-4}
 \end{align}
 where Eq.~\eqref{eq:r64-t-3} follows from Eq.~\eqref{eq:lemma:lower-bound-likelihood-gaussian};
-and Eq.~\eqref{eq:r64-t-4} follows from the fact $t \le \frac{1}{16 d^2}\log(1/\theta)$.
+and Eq.~\eqref{eq:r64-t-4} follows from the fact $t \le \frac{1}{4 d^2}\log(1/\theta)$.
 Next we have
 \begin{align}
 	\exp\left(-\frac{Td^2}{2} \right) & \ge \exp\left(-2t d ^2\right) \label{eq:r64-t-5}\\
@@ -1889,7 +1936,7 @@ In the rest of the proof, we will show that for any $e\in [n]$, the number of tr
 Notice that the theorem follows immediately by summing up Eq.~\eqref{eq:lower-each} for all $e\in[n]$.
 
 Now fix an arm $e\in [n]$.  
-We define $\theta=4\delta$ and $t_e^* = \frac{1}{16\Delta_e^2}\log(1/\theta)$
+We define $\theta=4\delta$ and $t_e^* = \frac{1}{16\Delta_e^2}\log(1/\theta)$.
 We prove Eq.~\eqref{eq:lower-each} by contradiction. 
 Therefore we assume the opposite that $\E[T_e] < t_e^*$ in the rest of the proof.
 
@@ -1947,9 +1994,9 @@ Then, by Kolmogorov's inequality (\Cref{lemma:kolmogrov}), we have
 \begin{align*}
 \Pr_0\left[\max_{1\le t \le 4t_e^*} \left|K_t-t\cdot w(e)\right| \ge \sqrt{t_e^*\log(1/\theta)} \right]
 &\le \frac{\E_0[ (K_{4t_e^*}-4w(e)t_e^*)^2]}{t_e^*\log(1/\theta)}\\
-&= \frac{4t_e^*}{t_e^*\log(1/\theta)} < \frac14,
+&\stackrel{(a)}{=} \frac{4t_e^*}{t_e^*\log(1/\theta)} \stackrel{(b)}{<} \frac14,
 \end{align*}
-where the second inequality follows from the fact that the variance of $\Rew_e$ equals to 1 and therefore $\E_0[(K_{4t_e^*}-4w(e)t_e^*)^2] = 4t_e^*$; the last inequality follows 
+where (a) follows from the fact that the variance of $\Rew_e$ equals to 1 and therefore $\E_0[(K_{4t_e^*}-4w(e)t_e^*)^2] = 4t_e^*$; and (b) follows 
 since $\theta < e^{-16}$.
 
 Since the probability of error of algorithm $\mathbb A$ is at most $\delta <  e^{-16}/4 < 1/4$, we have $\Pr_0[\mathcal B] \ge 3/4$.
@@ -2115,7 +2162,7 @@ $\Delta_e \le 2ZZZ$.
 \label{section:lowerbound-evidence}
 As a supplement to our main lower bound (\Cref{theorem:lower-bound}), we show that, for any arm $e\in [n]$, there exists an exchange set $b=(b_+,b_-)$ which contains $e$ such that a $\delta$-correct algorithm must spend
 $\tilde \Omega\Big(\big(|b_+|+|b_-|\big)^2 / \Delta_e^2 \Big)$ samples on exploring the arms belonging to $b_+\cup b_-$.
-Notice that this means that, on average, each arm $e\in b_+ \cup b_-$ must be sampled for $\tilde \Omega( (|b_+|+|b_-|) \Delta_e^{-1})$ times.
+Hence, on average, each arm $e\in b_+ \cup b_-$ must be sampled for $\tilde \Omega( (|b_+|+|b_-|) \Delta_e^{-2})$ times.
 This is asymptotically stronger than the result of \Cref{theorem:lower-bound} when the size of corresponding exchange set $|b_+|+|b_-|$ is non-constant.
 %any optimal exchange set $b\in\Bopt$ and any $\delta$-correct algorithm, the algorithm  must spend $\tilde \Omega\left(|b|^2/w(b)^2\right)$ samples on the arms belonging to $b$.
 This result is formalized in the following theorem.
@@ -2133,7 +2180,7 @@ $$
 $$
 where $T_i$ is the number of samples of arm $i$.
 \end{restatable}
-The proof is quite similar to that of Theorem~\ref{theorem:lower-bound} except that they use different constructions of alternative hypothesis and consequently introduce some difference on the details of computations.
+The proof is quite similar to that of Theorem~\ref{theorem:lower-bound} except that they use different constructions of alternative hypothesis and consequently this introduces some difference on the details of computations.
 
 %\lowerboundspecial*
 \begin{proof}
@@ -2185,7 +2232,7 @@ This means that under $H_1$, the set $M_*$ is not the optimal set.
 \textbf{Step (2): Three random events.}
 First we consider the complete sequence of sampling process by algorithm $\mathbb A$.
 Formally, let $W=\{(\tilde I_1,\tilde X_1),\ldots, (\tilde I_T, \tilde X_T)\}$ be the sequence of all trials by algorithm $\mathbb A$, where $\tilde I_i$ denotes the arm played in $i$-th trial and $\tilde X_i$ be the reward outcome of $i$-th trial.
-Then, consider the subsequence $W_1$ of $W$ which consists all the trials of arms in $b_-$.
+Then, consider the subsequence $W_1$ of $W$ which consists of all the trials of arms in $b_-$.
 Specifically, we write $W=\{(I_1,X_1),\ldots,(I_{T_{b_-}}, X_{T_{b_-}})\}$ such that $W_1$ is a subsequence of $W$ and $I_i \in b_-$ for all $i$.
 
 Now we  define three random events $\mathcal A$, $\mathcal B$ and $\mathcal C$ as follows
@@ -2202,9 +2249,9 @@ Next, using Kolmogrov's inequality (\Cref{lemma:kolmogrov}), we obtain
 \begin{align*}
 \Pr_0\left[\max_{1\le t \le 4t_{b_-}^*} \left|\sum_{i=1}^t X_i - \sum_{i=1}^t w(I_i) \right| \ge \sqrt{t_e^*\log(1/\theta)} \right]
 &\le \frac{\E_0\left[ \left(\sum_{i=1}^{4t_{b_-}^*} X_i - \sum_{i=1}^{4t_{b_-}^*} w(I_i)\right)^2\right]}{t_e^*\log(1/\theta)}\\
-&= \frac{4t_{b_-}^*}{t_{b_-}^*\log(1/\theta)} < \frac14,
+&\stackrel{\text(a)}{=} \frac{4t_{b_-}^*}{t_{b_-}^*\log(1/\theta)} \stackrel{\text(b)}{<} \frac14,
 \end{align*}
-where the second inequality follows from the fact that all reward distributions have unit variance; and the last inequality follows 
+where (a) follows from the fact that all reward distributions have unit variance; and (b) follows 
 since $\theta < e^{-16}$.
 
 
@@ -2295,7 +2342,7 @@ Fix some $t\in [n]$ and fix some active arm $i\in [n]\del (A_t\cup B_t)$ of phas
 
 Notice that the arm $i$ has been pulled for $\tilde T_t$ times during the first $t$ phases.
 Therefore,
-by Hoeffding's inequality, we have
+by Hoeffding's inequality (Lemma~\ref{lemma:hoeffeding}), we have
 \begin{align}
 	\Pr\left[ \big|\bar w_t(i)-w(i)\big| \ge \frac{\Delta_{(n-t+1)}}{3\rank(\M)} \right] \le
 	2\exp\left(-\frac{\tilde T_t \Delta_{(n-t+1)}^2}{18 R^2\rank(\M)^2} \right).
@@ -2716,7 +2763,7 @@ $$
 
 %Define $t = \lfloor \frac{T}{n} \rfloor$. 
 Notice that each arm is sampled for $\lfloor \frac{T}{n} \rfloor$ times. 
-Therefore, using Hoeffding's inequality and union bound, we can bound $\Pr[\xi]$ as follows.
+Therefore, using Hoeffding's inequality (Lemma~\ref{lemma:hoeffeding}) and union bound, we can bound $\Pr[\xi]$ as follows.
 Fix any $i\in[n]$, by Hoeffding's inequality, we have
 $$
 \Pr\left[ |\bar w(i)-w(i)| \ge  \frac{\Delta_{(1)}}{3\rank(\M)} \right] 
@@ -2799,7 +2846,7 @@ We illustrate the constructed exchange classes in Figure~\ref{fig:exchange}.
 	\caption{An exchange set from $\B_{\Path(G)}$ (Paths: \Cref{fact:path}; each edge corresponds to an arm).}
 \end{subfigure}
 \caption{
-Examples of exchange sets belonging to the exchange classes $\B_{\Matroid}$ (one for \MultiIdent and one for spanning tree), $\B_{\Match(G)}$ and $\B_{\Path(G)}$:
+Examples of exchange sets belonging to the exchange classes $\B_{\Matroid(n)}$ (one for \MultiIdent and one for spanning tree), $\B_{\Match(G)}$ and $\B_{\Path(G)}$:
 green-solid elements constitute the set $b_+$, red-dotted elements constitute the set $b_-$ and an example exchange set is given by $b=(b_+,b_-)$. 
 In \Cref{fig:exchange:topk}, we use \MultiIdent as a specific instance of matroid decision class.
 In \Cref{fig:exchange:matroid}, we use spanning tree as a specific instance of matroid decision class.
@@ -2869,6 +2916,8 @@ To conclude, we observe that $\rank(\B_{\Matroid(n)}) = 2$.
 
 Now we show that \MultiIdent and \MultiBandit are special cases of the family of decision classes of derived from bases of matroids. 
 This enable us to apply \Cref{fact:matroid} to construct exchange classes and bound the widths of these decision classes.
+We also note that one may use a more direct way to construct the exchange classes for these two problems without appealing to matroids.
+
 
 \begin{fact}[\MultiIdent]
 \label{fact:topk}
@@ -2975,7 +3024,8 @@ $$
 $$
 }
 
-We see that $b\in \B_{\Match(G)}$.
+Since $b$ corresponds to either an augmenting path or an augmenting cycle, 
+we see that $b\in \B_{\Match(G)}$.
 Since $a\in C_-$, we obtain that $e\in b_-$.
 In addition, note that $C_+ \subseteq A'\del A$ and $C_- \subseteq A\del A'$.
 Therefore we have $b_+ \subseteq M'\del M$ and $b_- \subseteq M\del M'$.
@@ -3014,13 +3064,15 @@ We prove that $\B_{\Path(G)}$ is an exchange class for $\M_{\Path(G,s,t)}$.
 Let $M,M' \in \M_{\Path(G,s,t)}$ be two different sets. 
 Then $\sigma^{-1}(M),\sigma^{-1}(M')$ are two sets of arcs corresponding to two different paths from $s$ to $t$.
 Let $P=(v_1,\ldots,v_{n_1}),P'=(v_1',\ldots,v_{n_2}')$ denote the two paths, respectively. 
-Also denote $E(P) = \sigma^{-1}(M)$ and $E(P') = \sigma^{-1}(M')$.
+Notice that $s=v_1=v_1'$ and $t=v_{n_1}=v_{n_2}'$.
+We also denote $E(P) = \sigma^{-1}(M)$ and $E(P') = \sigma^{-1}(M')$.
 
 
-Fix $e\in M\del M'$ and define $a=\sigma^{-1}(e)$.
+Fix some $e\in M\del M'$ and define $a=\sigma^{-1}(e)$.
 Suppose that $a$ is an arc from $u$ to $v$.
-Suppose $v_i=u$ and $v_{i+1} = v$.
-Define $j_1 = \argmax_{j \le i, v_j\in P'} j$ and $j_2 = \argmin_{j \ge i+1, v_j \in P'} j$.
+Since $a$ is on path $P$, there exists $i$ such that $v_i=u$ and $v_{i+1} = v$.
+Now we define $j_1 = \argmax_{j \le i, v_j\in P'} j$ and $j_2 = \argmin_{j \ge i+1, v_j \in P'} j$.
+Notice that $j_1$ and $j_2$ are well-defined since $P$ and $P'$ intersects on at least two vertices ($s$ and $t$).
 Let $v_{k_1}' = v_{j_1}$ and $v_{k_2}'= v_{j_2}$ be the corresponding indices in $P'$.
 Then, we see that $Q_1=(v_{j_1},v_{j_1+1},\ldots,v_{j_2})$ and $Q_2= (v_{k_1}',v_{k_1+1}', \ldots,v_{k_2}')$ are two different paths from $v_{j_1}$ to $v_{j_2}$. 
 Denote the sets of arcs of $Q_1$ and $Q_2$ as $E(Q_1)$ and $E(Q_2)$. 
@@ -3211,6 +3263,58 @@ The experiment results show that the proposed algorithms are considerably more s
 
 %Our implementations of \Algorithm and \AlgorithmBud slightly differs from our descriptions in Algorithm~\ref{algo:pac} and Algorithm~\ref{algo:budget}. For \AlgorithmBud,  
 \newcommand{\imgsize}{0.30}
+\begin{figure}[ht]
+\centering
+\begin{subfigure}[c]{\imgsize\textwidth}
+	\includegraphics[width=\textwidth]{fig/exp/mst-c-1755}
+	\caption{Network 1755}
+\end{subfigure}
+\begin{subfigure}[c]{\imgsize\textwidth}
+	\includegraphics[width=\textwidth]{fig/exp/mst-c-3257}
+	\caption{Network 3257}
+\end{subfigure}
+\begin{subfigure}[c]{\imgsize\textwidth}
+	\includegraphics[width=\textwidth]{fig/exp/mst-c-3967}
+	\caption{Network 3967}
+\end{subfigure}
+\caption{Comparison of empirical probability of errors  with respect to $\mathbf H$.}
+\label{fig:exp1}
+\end{figure}
+\begin{figure}[ht]
+\centering
+\begin{subfigure}[c]{\imgsize\textwidth}
+	\includegraphics[width=\textwidth]{fig/exp/mst-cs-1755}
+	\caption{Network 1755}
+\end{subfigure}
+\begin{subfigure}[c]{\imgsize\textwidth}
+	\includegraphics[width=\textwidth]{fig/exp/mst-cs-3257}
+	\caption{Network 3257}
+\end{subfigure}
+\begin{subfigure}[c]{\imgsize\textwidth}
+	\includegraphics[width=\textwidth]{fig/exp/mst-cs-3967}
+	\caption{Network 3967}
+\end{subfigure}
+\caption{Empirical sample complexity of \Algorithm with respect to $\mathbf H$.}
+\label{fig:exp2}
+\end{figure}
+\begin{figure}[ht]
+\centering
+\begin{subfigure}[c]{\imgsize\textwidth}
+	\includegraphics[width=\textwidth]{fig/exp/mst-1755}
+	\caption{Network 1755 ($\mathbf H=117.6$)}
+\end{subfigure}
+\begin{subfigure}[c]{\imgsize\textwidth}
+	\includegraphics[width=\textwidth]{fig/exp/mst-3257}
+	\caption{Network 3257 ($\mathbf H=181.5$)}
+\end{subfigure}
+\begin{subfigure}[c]{\imgsize\textwidth}
+	\includegraphics[width=\textwidth]{fig/exp/mst-3967}
+	\caption{Network 3967 ($\mathbf H=108.7$)}
+\end{subfigure}
+\caption{Empirical probability of error of \AlgorithmBud and \Uniform with respect to budget size $T$.}
+\label{fig:exp3}
+\end{figure}
+
 
 \textbf{Setup.} 
 Our task is to identify the optimal routing tree from a networking system which has the lowest expected latency  in an exploration procedure, where one can obtain noisy measurements of latencies between different nodes.
@@ -3242,58 +3346,6 @@ In this way, we see that the compared algorithms use an equal number of samples 
 Finally, we set $\delta=0.3$ for \Algorithm throughout the experiments.
 %In this way, we can compare the sample efficiency of \Algorithm with \Uniform and \AlgorithmBud.
 
-
-\begin{figure}[htbp]
-\centering
-\begin{subfigure}[c]{\imgsize\textwidth}
-	\includegraphics[width=\textwidth]{fig/exp/mst-c-1755}
-	\caption{Network 1755}
-\end{subfigure}
-\begin{subfigure}[c]{\imgsize\textwidth}
-	\includegraphics[width=\textwidth]{fig/exp/mst-c-3257}
-	\caption{Network 3257}
-\end{subfigure}
-\begin{subfigure}[c]{\imgsize\textwidth}
-	\includegraphics[width=\textwidth]{fig/exp/mst-c-3967}
-	\caption{Network 3967}
-\end{subfigure}
-\caption{Comparison of empirical probability of errors  with respect to $\mathbf H$.}
-\label{fig:exp1}
-\end{figure}
-\begin{figure}[htbp]
-\centering
-\begin{subfigure}[c]{\imgsize\textwidth}
-	\includegraphics[width=\textwidth]{fig/exp/mst-cs-1755}
-	\caption{Network 1755}
-\end{subfigure}
-\begin{subfigure}[c]{\imgsize\textwidth}
-	\includegraphics[width=\textwidth]{fig/exp/mst-cs-3257}
-	\caption{Network 3257}
-\end{subfigure}
-\begin{subfigure}[c]{\imgsize\textwidth}
-	\includegraphics[width=\textwidth]{fig/exp/mst-cs-3967}
-	\caption{Network 3967}
-\end{subfigure}
-\caption{Empirical sample complexity of \Algorithm with respect to $\mathbf H$.}
-\label{fig:exp2}
-\end{figure}
-\begin{figure}[htbp]
-\centering
-\begin{subfigure}[c]{\imgsize\textwidth}
-	\includegraphics[width=\textwidth]{fig/exp/mst-1755}
-	\caption{Network 1755 ($\mathbf H=117.6$)}
-\end{subfigure}
-\begin{subfigure}[c]{\imgsize\textwidth}
-	\includegraphics[width=\textwidth]{fig/exp/mst-3257}
-	\caption{Network 3257 ($\mathbf H=181.5$)}
-\end{subfigure}
-\begin{subfigure}[c]{\imgsize\textwidth}
-	\includegraphics[width=\textwidth]{fig/exp/mst-3967}
-	\caption{Network 3967 ($\mathbf H=108.7$)}
-\end{subfigure}
-\caption{Empirical probability of error of \AlgorithmBud and \Uniform with respect to budget size $T$.}
-\label{fig:exp3}
-\end{figure}
 
 
 
