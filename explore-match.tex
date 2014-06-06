@@ -204,7 +204,7 @@ The objective is when the exploration period ends, the learner outputs a member 
 
 The \Problem framework represents a rich class of pure exploration problems.
 The conventional pure exploration problem in MAB, whose objective is to find the single best arm, clearly fits into this framework, in which the decision class is the collection of all singletons. 
-This framework also naturally encompasses several recent extensions, including the problem of finding the top $K$ arms (henceforth \MultiIdent) \citep{kalyanakrishnan2010efficient,kalyanakrishnan2012pac,bubeck2013multiple,zhou2014optimal} and the
+This framework also naturally encompasses several recent extensions, including the problem of finding the top $K$ arms (henceforth \MultiIdent) \citep{kalyanakrishnan2010efficient,kalyanakrishnan2012pac,bubeck2013multiple,kaufmann2013information,zhou2014optimal} and the
 multi-bandit problem of finding the best arms simultaneously from several disjoint sets of arms (henceforth \MultiBandit) \citep{NIPS2011_4478,bubeck2013multiple}.
 % by constructing proper decision classes. 
 %The decision classes associated with these problems are relatively flat. 
@@ -277,7 +277,7 @@ In the fixed budget setting, we present a parameter-free algorithm called Combin
 We prove a probability of error bound of the \AlgorithmBud algorithm. 
 This bound can be shown to be equivalent to the sample complexity bound of \Algorithm within logarithmic factors, although the two algorithms are based on quite different techniques. 
 Our analysis of \AlgorithmBud re-uses exchange classes as tools. 
-This suggests that exchange classes may be useful for the analysis of similar problems. 
+This suggests that exchange classes may be useful for analyzing  similar problems. 
 In addition, when applying the algorithm to back \MultiIdent and \MultiBandit, our bound recovers the best known result in the fixed budget setting due to \citet{bubeck2013multiple} up to constant factors. 
 
 \junk{
@@ -298,12 +298,12 @@ Assume that each arm $e\in[n]$ is associated with a reward distribution $\Rew_e$
 % and we let $w(e)=\E_{X\sim \Rew_e}[X]$ denote the expected reward. 
 Let $\vec w = \big(w(1),\ldots, w(n)\big)^T$ denote the vector of expected rewards, where each entry $w(e)=\E_{X\sim \Rew_e}[X]$ denote the expected reward of arm $e$.
 Following standard assumptions of stochastic MABs, we assume that all reward distributions have $R$-sub-Gaussian tails for some known constant $R>0$. 
-Formally, if $X$ is a random variable drawn according to $\Rew_e$ for some $e\in[n]$, then, for all $t\in \RR$, one has $\mathbb E\big[\exp(tX-t\mathbb E[X])\big] \le \exp(R^2t^2/2)$.
+Formally, if $X$ is a random variable drawn from to $\Rew_e$ for some $e\in[n]$, then, for all $t\in \RR$, one has $\mathbb E\big[\exp(tX-t\mathbb E[X])\big] \le \exp(R^2t^2/2)$.
 It is well-known that the family of $R$-sub-Gaussian tail distributions encompasses all distributions that are supported on $[0,R]$ as well as many unbounded distributions such as Gaussian distributions with variance $R^2$ (cf. \citep{pollard2000asymptopia}).
 
 
 We define a \emph{decision class} $\M \subseteq 2^{[n]}$ as a  collection of sets of arms.
-Let $M_*=\argmax_{M\in \M} w(M)$ denote the optimal set belonging to the decision class $\M$ which maximizes the sum of expected reward\footnote{We denote $v(S)\triangleq \sum_{i\in S} v(i)$ for any vector $\vec v\in\RR^{n}$ and any set $S \subseteq[n]$. In addition, for convenience, we will assume that $M_*$ is unique.}.
+Let $M_*=\argmax_{M\in \M} w(M)$ denote the optimal set belonging to the decision class $\M$ which maximizes the sum of expected reward\footnote{We define $v(S)\triangleq \sum_{i\in S} v(i)$ for any vector $\vec v\in\RR^{n}$ and any set $S \subseteq[n]$. In addition, for convenience, we will assume that $M_*$ is unique.}.
 A learner's objective is to identify $M_*$ from $\M$ by playing the following game with the stochastic environment.
 %Let $\M\subseteq 2^{[n]}$ be the family of all feasible solutions to a combinatorial problem.
 %Let $M_* = \argmax_{M\in \M} w(M)$ denote the optimal set of arms which max
@@ -336,7 +336,7 @@ The learner need to guarantee that $\Pr[\out = M_*] \ge 1-\delta$ for a given co
 %Specifically, given a confidence parameter $\delta$, the learner 
 The learner's performance is evaluated by her \emph{sample complexity}, i.e., the number of pulls used by the learner.
 %Notice that the learner can stop the game at any point in this setting.
-In the fixed budget setting, the game stops after a fixed number $T$ of rounds, where $T$ is given before the game.
+In the fixed budget setting, the game stops after a fixed number $T$ of rounds, where $T$ is given before the game starts.
 The learner tries to minimize the \emph{probability of error}, which is formally $\Pr[\out \not= M_*]$, within $T$ rounds.
 In this case, the learner's performance is measured by the probability of error.
 
@@ -372,7 +372,7 @@ Furthermore, the \Algorithm algorithm can be extended to the fixed budget and PA
 We allow the \Algorithm algorithm to access a \emph{maximization oracle}. 
 A maximization oracle takes a weight vector $\vec v \in \RR^{n}$ as input and finds an optimal set from a given decision class $\M$ with respect to the weight vector $\vec v$.
 Formally, we call a function $\text{Oracle:}~\RR^{n} \rightarrow \M$ a maximization oracle for $\M$ if, for all $\vec v\in \RR^{n}$, we have $\Oracle(\vec v) \in \argmax_{M\in \M} v(M)$.
-It is clear that a wide range of decision classes admit such maximization oracles, including decision classes correspond to collections of matchings, paths or bases of matroids (see later for concrete examples).
+It is clear that a wide range of decision classes admit such maximization oracles, including decision classes corresponding to collections of matchings, paths or bases of matroids (see later for concrete examples).
 Besides the access to the oracle, \Algorithm does not need \emph{any} additional knowledge of the decision class $\M$.
 
 %For most non-trivial combinatorial problems, the size of the collection of feasible sets $\M$ is exponential in $n$.
@@ -455,7 +455,7 @@ For each arm $e \in [n]$, we define its gap $\Delta_e$ as
 			   w(M_*)-\max_{M\in \M: e\not \in M} w(M) & \text{if } e\in M_*,
 			\end{cases}
 \end{equation}
-where we use the convention that the maximum value of an empty set is $-\infty$. 
+where we adopt the convention that the maximum value of an empty set is $-\infty$. 
 %Therefore the gap $\Delta_e$ of a redundant arm $e\not \in M$ for all $M\in \M$ is $+\infty$.
 We also define the hardness $\mathbf H$ as the sum of inverse squared gaps 
 \begin{equation}
@@ -648,7 +648,7 @@ Then we have $\rank(\M_{\Matroid(T)}) \le 2$ (derived from strong basis exchange
 \end{example}
 The last example $\M_{\Matroid(T)}$ is a general type of decision class which encompasses many pure exploration problems including \MultiIdent and \MultiBandit as special cases, where \MultiIdent corresponds to uniform matroids of rank $K$ and \MultiBandit corresponds to partition matroids.
 It is easy to see that $\M_{\Matroid(T)}$ also covers the decision class that contains all spanning trees of a graph.
-On the other hand, it is well-known that matchings and paths cannot be formulated as matroids since they are matroid intersections \citep{oxley2006matroid}.
+On the other hand, it has been established that matchings and paths cannot be formulated as matroids since they are matroid intersections \citep{oxley2006matroid}.
 
 \junk{
 The bounds on the width of our examples decision classes are proven by constructing the exchange classes. 
@@ -815,7 +815,7 @@ Then, the \AlgorithmBud algorithm uses at most $T$ samples and outputs a solutio
 where $\barlog(n)\triangleq \sum_{i=1}^n i^{-1}$, $M_* = \argmax_{M\in \M} w(M)$ and $\rank(\M)$ is defined in Eq.~\eqref{eq:width-class}.
 \label{theorem:budget}
 \end{restatable}
-It is well-known that $\mathbf H_2$ is equivalent to $\mathbf H$ up to a logarithmic factor, i.e., $\mathbf H_2 \le \mathbf H \le \log(2n) \mathbf H_2$ (see \citep{audibert2010best}).
+One can verify that $\mathbf H_2$ is equivalent to $\mathbf H$ up to a logarithmic factor, i.e., $\mathbf H_2 \le \mathbf H \le \log(2n) \mathbf H_2$ (see \citep{audibert2010best}).
 Therefore, by setting the probability of error (the RHS of Eq.~\eqref{eq:fbudget:prob-error}) to a constant, one can see that \AlgorithmBud requires a budget of $T = \tilde O(\rank(\M)^2 \mathbf H)$ samples.
 This is equivalent to the sample complexity bound of \Algorithm up to logarithmic factors.
 %Thisis equivalent to.
@@ -839,8 +839,8 @@ Among these work, a recent line of research considers a generalized setting call
 Note that the objective of these work is to minimize the cumulative regret, which differs from ours.
 
 In the literature of pure exploration MABs, the classical problem of identifying the single best arm has been well-studied in both fixed confidence and fixed budget settings \citep{mannor2004sample,even2006action,bubeck2010pure,audibert2010best,gabillon2012best,jamieson2013lil,jamieson2014best}.
-A flurry of recent work extend this classical problem to \MultiIdent and \MultiBandit problems and obtain algorithms, upper bounds \citep{kalyanakrishnan2010efficient,NIPS2011_4478,gabillon2012best,kalyanakrishnan2012pac,zhou2014optimal,bubeck2013multiple,kaufmann2013information,zhou2014optimal} and worst-case lower bounds of \MultiIdent \citep{kalyanakrishnan2012pac,zhou2014optimal}.
-Our framework encompasses these two problems as special cases and covers a much larger class of combinatorial pure exploration problems, which are unaddressed in the current literature.
+A flurry of recent work extend this classical problem to \MultiIdent and \MultiBandit problems and obtain algorithms with upper bounds \citep{kalyanakrishnan2010efficient,NIPS2011_4478,gabillon2012best,kalyanakrishnan2012pac,bubeck2013multiple,kaufmann2013information,zhou2014optimal} and worst-case lower bounds of \MultiIdent \citep{kalyanakrishnan2012pac,zhou2014optimal}.
+Our framework encompasses these two problems as special cases and covers a much larger class of combinatorial pure exploration problems, which have not been addressed in current literature.
 Applying our results back to \MultiIdent and \MultiBandit, our upper bounds match best available problem-dependent bounds up to constant factors \citep{gabillon2012best,kalyanakrishnan2012pac,bubeck2013multiple} in both fixed confidence and fixed budget settings; and our lower bound is the first proven problem-dependent lower bound for these two problems,
 %provides the first problem-dependent lower bounds for these two problems, 
 which are conjectured earlier by \citet{bubeck2013multiple}.
@@ -1559,7 +1559,7 @@ Then, for $0 \le \alpha \le \frac19 (T-n)\left(R^2\rank(\M)^2 \mathbf H\right)^{
 %the probability of error of \Algorithm is bounded as follows
 \begin{equation}
 \label{eq:fix-budget}
-\Pr\big[\out\not=M_*\big] \le 2Tn\exp\left(-2\alpha\right).
+\Pr\big[\out\not=M_*\big] \le 2Tn\exp\left(-\alpha/2\right).
 \end{equation}
 %In particular, when $\alpha=\frac19 (T-n)\left(R^2\rank(\M)^2 \mathbf H\right)^{-1}$, the probability of error is at most $O\Big(Tn\exp\left(-\frac{T}{\rank(\M)^2 \mathbf H}\right)\Big)$.
 In particular, the right-hand side of Eq.~\eqref{eq:fix-budget} equals to $O\left(Tn\exp\left(\frac{-T}{\rank(\M)^2\mathbf H} \right)\right)$
@@ -1634,7 +1634,7 @@ Let the confidence radius $\rad_t(e)$ of arm $e\in[n]$ and round $t>0$ be
 $\rad_t(e)=R\sqrt{\frac{\alpha}{T_t(e)}}.$
 Then, we have
 $$
-\Pr\left[\bigcap_{t=1}^T \xi_t \right] \ge 1-2nT\exp\left(-2\alpha\right),
+\Pr\left[\bigcap_{t=1}^T \xi_t \right] \ge 1-2nT\exp\left(-\alpha/2\right),
 $$
 where $\xi_t$ is the random event defined in Eq.~\eqref{eq:define-xi}.
 \label{lemma:ci-budget}
@@ -1642,9 +1642,9 @@ where $\xi_t$ is the random event defined in Eq.~\eqref{eq:define-xi}.
 \begin{proof}
 For any $t>0$ and $e\in[n]$, using Hoeffding's inequality, we have
 $$
-\Pr\left[ \big|\bar w_t(e)-w(e) \big| \ge \rad_t(e) \right] \le 2\exp(-2\alpha).
+\Pr\left[ \big|\bar w_t(e)-w(e) \big| \ge \rad_t(e) \right] \le 2\exp(-\alpha/2).
 $$
-By a union bound over all arms $e\in[n]$, we see that $\Pr[\xi_t] \ge 1-2n\exp(-2\alpha)$. 
+By a union bound over all arms $e\in[n]$, we see that $\Pr[\xi_t] \ge 1-2n\exp(-\alpha/2)$. 
 The lemma follows immediately by using union bound again over all round $t\in [T]$.
 \end{proof}
 
@@ -2851,9 +2851,9 @@ Let $A_1,A_2 \in \mathcal A$ be two bases.
 Then for all $x \in A_1\del A_2$, there exists $y\in A_2\del A_1$ 
 such that $A_1\del \{x\} \cup \{y\} \in \mathcal A$ and $A_2\del\{y\}\cup\{x\} \in \mathcal A$.
 \end{lemma}
-We refer readers to \citep{oxley2006matroid} for a proof of \Cref{lemma:basis-exchange}.
+%We refer readers to \citep{oxley2006matroid} for a proof of \Cref{lemma:basis-exchange}.
 
-
+Now we are ready to prove \Cref{fact:matroid}.
 \begin{proof}[Proof of \Cref{fact:matroid}]
 Fix a matroid $T=(E,\mathcal I)$ where $|E|=n$ and fix the bijection $\sigma\colon E\rightarrow [n]$.
 Let $\M_{\Matroid(T)}$ be defined as in Eq.~\eqref{eq:matroid} and let $\B_{\Matroid(n)}$ be defined as in Eq.~\eqref{eq:bmatroid}.
@@ -2870,7 +2870,7 @@ By \Cref{lemma:basis-exchange}, we see that there exists $y \in \sigma^{-1}(M') 
 such that 
 \begin{equation}
 \label{eq:fm1}
-\sigma^{-1}(M) \del \{x\} \cup \{y\} \in \mathcal A\quad\text{ and }\quad\sigma^{-1}(M') \del \{y\} \cup \{x\} \in \mathcal B.
+\sigma^{-1}(M) \del \{x\} \cup \{y\} \in \mathcal A\quad\text{ and }\quad\sigma^{-1}(M') \del \{y\} \cup \{x\} \in \mathcal A.
 \end{equation}
 Now we define exchange set $b=(b_+,b_-)$ where $b_+ = \{\sigma(y)\}$ and $b_-=\{\sigma(x)\}$. 
 By Eq.~\eqref{eq:fm1} and the fact that $\sigma$ is a bijection, we see that $M\oplus b \in \M_{\Matroid(T)}$ and $M'\ominus b \in \M_{\Matroid(T)}$. We also have $b\in \B_{\Matroid(n)}$.
