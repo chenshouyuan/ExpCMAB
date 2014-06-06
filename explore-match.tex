@@ -201,7 +201,7 @@ The objective is when the exploration period ends, the learner outputs a member 
 
 
 The \Problem framework represents a rich class of pure exploration problems.
-The conventional pure exploration problem in MAB, where the objective is to find the single best arm, clearly fits into this framework, in which the decision class is the collection of all singletons. 
+The conventional pure exploration problem in MAB, whose objective is to find the single best arm, clearly fits into this framework, in which the decision class is the collection of all singletons. 
 This framework also naturally encompasses several recent extensions, including the problem of finding the top $K$ arms (henceforth \MultiIdent) \citep{kalyanakrishnan2010efficient,kalyanakrishnan2012pac,bubeck2013multiple,zhou2014optimal} and the
 multi-bandit problem of finding the best arms simultaneously from several disjoint sets of arms (henceforth \MultiBandit) \citep{NIPS2011_4478,bubeck2013multiple}.
 % by constructing proper decision classes. 
@@ -296,7 +296,7 @@ Assume that each arm $e\in[n]$ is associated with a reward distribution $\Rew_e$
 % and we let $w(e)=\E_{X\sim \Rew_e}[X]$ denote the expected reward. 
 Let $\vec w = \big(w(1),\ldots, w(n)\big)^T$ denote the vector of expected rewards, where each entry $w(e)=\E_{X\sim \Rew_e}[X]$ denote the expected reward of arm $e$.
 Following standard assumptions of stochastic MABs, we assume that all reward distributions have $R$-sub-Gaussian tails for some known constant $R>0$. 
-Formally, if $X$ is a random variable drawn according to $\Rew_e$ for some $e\in[n]$, then, for all $t\in \RR$, one has $\mathbb E\big[\exp(tX-t\mathbb E[X])\big] \le \exp(R^2t^2/2)$ and $\mathbb E\big[\exp(t\mathbb E[X]-tX)\big] \le \exp(R^2t^2/2)$.
+Formally, if $X$ is a random variable drawn according to $\Rew_e$ for some $e\in[n]$, then, for all $t\in \RR$, one has $\mathbb E\big[\exp(tX-t\mathbb E[X])\big] \le \exp(R^2t^2/2)$.
 It is well-known that the family of $R$-sub-Gaussian tail distributions encompasses all distributions that are supported on $[0,R]$ as well as many unbounded distributions such as Gaussian distributions with variance $R^2$ (cf. \citep{pollard2000asymptopia}).
 
 
@@ -400,7 +400,7 @@ Intuitively, the adjusted expectation vector $\vec {\tilde w}_t$ penalizes arms 
 \Algorithm then calls the oracle using the adjusted expectation vector $\vec {\tilde w}_t$ as input to compute a refined set $\tilde M_t = \Oracle(\vec {\tilde w}_t)$.
 If $\tilde w_t(\tilde M_t) = \tilde w_t(M_t)$ then \Algorithm stops and returns $\out=M_t$.
 %\wei{Is there a difference of using $\tilde w_t(\tilde M_t) = \tilde w_t(M_t)$ or using
-Otherwise, \Algorithm pulls the arm belonging to the symmetric difference $(\tilde M_t \del M_t) \cup (M_t \del \tilde M_t)$ between $M_t$ and $\tilde M_t$ which has the largest confidence radius.
+Otherwise, \Algorithm pulls the arm belonging to the symmetric difference $(\tilde M_t \del M_t) \cup (M_t \del \tilde M_t)$ between $M_t$ and $\tilde M_t$ which has the largest confidence radius (intuitively the largest uncertainty).
 This ends the $t$-th round of \Algorithm.
 We note that \Algorithm generalizes and unifies the ideas of several different fixed confidence algorithms dedicated to the \MultiIdent and \MultiBandit problems in the literature \citep{kalyanakrishnan2012pac,gabillon2012best,kaufmann2013information}.
 
@@ -709,7 +709,7 @@ In the supplementary material (\Cref{section:lowerbound-evidence}), we provide e
 \vspace{-0.5em}
 \section{Fixed Budget Algorithm}
 \vspace{-0.5em}
-In this section, we present Combinatorial Successive Accept Reject algorithm (\AlgorithmBud), which is a parameter-free learning algorithm for the \Problem problem in the fixed budget setting.
+In this section, we present Combinatorial Successive Accept Reject (\AlgorithmBud) algorithm, which is a parameter-free learning algorithm for the \Problem problem in the fixed budget setting.
 Then, we upper bound the probability of error \AlgorithmBud in terms of gaps and $\rank(\M)$.
 %Recall that, in the fixed budget setting, an algorithm is given a budget $T>0$ such that the algorithm can use at most $T$ pulls.
 %The goal of the algorithm is to minimize the probability of error. 
@@ -1102,7 +1102,7 @@ Let $\bar X=\frac{1}{n}\sum X_i$ be the average of these random variables.
 Then, we have
 $$
 \Pr\Big[ \big|\bar X - \mathbb E[\bar X] \big| \ge t \Big] \le 
-2\exp\left(-\frac{2nt^2}{R^2}\right).
+2\exp\left(-\frac{nt^2}{2R^2}\right).
 $$
 \end{lemma}
 
@@ -1582,7 +1582,7 @@ In this paper, we translate their guarantees to our definition of PAC algorithm.
 % which is $\tilde O(\frac{K^2n}{\epsilon^2})$ after ignoring logarithmic factors.
 If we ignore logarithmic factors, then the sample complexity bound of \AlgorithmPAC for the \MultiIdent problem is better than theirs since $\sum_{e\in[n]}\min\{\Delta_e^{-2}, K^2\epsilon^{-2}\}  \le  nK^2\epsilon^{-2} $.
 %Our bound is always smaller than or equal to the sample complexity bound $\tilde O(nK^2\epsilon^{-2})$ of \citet{zhou2014optimal}, regardless the value of gaps $\Delta_1,\ldots,\Delta_n$ and $\epsilon$.
-On the other hand, the algorithms of \citet{kalyanakrishnan2012pac} and \citet{gabillon2012best} guarantee to find $K$ arms such that each of them is better than the $K$-th optimal arm within a factor of $\epsilon$ with probability $1-\delta$.
+On the other hand, the algorithms of \citet{kalyanakrishnan2012pac}, \citet{gabillon2012best} and \citet{kaufmann2013information} guarantee to find $K$ arms such that each of them is better than the $K$-th optimal arm within a factor of $\epsilon$ with probability $1-\delta$.
 Unless $\epsilon=0$, their guarantee is different from ours which concerns the optimality of the sum of $K$ arms.
 %though the bounds are similar, our definition of $(\epsilon,\delta)$-PAC algorithm is different from that of \citet{kalyanakrishnan2012pac,gabillon2012best}, where these work aim to 
  %$(\epsilon, \delta)$
@@ -2115,7 +2115,7 @@ $$
 $$
 where $T_i$ is the number of samples of arm $i$.
 \end{restatable}
-The proof is quite similar to that of Theorem~\ref{theorem:lower-bound} except for the construction of alternative hypothesis.
+The proof is quite similar to that of Theorem~\ref{theorem:lower-bound} except that they use different constructions of alternative hypothesis and consequently introduce some difference on the details of computations.
 
 %\lowerboundspecial*
 \begin{proof}
