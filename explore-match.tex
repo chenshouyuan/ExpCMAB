@@ -2065,7 +2065,7 @@ Hence we have
 	\Delta_e &\le \inn{\vec w, \vec \chi_b} = w(M_*) - w(M_*\ominus b) \label{eq:r65-1}\\
 					 &= \sum_{i\in M_*} w(i) - \sum_{i\in M_* \del b_+ \cup b_-} w(i) \nonumber\\
 					 &= \sum_{i \in b_+} w(i) - \sum_{i\in b_-} w(i) \label{eq:r65-2}\\
-					 &\le |b_+| \cdot |B| + |b_-| \cdot |A| \le (|b_+|+|b_-|) \max\{|A|,|B|\} \noumber\\
+					 &\le |b_+| \cdot |B| + |b_-| \cdot |A| \le (|b_+|+|b_-|) \max\{|A|,|B|\} \nonumber\\
 					 &\le \rank(\M)\max\{|A|,|B|\},\label{eq:r65-3}
 \end{align}
 where Eq.~\eqref{eq:r65-1} follows from Lemma~\ref{lemma:exchange-char};
@@ -2782,7 +2782,7 @@ Hence, by contradiction, we have proven that $\out=M_*$.
 %In this section
 
 In this section, we give formal constructions of the decision classes discussed in Example~1, 2 and 3.
-Further, we bound the width of the examples exchange classes.
+Further, we bound the width of exchange classes for different examples.
 These bounds are proven using concrete constructions of exchange classes (Fact~\ref{fact:matroid}~through~\ref{fact:path}).
 The constructed exchange classes embody natural combinatorial structures.
 We illustrate the constructed exchange classes in Figure~\ref{fig:exchange}.
@@ -2809,10 +2809,10 @@ We illustrate the constructed exchange classes in Figure~\ref{fig:exchange}.
 ~
 \begin{subfigure}[c]{0.45\textwidth}
 	\includegraphics[width=\textwidth]{fig/exchange-path}
-	\caption{An exchange set from $\B_{\Path(G,s,t)}$ (Paths: \Cref{fact:path}; each edge corresponds to an arm).}
+	\caption{An exchange set from $\B_{\Path(G)}$ (Paths: \Cref{fact:path}; each edge corresponds to an arm).}
 \end{subfigure}
 \caption{
-Examples of exchange sets belonging to the exchange classes $\B_{\Matroid}$ (one for \MultiIdent and one for spanning tree), $\B_{\Match(G)}$ and $\B_{\Path(G,s,t)}$:
+Examples of exchange sets belonging to the exchange classes $\B_{\Matroid}$ (one for \MultiIdent and one for spanning tree), $\B_{\Match(G)}$ and $\B_{\Path(G)}$:
 green-solid elements constitute the set $b_+$, red-dotted elements constitute the set $b_-$ and an example exchange set is given by $b=(b_+,b_-)$. 
 In \Cref{fig:exchange:topk}, we use \MultiIdent as a specific instance of matroid decision class.
 In \Cref{fig:exchange:matroid}, we use spanning tree as a specific instance of matroid decision class.
@@ -2942,7 +2942,7 @@ To prove \Cref{fact:match}, we recall a classical result on graph matching which
 \begin{lemma}
 \label{lemma:match}
 Let $G(V,E)$ be a bipartite graph.
-Let $M$ and $M'$ be two different matching.
+Let $M$ and $M'$ be two different matchings.
 Then the induced graph $G'$ from the symmetric difference $(M\del M')\cup (M'\del M)$ consists of connected components that are one of the following
 \begin{itemize}
 %\item An isolated vertex.
@@ -3025,7 +3025,7 @@ Fix two vertices $s,t\in V$.
 
 We prove that $\B_{\Path(G)}$ is an exchange class for $\M_{\Path(G,s,t)}$.
 Let $M,M' \in \M_{\Path(G,s,t)}$ be two different sets. 
-Then $\sigma^{-1}(M),\sigma^{-1}(M')$ are two sets of arcs correspond to two different paths from $s$ to $t$.
+Then $\sigma^{-1}(M),\sigma^{-1}(M')$ are two sets of arcs corresponding to two different paths from $s$ to $t$.
 Let $P=(v_1,\ldots,v_{n_1}),P'=(v_1',\ldots,v_{n_2}')$ denote the two paths, respectively. 
 Also denote $E(P) = \sigma^{-1}(M)$ and $E(P') = \sigma^{-1}(M')$.
 
