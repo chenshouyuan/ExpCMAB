@@ -1212,6 +1212,22 @@ Using Hoeffding's inequality (Lemma~\ref{lemma:hoeffeding}), we obtain
 $$
 \Pr\left[ \big|\bar w_t(e)-w(e) \big| \ge R\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_t(e)}} \right] \le \frac{\delta}{2nt^2}.
 $$
+
+\tian{
+Set $\rad_t(e) = R\sqrt{2\log\left(\frac{4n t^3}\delta\right)/ T_t(e) }$ for all $t > 0$ and $e\in[n]$. 
+Denote $\bar w^{(s)}(e)$ as the empirical mean of $\Rew_e$ from $s$ samples, and by definition 
+$\bar w_t(e) = \bar w^{(T_t(e))}(e)$ always holds.
+\begin{align}
+\Pr\left[ \big|\bar w_{t}(e)-w(e) \big| \ge R\sqrt{\frac{2\log\left(\frac{4n t^3}\delta\right)}{T_t(e)}} \right] 
+&= \sum_{s=1}^{t-1} \Pr\left[ \big|\bar w^{(s)}(e)-w(e) \big| \ge R\sqrt{\frac{2\log\left(\frac{4n t^3}\delta\right)}{s}}, T_t(e) = s\right]  \nonumber \\
+&\le \sum^{t-1}_{s=1} \frac{\delta}{2nt^3} \label{eq:ci-1} \\
+&\le \frac{\delta}{2nt^2}, \nonumber
+\end{align}
+where Eq.~\eqref{eq:ci-1} is derived by Hoeffding's Inequality (Lemma~\ref{lemma:hoeffeding}).
+
+{\em Note: } The above is a quick fix. Wei's analysis tightens the confidence interval from $\sqrt{2 \log\left(\frac{4n t^3}\delta\right)/ T_t(e)}$ to $\sqrt{3 \log\left(\frac{4n t^3}\delta\right)/ 2 T_t(e)}$.
+}
+
 By union bound over all $e\in [n]$, we see that $\Pr[\xi_t] \ge 1-\frac{\delta}{2t^2}$. 
 Using a union bound again over all $t>0$, we have
 \begin{align*}
@@ -1220,8 +1236,6 @@ Using a union bound again over all $t>0$, we have
 &= 1-\frac{\pi^2}{12}\delta \ge 1-\delta.
 \end{align*}
 \end{proof}
-
-
 
 \subsection{Main Lemmas}
 
