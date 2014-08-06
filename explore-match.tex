@@ -924,6 +924,7 @@ Then, we have
 $$
 \vec\chi_{M_1} +\vec\chi_{b} = \vec\chi_{M_2}.
 $$
+In addition, we have $M_1 = M_2 \ominus b$.
 \label{lemma:exchange-char}
 \end{lemma}
 
@@ -937,6 +938,7 @@ Hence, we have
    							   &= \vec\chi_{M_1\cap M_2} + \vec\chi_{M_2\del M_1}\\
    							   &= \vec\chi_{M_2}.
 \end{align*}
+Using the definition of operator $\ominus$, one can verify that $M_1 = M_2 \ominus b$.
 \end{proof}
 
 
@@ -1235,12 +1237,12 @@ Then, if Algorithm~\ref{algo:pac} terminates at round $t$, we have $M_t=M_*$.
 \begin{proof}
 Suppose that $M_t \not= M_*$. 
 By the assumption that $M_*$ is the unique optimal set, we have $w(M_*)>w(M_t)$. 
-Rewriting the former inequality, we obtain that $\inn{\vec w, \vec\chi_{M_*}} > \inn{\vec w,\vec\chi_{M_t}}$.
+Rewriting this inequality, we obtain that $\inn{\vec w, \vec\chi_{M_*}} > \inn{\vec w,\vec\chi_{M_t}}$.
 
 Let $\B$ be an exchange class for $\M$.
 Applying Lemma~\ref{lemma:exchange} by setting $M=M_t$ and $M'=M_*$, we see that 
-there exists $b=(b_+,b_-)\in \B$ such that $(M_t \oplus b) \in \M$.
-%Then, using Lemma~\ref{lemma:exchange-char}, we see that 
+there exists $b=(b_+,b_-)\in \B$ such that $(M_t \oplus b) \in \M$ and $\inn{\vec w, \vec\chi_b} > 0$.
+%Then, using Lemma~\ref{lemma:exchange-char}, we see that  
 
 
 Now define $M_t' = M_t \oplus b$.
@@ -1251,10 +1253,10 @@ Hence, we have
   &\ge \tilde w_t(M_t')-\tilde w_t(M_t) \nonumber \\
   &= \inn{\vec {\bar w}_t, \vec \chi_{M_t'}-\vec\chi_{M_t}}+\inn{\vec \rad_t, |\vec \chi_{M'}-\vec\chi_{M_t}|} \label{eq:lc-1}\\
   &\ge \inn{\vec w, \vec \chi_{M_t'}-\vec\chi_{M_t}} \label{eq:lc-2}\\
-  &= w(M_t')-w(M_t) > 0 \label{eq:lc-3},
+  &= \inn{\vec w,\vec\chi_b} > 0 \label{eq:lc-3},
 \end{align}
 where Eq.~\eqref{eq:lc-1} follows from Lemma~\ref{lemma:tilde};
-and Eq.~\eqref{eq:lc-2} follows the assumption that event $\xi_t$ occurs and Lemma~\ref{lemma:ci-property};
+and Eq.~\eqref{eq:lc-2} follows the assumption that event $\xi_t$ occurs and Lemma~\ref{lemma:ci-property}.
 
 Therefore Eq.~\eqref{eq:lc-3} shows that $\tilde w_t(\tilde M_t) > \tilde w_t(M_t)$. 
 However, this contradicts to the stopping condition of \Algorithm: $\tilde w_t(\tilde M_t) = \tilde w_t(M_t)$ and the assumption that the algorithm terminates on round~$t$.
@@ -1299,7 +1301,8 @@ Now, we decompose our proof into two cases.
 
 \textbf{Case (1): $(e \in M_* \wedge e\in c_+) \vee (e \not \in M_* \wedge e\in c_-)$.}
 
-First we construct a gadget $M_t' = \tilde M_t \ominus c$ and recall that $M_t' \in \M$.
+First we construct a gadget $M_t' = \tilde M_t \ominus c$ and recall that $M_t' \in \M$. 
+By the definitions of $\ominus$ and $\oplus$, we see that $\tilde M_t = M_t' \oplus c$.
 
 We claim that $M_t'\not= M_*$.
 The assumption of Case (1) means that either (a) $e\in M_*$ and $e\in c_+$; or (b) $e\not \in M_*$ and $e\in c_-$ holds.
@@ -1346,14 +1349,16 @@ Then, applying Lemma~\ref{lemma:max}, we obtain
    &= \nor{\vec \rad_t \odot (\vec \chi_{M_t'} - \vec\chi_{M_t})}_\infty \nonumber\\
    &= \max_{i\in (M_t \del M_t') \cup (M_t'\del M_t) } \rad_t(i) \nonumber \\
    &\le \max_{i\in (M_t \del \tilde M_t ) \cup (\tilde M_t \del M_t)}  \rad_t(i) \nonumber \\
-   & = \rad_t(e) < \frac{\Delta_e}{3\rank(\B)} \label{eq:u-c-1-0}.
+   & = \rad_t(e) \label{eq:cmr-1} \\
+   & < \frac{\Delta_e}{3\rank(\B)} \label{eq:u-c-1-0},
 \end{align}
+where Eq.~\eqref{eq:cmr-1} follows from the assumption that $p_t = e$.
 
 Next we claim that $\nor{\vec \rad_t \odot \vec \chi_c}_\infty < \frac{\Delta_e}{3\rank(\B)}$.
 Recall that, by the definition of $c$, we have
 $c_+\subseteq (\tilde M_t \del M_t)$ and $c_-\subseteq (M_t\del \tilde M_t)$. 
 Hence $c_+\cup c_- \subseteq  (\tilde M_t \del M_t)\cup (M_t\del \tilde M_t)$.
-Since $\vec \chi_c \in [-1,1]^n$, we see that 
+Since $\vec \chi_c \in \{-1,0,1\}^n$, we see that 
 \begin{align}
 \nor{\vec \rad_t \odot \vec \chi_c}_\infty &= \max_{i\in  c_+\cup c_-} \rad_t(i) \nonumber \\
 									    &\le \max_{i\in  (\tilde M_t \del M_t)\cup (M_t\del \tilde M_t)} \rad_t(i)  \nonumber \\
@@ -1460,9 +1465,9 @@ and Eq.~\eqref{eq:u-c-1-9} holds since Eq.~\eqref{eq:rvtmp-5}.
 We have shown that $\inn{\vec {\bar w}_t,\vec \chi_c}>0$. Now we can bound $\bar w_t(M_t')$ as follows
 \begin{align*}
  \bar w_t(M_t') &= \inn{\vec {\bar w}_t, \vec \chi_{M_t'}} = \inn{\vec {\bar w}_t, \vec \chi_{M_t}+\vec \chi_c} =
- \inn{\vec {\bar w}_t, \vec \chi_{M_t}}+\inn{\vec {\bar w}_t, \vec \chi_c} > \inn{\vec {\bar w}_t, \vec \chi_{M_t}} = w_t(M_t).
+ \inn{\vec {\bar w}_t, \vec \chi_{M_t}}+\inn{\vec {\bar w}_t, \vec \chi_c} > \inn{\vec {\bar w}_t, \vec \chi_{M_t}} = \bar w_t(M_t).
 \end{align*}
-However, the definition of $M_t$ ensures that $\bar w(M_t) = \max_{M\in\M} \bar w_t(M)$, which implies that $\bar w_t(M_t) \ge \bar w_t(M_t')$. 
+However, the definition of $M_t$ ensures that $\bar w_t(M_t) = \max_{M\in\M} \bar w_t(M)$, which implies that $\bar w_t(M_t) \ge \bar w_t(M_t')$. 
 This is a contradiction, and therefore we have $p_t \not=e$ for this case.
 
 \textbf{Case (2): $(e \in M_* \wedge e\in c_-) \vee (e \not \in M_* \wedge e\in c_+)$.}
