@@ -1239,6 +1239,10 @@ and Eq.~\eqref{eq:lc-2} follows the assumption that event $\xi_t$ occurs and Lem
 
 Therefore Eq.~\eqref{eq:lc-3} shows that $\tilde w_t(\tilde M_t) > \tilde w_t(M_t)$. 
 However, this contradicts to the stopping condition of \Algorithm: $\tilde w_t(\tilde M_t) \le \tilde w_t(M_t)$ and the assumption that the algorithm terminates on round $t$.
+\wei{In my other papers, I always use "in round $t$" or "at round $t$". I think "in round $t$" is
+	a bit better than "at round $t$", while "at time $t$" is a good term if we refer time instead of 
+	round. But "on round $t$" is a bit weird to me. Please check all occurrences use the expression
+	consistently.}
 \end{proof}
 
 
@@ -1264,7 +1268,9 @@ Now, we decompose our proof into two cases.
 
 \textbf{Case (1): $(e \in M_* \wedge e\in c_+) \vee (e \not \in M_* \wedge e\in c_-)$.}
 
-First we construct a gadget $M_t'$ as $M_t' = \tilde M_t \ominus c = \tilde M_t \del c_+ \oplus c_-$ and recall that $M_t' \in \M$ due to the definition of exchange class.
+First we construct a gadget $M_t'$ as $M_t' = \tilde M_t \ominus c = \tilde M_t \del c_+ \oplus c_-$
+\wei{Should this be $\tilde M_t \del c_+ \cup c_-$?}
+ and recall that $M_t' \in \M$ due to the definition of exchange class.
 
 We claim that $M_t'\not= M_*$.
 Suppose that $e\in M_*$ and $e\in c_+$.
