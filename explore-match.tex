@@ -943,6 +943,9 @@ Hence, we have
 \end{align*}
 \end{proof}
 
+\wei{For the above lemma, should we also add that under the lemma's condition, we also have
+	$M_1= M_2 \ominus b$? I think the proof of Lemma 10 uses this fact.}
+
 The next lemma serves as a basic tool derived from exchange classes, which allows us to interpolate between different members of a decision class $\M$.
 It also characterizes the relationship between gaps and exchange sets.
 \begin{lemma}[Interpolation Lemma]
@@ -1288,7 +1291,8 @@ We will also use $M_t'\oplus b$ as a gadget.
 Now, we define vectors $\vec d = \vec \chi_{\tilde M_t} - \vec \chi_{M_t}$, $\vec d_1 = \vec\chi_{M_t'}-\vec\chi_{M_t}$ and $\vec d_2 = \vec\chi_{M_t'\oplus b}-\vec\chi_{M_t}$.
 %It is clear that $d\in[0,1]^n$,$d_1\in[0,1]^n$ and $d_2\in[0,1]^n$.
 By the definition of $M_t'$ and Lemma~\ref{lemma:exchange-char}, we see that $\vec d_1 = \vec d - \vec \chi_{c}$ and $\vec d_2 = \vec d_1+\vec \chi_b = \vec d-\vec \chi_c+\vec \chi_b$.
-
+\wei{I think here we need the result that $M_t'\oplus c = \tilde{M}_t$. See my comment after Lemma 1
+	about adding such a fact in the lemma.}
 
 Then, we claim that $\nor{\vec \rad_t \odot (\vec d-\vec \chi_c)}_\infty < \frac{\Delta_e}{3\rank(\B)}$.
 Using standard set-algebraic manipulations, we have
@@ -1319,11 +1323,15 @@ Then, applying Lemma~\ref{lemma:max}, we obtain
    & = \rad_t(e) < \frac{\Delta_e}{3\rank(\B)} \label{eq:u-c-1-0}.
 \end{align}
 
+\wei{It may be better to say that equality in Eq.\eqref{eq:u-c-1-0} is due to our assumption
+	$e=p_t$.}
 Next we claim that $\nor{\vec \rad_t \odot \vec \chi_c}_\infty < \frac{\Delta_e}{3\rank(\B)}$.
 Recall that, by the definition of $c$, we have
 $c_+\subseteq (\tilde M_t \del M_t)$ and $c_-\subseteq (M_t\del \tilde M_t)$. 
 Hence $c_+\cup c_- \subseteq  (\tilde M_t \del M_t)\cup (M_t\del \tilde M_t)$.
 Since $\vec \chi_c \in [-1,1]^n$, we see that 
+\wei{I think it is better to write $\vec \chi_c \in \{-1,0,1\}^n$, since otherwise, the following
+equality should be replaced by $\le$.}
 \begin{align}
 \nor{\vec \rad_t \odot \vec \chi_c}_\infty &= \max_{i\in  c_+\cup c_-} \rad_t(i) \nonumber \\
 									    &\le \max_{i\in  (\tilde M_t \del M_t)\cup (M_t\del \tilde M_t)} \rad_t(i)  \nonumber \\
@@ -1340,6 +1348,8 @@ From Eq.~\eqref{eq:u-c-1-0-1}, we derive
 where Eq.~\eqref{eq:rvtmp-1} hold since $\vec\chi_c \in \{-1,0,1\}^n$; 
 Eq.~\eqref{eq:rvtmp-2} follows form Lemma~\ref{lemma:vector-technical};
 Eq.~\eqref{eq:rvtmp-3} follows from H\"older's inequality;
+\wei{Do we need this fancy inequality? It looks like an easy fact by the special structure
+	of $\vec\chi_c$.}
 Eq.~\eqref{eq:rvtmp-4} follows from Eq.~\eqref{eq:u-c-1-0-1};
 and Eq.~\eqref{eq:rvtmp-5} holds since $\nor{\vec\chi_c}_1=|c_+|+|c_-| \le \rank(\B)$ where the inequality is due to $c\in \B$ .
 
@@ -1397,10 +1407,13 @@ Now, we bound  quantity $\langle \vec \rad_t, |\vec d_2| \rangle - \langle \vec 
 where Eq.~\eqref{eq:u-c-1-1} holds since $\vec d\in \{-1,0,1\}^n$ and $\vec d_2\in \{-1,0,1\}^n$;
 Eq.~\eqref{eq:u-c-1-2} follows from the claim that $\vec d \odot \vec \chi_c = |\vec \chi_c|=\vec\chi_c^2$;
 Eq.~\eqref{eq:u-c-1-3} and Eq.~\eqref{eq:u-c-1-4} follow from Lemma~\ref{lemma:vector-technical} and H\"older's inequality;
+\wei{Again, do we need this fancy inequality?}
 Eq.~\eqref{eq:u-c-1-5} follows from Eq.~\eqref{eq:u-c-1-0};
 and Eq.~\eqref{eq:u-c-1-6} holds since $b\in\B$ and $\nor{\vec\chi_b}_1 = |b_+|+|b_-| \le \rank(\B)$.
 
-Applying Lemma~\ref{lemma:tilde} by setting $M' = \tilde M_t$ and using the fact that $\tilde w_t(\tilde M_t) \ge \tilde w_t(M_t' \oplus b)$ (since $\tilde w_t(\tilde M_t) = \max_{M\in \M} \tilde w_t(M)$, we have 
+Applying Lemma~\ref{lemma:tilde} by setting $M' = \tilde M_t$ and using the fact that $\tilde w_t(\tilde M_t) \ge \tilde w_t(M_t' \oplus b)$ (since $\tilde w_t(\tilde M_t) = \max_{M\in \M} \tilde w_t(M)$, \wei{This is a repetition, since the explanation of Eq.\eqref{eq:exk-tmp-5} below
+	repeats this fact.}
+we have 
 \begin{align}
 \inn{\vec {\bar w}_t, \vec d}+\inn{\vec \rad_t, |\vec d|}
 & = \inn{\vec {\bar w}_t, \vec \chi_{\tilde M_t}-\vec\chi_{M_t}}+\inn{\vec \rad_t, |\vec \chi_{\tilde M_t}-\vec\chi_{M_t}|}\nonumber\\
@@ -1426,12 +1439,16 @@ Rearranging the above inequality, we obtain
 where Eq.~\eqref{eq:u-c-1-7} uses Eq.~\eqref{eq:u-c-1-6}; 
 Eq.~\eqref{eq:u-c-1-8} follows from the assumption that event $\xi_t$ occurs and Lemma~\ref{lemma:ci-property};
 and Eq.~\eqref{eq:u-c-1-9} holds since Eq.~\eqref{eq:rvtmp-5}.
+\wei{I do not understand why Eq.~\eqref{eq:u-c-1-8} and Eq.~\eqref{eq:u-c-1-9} have 
+strict inequality sign $<$ instead of $\le$. This is a key issue since we do need a strict
+inequality to reach a contradiction.}
 
 We have shown that $\inn{\vec {\bar w}_t,\vec \chi_c}>0$. Now we can bound $\bar w_t(M_t')$ as follows
 \begin{align*}
  \bar w_t(M_t') &= \inn{\vec {\bar w}_t, \vec \chi_{M_t'}} = \inn{\vec {\bar w}_t, \vec \chi_{M_t}+\vec \chi_c} =
  \inn{\vec {\bar w}_t, \vec \chi_{M_t}}+\inn{\vec {\bar w}_t, \vec \chi_c} > \inn{\vec {\bar w}_t, \vec \chi_{M_t}} = w_t(M_t).
 \end{align*}
+\wei{The last $ w_t(M_t)$ should be ${\bar w}_t(M_t)$, right?}
 However, the definition of $M_t$ ensures that $M_t = \argmax_{M\in\M} \bar w_t(M)$, i.e., $\bar w_t(M_t) \ge \bar w_t(M_t')$. 
 This is a contradiction, and therefore we have $p_t \not=e$ for this case.
 
