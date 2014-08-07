@@ -1024,7 +1024,7 @@ $$
 	\includegraphics[width=\textwidth]{fig/interpolate-basic}
 	\caption{}
 \end{subfigure}
-\caption{Illustration of Lemma~\ref{lemma:exchange}: (a) A venn diagram for the relationships among $M,M',b_-$ and~$b_+$. Note that $e\in b_-\cup b_+$. (b) An illustration for the relationships among $M$, $M'$, $M\oplus b$ and $M'\ominus b$.
+\caption{Illustration of Lemma~\ref{lemma:exchange}: (a) A Venn diagram for the relationships among $M,M',b_-$ and~$b_+$. Note that $e\in b_-\cup b_+$. (b) An illustration for the relationships among $M$, $M'$, $M\oplus b$ and $M'\ominus b$.
 We recall that $M\oplus b = M\del b_-\cup b_+$ and $M'\ominus b = M' \del b_+ \cup b_-$. We use dotted line to represent an application of Lemma~\ref{lemma:exchange} between two sets.}
 \label{fig:zzz}
 \end{figure}
@@ -1460,7 +1460,7 @@ Rearranging the above inequality, we obtain
 \end{align}
 where Eq.~\eqref{eq:u-c-1-7} uses Eq.~\eqref{eq:u-c-1-6}; 
 Eq.~\eqref{eq:u-c-1-8} follows from the assumption that event $\xi_t$ occurs and Lemma~\ref{lemma:ci-property};
-and Eq.~\eqref{eq:u-c-1-9} holds since Eq.~\eqref{eq:rvtmp-5}.
+and Eq.~\eqref{eq:u-c-1-9} holds due to Eq.~\eqref{eq:rvtmp-5}.
 
 We have shown that $\inn{\vec {\bar w}_t,\vec \chi_c}>0$. Now we can bound $\bar w_t(M_t')$ as follows
 \begin{align*}
@@ -1484,7 +1484,7 @@ $e \in (b_+ \cup b_-)$, $b_-\subseteq  (\tilde M_t \del M_*)$, $b_+ \subseteq (M
 $(\tilde M_t \oplus b) \in \M$.
 Lemma~\ref{lemma:exchange} also indicates that $\inn{\vec w, \vec \chi_b} \ge \Delta_e > 0$.
 We will use $\tilde M_t \oplus b$ as a gadget for this case.
-Note that the exchange set $b$ defined here is different from the definition in Case (1).
+Note that the exchange set $b$ defined here is different from the exchange set $b$ used in Case (1).
 
 Next, we define vectors $\vec d = \vec \chi_{\tilde M_t} - \vec \chi_{M_t}$ and $\vec d_1 = \vec\chi_{\tilde M_t\oplus b}-\vec\chi_{M_t}$.
 Notice that Lemma~\ref{lemma:exchange-char} gives that $\vec d_1= \vec d+\vec \chi_b$.
@@ -1496,6 +1496,8 @@ This shows that
 \label{eq:u-c-2-0}
 \end{equation}
 where the last inequality follows from the assumption that $\xi_t$ occurs.
+\wei{The last inequality is due to the assumption of the lemma, not that $\xi_t$ occurs, right? Please check.
+}
 
 Now, we bound quantity $\inn{\vec {\bar w}_t, \vec d_1}+\inn{\vec \rad_t, |\vec d_1|}
 -\inn{\vec {\bar w}_t, \vec d}-\inn{\vec \rad_t,  |\vec d|}$ as follows
@@ -1515,6 +1517,7 @@ where Eq.~\eqref{eq:u-c-2-1} follows from the fact that $\vec d_1\in \{-1,0,1\}^
 Eq.~\eqref{eq:u-c-2-2} holds since $\vec d_1=\vec d+\vec \chi_b$;
 Eq.~\eqref{eq:u-c-2-3} follows from the assumption that $\xi_t$ occurs and Lemma~\ref{lemma:ci-property};
 Eq.~\eqref{eq:u-c-2-3.5} follows from Lemma~\ref{lemma:vector-technical}  and H\"older's inequality;
+\wei{Lemma~\ref{lemma:vector-technical} has been applied two lines ago, not here at Eq.~\eqref{eq:u-c-2-3.5}.}
 Eq.~\eqref{eq:u-c-2-4} is due to Eq.~\eqref{eq:u-c-2-0};
 and Eq.~\eqref{eq:u-c-2-5} follows from $\inn{\vec w,\vec\chi_b} \ge \Delta_e >0$.
 
@@ -1570,8 +1573,11 @@ Solving Eq.~\eqref{eq:bound-te} for $T(e)$, we obtain
 T(e) \le \frac{18 \rank(\M)^2 R^2}{\Delta_e^2} \log(4nT^2/\delta)+1.
 \end{equation}
 
-Notice that $T=\sum_{i\in[n]} T(i)$. 
+Notice that $T=\sum_{e\in[n]} T(e)$. 
 Hence the theorem follows by summing up Eq.~\eqref{eq:bound-te-2} for all $e\in [n]$ and solving for $T$.
+\wei{It is not immediately clear how to solve the inequality with $T$ on both sides. Can you write more steps here? For all the proofs
+so far, one can follow the proofs step by step without doing any computation on a separate paper, but this final step one has to do some
+computation and it is not clear how to do it. So to be consistent, I think it is better to provide more detailed steps here.}
 \end{proof}
 
 
