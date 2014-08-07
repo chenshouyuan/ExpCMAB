@@ -1709,6 +1709,18 @@ For any $t>0$ and $e\in[n]$, using Hoeffding's inequality, we have
 $$
 \Pr\left[ \big|\bar w_t(e)-w(e) \big| \ge \rad_t(e) \right] \le 2\exp(-\alpha/2).
 $$
+
+\tian{
+Since $w_t(e)$ is a random variable, similarly we bound probability as follows
+\begin{align*}
+\Pr\left[ \big|\bar w_t(e)-w(e) \big| \ge \rad_t(e) \right]
+	&= \sum_{s=1}^{t-1} \Pr\left[ \big|\bar w^{(s)}(e)-w(e) \big| \ge R\sqrt{\frac{\alpha}{s}}, T_t(e) = s \right] \\
+	&\le \sum_{s=1}^{t-1}  2 \exp(-\alpha/2)
+	\le 2 t \exp(-\alpha/2).
+\end{align*}
+The above inequality will bring in another $T$ in the probability.
+}
+
 By a union bound over all arms $e\in[n]$, we see that $\Pr[\xi_t] \ge 1-2n\exp(-\alpha/2)$. 
 The lemma follows immediately by using union bound again over all round $t\in [T]$.
 \end{proof}
@@ -2378,6 +2390,7 @@ by Hoeffding's inequality (Lemma~\ref{lemma:hoeffeding}), we have
 	2\exp\left(-\frac{\tilde T_t \Delta_{(n-t+1)}^2}{18 R^2\rank(\M)^2} \right).
 	\label{eq:lci-1}
 \end{align}
+\tian{We also need to fix this.}
 By plugging the definition of $\tilde T_t$, the quantity $\tilde T_t\Delta_{(n-t+1)}^2$ on the right-hand side of Eq.~\eqref{eq:lci-1} can be further bounded by
 \begin{align*}
 \tilde T_t\Delta_{(n-t+1)}^2 
@@ -2696,7 +2709,7 @@ Therefore, the total number samples used by the algorithm is bounded by
 
 
 
-By Lemma~\ref{lemma:fbudget:ci}, we know that the event $\tau \triangleq \bigcap_{t=1}^T \tau_t$ occurs with probability at least
+By Lemma~\ref{lemma:fbudget:ci}, \tian{Revise the constant when we apply this lemma} we know that the event $\tau \triangleq \bigcap_{t=1}^T \tau_t$ occurs with probability at least
 $1-n^2  \exp\left(-\frac{(T-n)}{18 R^2 \barlog(n) \rank(\M)^2 \mathbf H_2} \right)$.
 %This equals to the claimed probability of error of the theorem.
 Therefore, we only need to prove that, under event $\tau$, the algorithm outputs $M_*$.
@@ -2799,6 +2812,7 @@ $$
 \Pr\left[ |\bar w(i)-w(i)| \ge  \frac{\Delta_{(1)}}{3\rank(\M)} \right] 
 \le 2\exp\left(-\frac{T\Delta_{(1)}^2}{18R^2n\rank(\M)^2} \right).
 $$
+\tian{Fix the above.}
 Then, using a union bound, we obtain
 $$
 \Pr\big[\xi \big] \ge 1-2n\exp\left(-\frac{T\Delta_{(1)}^2}{18 nR^2\rank(\M)^2} \right).
