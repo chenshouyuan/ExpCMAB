@@ -2304,7 +2304,7 @@ Therefore we have $\E[T_{b_-}]\ge t_{b_-}^*$ which proves claim \textbf{(a)} in 
 \label{section:fixed-budget-proof}
 
 \textbf{Notations.}
-Let $\vec w \in \RR^n$ be the vector expected rewards of arms.
+Let $\vec w \in \RR^n$ be the vector of the expected rewards of arms.
 Let $M_* = \argmax_{M\in \M} w(M)$ be the optimal set.
 Let $T$ be the budget of samples.
 We will also use the following additional notations in the rest of this section.
@@ -2485,7 +2485,9 @@ $$
 
 The next lemma provides an important insight on the correctness of \AlgorithmBud.
 Informally speaking, suppose that the algorithm does not make an error before phase $t$.
-Then, we show that, suppose arm $e$ has a gap $\Delta_e$ larger than the ``reference'' gap $\Delta_{(t-n+1)}$ of phase $t$, then arm $e$ must be correctly classified by $M_t$, i.e., $e\in M_t$ if and only if $e\in M_*$.
+Then, we show that, suppose arm $e$ has a gap $\Delta_e$ larger than the ``reference'' gap $\Delta_{(t-n+1)}$ of phase $t$, 
+\wei{I think this is a typo, it should be $\Delta_{(n-t+1)}$. Same typo occurs in the lemma statement below.}
+then arm $e$ must be correctly classified by $M_t$, i.e., $e\in M_t$ if and only if $e\in M_*$.
 \begin{lemma}
 Fix any phase $t>0$. 
 Suppose that event $\tau_t$ occurs. 
@@ -2552,7 +2554,9 @@ Therefore we have $e\in (M_* \cap M_t) \cup ( \neg M_* \cap \neg M_t)$.
 \end{proof}
 
 The next lemma takes a step further.
-It shows that if $\Delta_e \ge \Delta_{(t-n+1)}$ for some arm $e$, then the empirical gap of arm $e$ is greater than $\frac23 \Delta_{(t-n+1})$.
+It shows that if $\Delta_e \ge \Delta_{(t-n+1)}$ for some arm $e$, then the empirical gap of arm $e$,
+	$\bar w_t(M_t) - \bar w_t(\tilde M_{t,e})$, is greater than $\frac23 \Delta_{(t-n+1})$.
+\wei{Typo again, should be $\Delta_{(n-t+1)}$.}
 \begin{lemma}
 \label{lemma-budget-c}
 Fix any phase $t>0$. 
@@ -2573,7 +2577,7 @@ e \in (M_* \cap M_t) \cup ( \neg M_* \cap \neg M_t).
 \end{equation}
 
 We claim that $e\in (\tilde M_{t,e} \del M_*) \cup (M_* \del \tilde M_{t,e})$ and therefore $M_* \not= \tilde M_{t,e}$.
-Recall the definition of $\tilde M_{t,e}$ ensures that $e\in \tilde M_{t,e}$ if and only if $e\not\in M_t$.
+Recall the definition of $\tilde M_{t,e}$, which ensures that $e\in \tilde M_{t,e}$ if and only if $e\not\in M_t$.
 By Eq.~\eqref{eq:lbcx-0}, we see that either $e\in (M_* \cap M_t)$ or $e\in (\neg M_* \cap \neg M_t)$.
 First let us assume that $e\in M_*\cap M_t$.
 Then, by definition of $\tilde M_{t,e}$, we see that $e\not\in \tilde M_{t,e}$. Therefore $e\in M_* \del \tilde M_{t,e}$.
@@ -2614,6 +2618,7 @@ and Eq.~\eqref{eq:lbcx-6} follows from the fact that $\inn{\vec w, \vec\chi_b} \
 \end{proof}
 
 The next lemma shows that, during phase $t$, if $\Delta_e \le \Delta_{(t-n+1)}$ for some arm $e$, then the empirical gap of arm $e$ is smaller than $\frac13 \Delta_{(t-n+1})$.
+\wei{Typo again, should be $\Delta_{(n-t+1)}$.}
 \begin{lemma}
 \label{lemma-budget-e}
 Fix any phase $t>0$. 
@@ -2634,7 +2639,7 @@ $e \in (M_* \del M_t) \cup (M_t\del M_*)$.
 This shows that $M_t\not=M_*$,
 hence \Cref{lemma:exchange} applies here. 
 Therefore we know that there exists $b=(b_+,b_-)\in \B$ such that
-$e\in (b_+\cup b_-)$, $b_+\subseteq M_* \del M_t$, $b_- \subseteq M_t \del M_*$, $M_t \oplus b \in \M$ and $\inn{\vec w,\vec\chi_b}\ge \Delta_e \ge 0$.
+$e\in (b_+\cup b_-)$, $b_+\subseteq M_* \del M_t$, $b_- \subseteq M_t \del M_*$, $M_t \oplus b \in \M$ and $\inn{\vec w,\vec\chi_b}\ge \Delta_e > 0$.
 
 Define $M_{t,e}' \triangleq M_t \oplus b$.
 We claim that
@@ -2671,9 +2676,9 @@ For reader's convenience, we first restate Theorem~\ref{theorem:budget} as follo
 \realfixbudget*
 
 \begin{proof}
-First, we show that the algorithm at most $T$ samples.
+First, we show that the algorithm takes at most $T$ samples.
 It is easy to see that exactly one arm is pulled for $\tilde T_1$ times, one arm is pulled for $\tilde T_2$ times, \ldots, and one arm is pulled for $\tilde T_n$ times. 
-Therefore, the total number samples used by the algorithm is bounded by
+Therefore, the total number of samples used by the algorithm is bounded by
 \begin{align*}
 \sum_{t=1}^n \tilde T_t 
 &\le \sum_{t=1}^n \left(\frac{T-n}{\barlog(n)(n-t+1)} +1\right)\\
@@ -2718,7 +2723,7 @@ By combining Eq.~\eqref{eq-fbdg-upper} and Eq.~\eqref{eq-fbdg-lower}, we see tha
 \bar w_t(M_t) - \bar w_t(\tilde M_{t,p_t}) \le \frac{1}{3} \Delta_{(n-t+1)} < \frac{2}3 \Delta_{(n-t+1)} \le \bar w_t(M_t)- \bar w_t(M_{t,e_t}).
 \label{eq-fdbg-contract}
 \end{equation}
-However Eq.~\eqref{eq-fdbg-contract} is contradictory to the definition of $p_t \triangleq \argmax_{i\in [n]\del (A_t\cup B_t)} \bar w_t(M_t)- \bar w_t(\tilde M_{t,i})$.
+However Eq.~\eqref{eq-fdbg-contract} is contradictory to the definition of $p_t \triangleq \argmax_{e\in [n]\del (A_t\cup B_t)} \bar w_t(M_t)- \bar w_t(\tilde M_{t,e})$.
 Therefore we have proven that $p_t \not\in (M_* \cap \neg M_t) \cup (\neg M_* \cap M_t)$.
 This means that the algorithm does not err at phase $t$, or equivalently $A_{t+1} \subseteq M_*$ and $B_{t+1}\cap M_* = \emptyset$.
 By induction, we have proven that the algorithm does not err at any phase $t\in[n]$.
