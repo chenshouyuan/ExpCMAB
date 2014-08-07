@@ -731,7 +731,7 @@ The \AlgorithmBud algorithm divides the budget of $T$ rounds into $n$ phases.
 In the end of each phase, \AlgorithmBud either accepts or rejects a single arm. 
 If an arm is accepted, then it is included into the final output. 
 Conversely, if an arm is rejected, then it is excluded from the final output.
-The arms that are neither accepted nor rejected are sampled for a equal number of times in the next phase.
+The arms that are neither accepted nor rejected are sampled for an equal number of times in the next phase.
 \junk{We see that the major challenge here is to choose a correct arm to accept/reject. 
 For decision classes with non-trivial combinatorial structures, one cannot simply accept/reject arms according to their empirical means, since an arm with small expected reward may belong to the optimal set.
 We resolve this challenge by using a novel gap estimation method for decision making and demonstrate that \AlgorithmBud can achieve a small probability of error.}
@@ -741,7 +741,9 @@ Let $A_t$ denote the set of accepted arms before phase $t$ and let $B_t$ denote 
 We call an arm $e$ to be active if $e\not\in A_t\cup B_t$.
 In the beginning of phase $t$, \AlgorithmBud samples each active arm for $\tilde T_t -\tilde T_{t-1}$ times, where the definition of $\tilde T_t$ is given in Algorithm~\ref{algo:budget}.
 Next, \AlgorithmBud calls the constrained oracle to compute an optimal set $M_t$ with respect to the empirical means $\vec {\bar w}_t$, accepted arms $A_t$ and rejected arms $B_t$, i.e., $M_t = \COracle(\vec {\bar w}_t, A_t,B_t)$.
-It is clear that the output of $\COracle(\vec {\bar w}_t, A_t,B_t)$ is independent from the input $\bar w_t(i)$ for any $i\in A_t\cup B_t$.
+It is clear that the output of $\COracle(\vec {\bar w}_t, A_t,B_t)$ is independent from the input $\bar w_t(e)$ for any $e\in A_t\cup B_t$.
+\wei{I changed the general index of an arm from $i$ to $e$, following the common convention used in the paper. I also did this for the
+algorithm pseudocode. Please check other places to try to keep this convention.}
 Then, for each active arm $e$, \AlgorithmBud estimates the ``empirical gap'' of $e$ in the following way.
 If $e\in M_t$, then \AlgorithmBud computes an optimal set $\tilde M_{t,e}$ that does not include $e$, i.e., $\tilde M_{t,e} = \COracle(\vec {\bar w}_t, A_t, B_t \cup \{e\})$.
 Conversely, if $e\not\in M_t$, then \AlgorithmBud computes an optimal $\tilde M_{t,e}$ which includes $e$, i.e., $\tilde M_{t,e} = \COracle(\vec {\bar w}_t, A_t \cup \{e\}, B_t)$.
@@ -761,7 +763,7 @@ We note that \AlgorithmBud can be considered as a generalization of the ideas of
 	\State $\tilde T_t \gets \left\lceil \frac{T-n}{\barlog(n)(n-t+1)} \right\rceil$
 	\State Pull each arm $e\in [n]\del (A_t\cup B_t)$ for $\tilde T_t - \tilde T_{t-1}$ times
 	\State Update the empirical means $\vec {\bar w}_t$ for each arm $e\in [n] \del (A_t\cup B_t)$
-	\Comment{set $\bar w_t(i)= 0, \;\forall i\in A_t\cup B_t$}
+	\Comment{set $\bar w_t(e)= 0, \;\forall e\in A_t\cup B_t$}
 	\State $M_t \gets \COracle(\vec {\bar w}_t, A_t, B_t)$
   \If{$M_t = \bot$}
     \State \textbf{fail:} set $\out\gets \bot$ and \textbf{return }$\out$
@@ -770,7 +772,7 @@ We note that \AlgorithmBud can be considered as a generalization of the ideas of
 		\State \textbf{if } {$e\in M_t$} \textbf{then }  $\tilde M_{t,e} \gets \COracle(\vec {\bar w}_t, A_t, B_t \cup \{e\})$
 		\State \textbf{else} $\tilde M_{t,e} \gets \COracle(\vec {\bar w}_t, A_t \cup \{e\}, B_t)$
 	\EndFor
-	\State $p_t \gets \argmax_{i\in[n]\del (A_t\cup B_t)} \bar w_t(M_t) - \bar w_t(\tilde M_{t,i})$
+	\State $p_t \gets \argmax_{e\in[n]\del (A_t\cup B_t)} \bar w_t(M_t) - \bar w_t(\tilde M_{t,e})$
   \Comment{ define $\bar w_t(\bot) = -\infty$; break ties arbitrarily}
 	\If {$p_t\in M_t$}
 		\State $A_{t+1} \gets A_t \cup \{p_t\}, B_{t+1} \gets B_t$
