@@ -742,8 +742,6 @@ We call an arm $e$ to be active if $e\not\in A_t\cup B_t$.
 In the beginning of phase $t$, \AlgorithmBud samples each active arm for $\tilde T_t -\tilde T_{t-1}$ times, where the definition of $\tilde T_t$ is given in Algorithm~\ref{algo:budget}.
 Next, \AlgorithmBud calls the constrained oracle to compute an optimal set $M_t$ with respect to the empirical means $\vec {\bar w}_t$, accepted arms $A_t$ and rejected arms $B_t$, i.e., $M_t = \COracle(\vec {\bar w}_t, A_t,B_t)$.
 It is clear that the output of $\COracle(\vec {\bar w}_t, A_t,B_t)$ is independent from the input $\bar w_t(e)$ for any $e\in A_t\cup B_t$.
-\wei{I changed the general index of an arm from $i$ to $e$, following the common convention used in the paper. I also did this for the
-algorithm pseudocode. Please check other places to try to keep this convention.}
 Then, for each active arm $e$, \AlgorithmBud estimates the ``empirical gap'' of $e$ in the following way.
 If $e\in M_t$, then \AlgorithmBud computes an optimal set $\tilde M_{t,e}$ that does not include $e$, i.e., $\tilde M_{t,e} = \COracle(\vec {\bar w}_t, A_t, B_t \cup \{e\})$.
 Conversely, if $e\not\in M_t$, then \AlgorithmBud computes an optimal $\tilde M_{t,e}$ which includes $e$, i.e., $\tilde M_{t,e} = \COracle(\vec {\bar w}_t, A_t \cup \{e\}, B_t)$.
@@ -1497,9 +1495,7 @@ This shows that
 \nor{\vec \rad_t\odot \vec d}_\infty \le \max_{i: (\tilde M_t \del M_t)\cup (M_t\del \tilde M_t)} \rad_t(i) = \rad_t(e) < \frac{\Delta_e}{3\rank(\B)},
 \label{eq:u-c-2-0}
 \end{equation}
-where the last inequality follows from the assumption that $\xi_t$ occurs.
-\wei{The last inequality is due to the assumption of the lemma, not that $\xi_t$ occurs, right? Please check.
-}
+where the last inequality follows from the assumption that $\rad_t(e) < \frac{\Delta_e}{3\rank(\B)}$.
 
 Now, we bound quantity $\inn{\vec {\bar w}_t, \vec d_1}+\inn{\vec \rad_t, |\vec d_1|}
 -\inn{\vec {\bar w}_t, \vec d}-\inn{\vec \rad_t,  |\vec d|}$ as follows
@@ -1509,7 +1505,7 @@ Now, we bound quantity $\inn{\vec {\bar w}_t, \vec d_1}+\inn{\vec \rad_t, |\vec 
 & = \inn{\vec {\bar w}_t, \vec \chi_b} + \inn{\vec \rad_t, |\vec d_1|-|\vec d|} \nonumber\\
 & =	\inn{\vec {\bar w}_t, \vec \chi_b} + \inn{\vec \rad_t, \vec d_1^2-\vec d^2} \label{eq:u-c-2-1} \\
 & =	\inn{\vec {\bar w}_t, \vec \chi_b} + \inn{\vec \rad_t, 2\vec d\odot \vec \chi_b +\vec \chi_b^2} \label{eq:u-c-2-2} \\
-& =	\inn{\vec {\bar w}_t, \vec \chi_b} + \inn{\vec \rad_t, \vec\chi_b^2} + 2\inn{\vec \rad_t\odot \vec d, \vec \chi_b} \nonumber \\
+& =	\inn{\vec {\bar w}_t, \vec \chi_b} + \inn{\vec \rad_t, \vec\chi_b^2} + 2\inn{\vec \rad_t\odot \vec d, \vec \chi_b} \label{eq:cmr-2-1} \\
 & \ge \inn{\vec w, \vec \chi_b}+2\inn{\vec \rad_t\odot \vec d, \vec \chi_b}  \label{eq:u-c-2-3} \\
 & \ge \inn{\vec w, \vec \chi_b}-2\nor{\vec \rad_t\odot \vec d}_\infty\nor{\vec\chi_b}_1 \label{eq:u-c-2-3.5} \\
 & > \inn{\vec w, \vec \chi_b}-\frac{2\Delta_e}{3} \label{eq:u-c-2-4} \\
@@ -1517,9 +1513,9 @@ Now, we bound quantity $\inn{\vec {\bar w}_t, \vec d_1}+\inn{\vec \rad_t, |\vec 
 \end{align}
 where Eq.~\eqref{eq:u-c-2-1} follows from the fact that $\vec d_1\in \{-1,0,1\}^n$ and $\vec d \in \{-1,0,1\}^n$;
 Eq.~\eqref{eq:u-c-2-2} holds since $\vec d_1=\vec d+\vec \chi_b$;
+Eq.~\eqref{eq:cmr-2-1} follows from Lemma~\ref{lemma:vector-technical};
 Eq.~\eqref{eq:u-c-2-3} follows from the assumption that $\xi_t$ occurs and Lemma~\ref{lemma:ci-property};
-Eq.~\eqref{eq:u-c-2-3.5} follows from Lemma~\ref{lemma:vector-technical}  and H\"older's inequality;
-\wei{Lemma~\ref{lemma:vector-technical} has been applied two lines ago, not here at Eq.~\eqref{eq:u-c-2-3.5}.}
+Eq.~\eqref{eq:u-c-2-3.5} follows from  H\"older's inequality;
 Eq.~\eqref{eq:u-c-2-4} is due to Eq.~\eqref{eq:u-c-2-0};
 and Eq.~\eqref{eq:u-c-2-5} follows from $\inn{\vec w,\vec\chi_b} \ge \Delta_e >0$.
 
@@ -2485,8 +2481,7 @@ $$
 
 The next lemma provides an important insight on the correctness of \AlgorithmBud.
 Informally speaking, suppose that the algorithm does not make an error before phase $t$.
-Then, we show that, suppose arm $e$ has a gap $\Delta_e$ larger than the ``reference'' gap $\Delta_{(t-n+1)}$ of phase $t$, 
-\wei{I think this is a typo, it should be $\Delta_{(n-t+1)}$. Same typo occurs in the lemma statement below.}
+Then, we show that, suppose arm $e$ has a gap $\Delta_e$ larger than the ``reference'' gap $\Delta_{(n-t+1)}$ of phase $t$, 
 then arm $e$ must be correctly classified by $M_t$, i.e., $e\in M_t$ if and only if $e\in M_*$.
 \begin{lemma}
 Fix any phase $t>0$. 
@@ -2554,9 +2549,8 @@ Therefore we have $e\in (M_* \cap M_t) \cup ( \neg M_* \cap \neg M_t)$.
 \end{proof}
 
 The next lemma takes a step further.
-It shows that if $\Delta_e \ge \Delta_{(t-n+1)}$ for some arm $e$, then the empirical gap of arm $e$,
-	$\bar w_t(M_t) - \bar w_t(\tilde M_{t,e})$, is greater than $\frac23 \Delta_{(t-n+1})$.
-\wei{Typo again, should be $\Delta_{(n-t+1)}$.}
+It shows that if $\Delta_e \ge \Delta_{(n-t+1)}$ for some arm $e$, then the empirical gap of arm $e$,
+	$\bar w_t(M_t) - \bar w_t(\tilde M_{t,e})$, is greater than $\frac23 \Delta_{(n-t+1})$.
 \begin{lemma}
 \label{lemma-budget-c}
 Fix any phase $t>0$. 
@@ -2617,8 +2611,8 @@ Eq.~\eqref{eq:lbcx-5} holds since $b\in \B$ and therefore $\nor{\vec\chi_b}_1  \
 and Eq.~\eqref{eq:lbcx-6} follows from the fact that $\inn{\vec w, \vec\chi_b} \ge \Delta_e$.
 \end{proof}
 
-The next lemma shows that, during phase $t$, if $\Delta_e \le \Delta_{(t-n+1)}$ for some arm $e$, then the empirical gap of arm $e$ is smaller than $\frac13 \Delta_{(t-n+1})$.
-\wei{Typo again, should be $\Delta_{(n-t+1)}$.}
+The next lemma shows that, during phase $t$, if $\Delta_e \le \Delta_{(n-t+1)}$ for some arm $e$, then the empirical gap of arm $e$ is smaller than $\frac13 \Delta_{(n-t+1})$.
+
 \begin{lemma}
 \label{lemma-budget-e}
 Fix any phase $t>0$. 
