@@ -558,7 +558,7 @@ Given any $\delta \in (0,1)$, any decision class $\M \subseteq 2^{[n]}$ and any 
 Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ has mean $w(e)$ with an $R$-sub-Gaussian tail.
 Let $M_* = \argmax_{M\in \M} w(M)$ denote the optimal set.
 %Let $\B$ be an exchange class for $\M$ and let $\{\Delta_e\}_{e\in [n]}$ be the gaps defined in Eq.~\eqref{eq:define-delta}.
-Set $\rad_t(e) = R\sqrt{2\log\left(\frac{4n t^2}\delta\right)/ T_t(e) }$ for all $t > 0$ and $e\in[n]$.
+Set $\rad_t(e) = R\sqrt{2\log\left(\frac{4n t^3}\delta\right)/ T_t(e) }$ for all $t > 0$ and $e\in[n]$.
 Then, with probability at least $1-\delta$, the \Algorithm algorithm (Algorithm~\ref{algo:pac}) returns the optimal set $\out=M_*$ and
 \begin{equation}
 \label{eq:sample-complexity}
@@ -1196,7 +1196,7 @@ Suppose that the reward distribution $\Rew_e$ is a $R$-sub-Gaussian distribution
 And if, for all $t>0$ and all $e\in [n]$, 
 the confidence radius $\rad_t(e)$ is given by
 $$
-\rad_t(e) = R\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_t(e)}},
+\rad_t(e) = R\sqrt{\frac{2\log\left(\frac{4n t^3}\delta\right)}{T_t(e)}},
 $$
 where $T_t(e)$ is the number of samples of arm $e$ up to round $t$.
 Then, we have
@@ -1207,12 +1207,21 @@ $$
 
 \begin{proof}
 %We claim that, for any $t>0$, one has $\Pr[\xi_t] \ge 1- \frac{\delta}{4t^2}$.
-For any $t>0$ and $e\in [n]$, notice $\Rew_e$ is a $R$-sub-Gaussian tail distribution with mean $w(e)$ and $w_t(e)$ is the empirical mean of $\Rew_e$ from $T_t(e)$ samples. 
-Using Hoeffding's inequality (Lemma~\ref{lemma:hoeffeding}), we obtain
-$$
-\Pr\left[ \big|\bar w_t(e)-w(e) \big| \ge R\sqrt{\frac{2\log\left(\frac{4n t^2}\delta\right)}{T_t(e)}} \right] \le \frac{\delta}{2nt^2}.
-$$
-By union bound over all $e\in [n]$, we see that $\Pr[\xi_t] \ge 1-\frac{\delta}{2t^2}$. 
+Fix any $t>0$ and $e\in [n]$. 
+Note that $\Rew_e$ is a $R$-sub-Gaussian tail distribution with mean $w(e)$ and $\bar w_t(e)$ is the empirical mean of $\Rew_e$ from $T_t(e)$ samples. 
+Then, we have
+%Using Hoeffding's inequality (Lemma~\ref{lemma:hoeffeding}) and a union bound over the possible values of $T_t(e)$, we obtain
+\begin{align}
+\Pr\left[ \big|\bar w_t(e)-w(e) \big| \ge R\sqrt{\frac{2\log\left(\frac{4n t^3}\delta\right)}{T_t(e)}} \right] &=
+\sum_{s=1}^{t-1} \Pr\left[ \big|\bar w_t(e)-w(e) \big| \ge R\sqrt{\frac{2\log\left(\frac{4n t^3}\delta\right)}{s}}, T_t(e) = s \right]
+\label{eq:cmr-3-1}\\
+&\le \sum_{s=1}^{t-1} \frac{\delta}{2nt^3}
+\label{eq:cmr-3-2}\\
+&\le \frac{\delta}{2nt^2},\nonumber
+\end{align}
+where Eq.~\eqref{eq:cmr-3-1} follows from the fact that $ 1 \le T_t(e) \le t-1$ and
+Eq.~\eqref{eq:cmr-3-2} follows from Hoeffding's inequality (Lemma~\ref{lemma:hoeffeding}).
+By a union bound over all $e\in [n]$, we see that $\Pr[\xi_t] \ge 1-\frac{\delta}{2t^2}$. 
 Using a union bound again over all $t>0$, we have
 \begin{align*}
 \Pr\left[\bigcap_{t=1}^\infty \xi_t \right] &\ge 1-\sum_{t=1}^\infty \Pr[\neg \xi_t]\\
@@ -1829,14 +1838,14 @@ $\rad_{t_e}(e) \ge \max\{\frac{\Delta_e}{3\rank(\B)},\frac{\epsilon}{2K}\}$.
 Then, by the construction of $\rad_{t_e}(e)$, we have
 \begin{equation}
 \max\left\{\frac{\Delta_e}{3\rank(\B)},\frac{\epsilon}{2K}\right\} \le 
-R\sqrt{\frac{2\log\left(4n t_e^2/\delta\right)}{T(e)-1}} \le
-R\sqrt{\frac{2\log\left(4n T^2/\delta\right)}{T(e)-1}}.
+R\sqrt{\frac{2\log\left(4n t_e^3/\delta\right)}{T(e)-1}} \le
+R\sqrt{\frac{2\log\left(4n T^3/\delta\right)}{T(e)-1}}.
 \label{eq:bound-pac-te}
 \end{equation}
 Solving Eq.~\eqref{eq:bound-pac-te} for $T(e)$, we obtain
 \begin{equation}
 \label{eq:bound-pac-te-2}
-T(e) \le R^2\min\left\{\frac{18 \rank(\B)^2}{\Delta_e^2},\frac{16K^2}{\epsilon^2}\right\} \log(4nT^2/\delta)+1.
+T(e) \le R^2\min\left\{\frac{18 \rank(\B)^2}{\Delta_e^2},\frac{16K^2}{\epsilon^2}\right\} \log(4nT^3/\delta)+1.
 \end{equation}
 
 Notice that $T=\sum_{i\in[n]} T(e)$. 
@@ -3354,7 +3363,7 @@ We use the following evaluation procedure to compare the sample efficiency betwe
 Since \AlgorithmBud and \Uniform are both learning algorithms in the fixed budget setting, the comparison between them is straightforward:
 for each given budget, we run both algorithms with this budget independently for 1000 times and compare their empirical probability of errors (the fraction of runs where a tested algorithm fails to report the ground-truth optimal set $M_*$).
 On the other hand, we use the following procedure to compare \Algorithm with other fixed budget algorithms.
-For each instance, we run \Algorithm independently for 1000 times.
+For each instance of ISP network, we run \Algorithm independently for 1000 times.
 Suppose that the $i$-th run of \Algorithm uses $T_i$ samples, we also run \Uniform and \AlgorithmBud with budget $T_i$.
 Then we compare the empirical probability of errors of the tested algorithms after the 1000 runs are completed.
 In this way, we see that the compared algorithms use an equal number of samples in each run, which allows us to compare their sample efficiency.
