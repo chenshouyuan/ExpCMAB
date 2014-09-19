@@ -3,7 +3,12 @@
 
 %\title{Pure Exploration of Combinatorial Bandits}
 \title{Combinatorial Pure Exploration of \\ Multi-Armed Bandits}
-\author{Shouyuan Chen}
+\author{
+Shouyuan Chen$^1$\thanks{This work was done when the first two authors were interns at Microsoft Research Asia.}\hspace{1.5em}Tian Lin$^2$\hspace{1.5em}Irwin King$^1$\hspace{1.5em}Michael R. Lyu$^1$\hspace{1.5em}Wei Chen$^3$\\
+$^1$The Chinese University of Hong Kong\hspace{1.5em}$^2$Tsinghua University\hspace{1.5em}$^3$Microsoft Research Asia\\
+{ $^1$\{sychen,king,lyu\}@cse.cuhk.edu.hk \hspace{1em} 
+$^2$lint10@mails.tsinghua.edu.cn\hspace{1em}$^3$weic@microsoft.com}\\
+}
 \date{\today}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -47,7 +52,7 @@
 
 
 
-
+\nipsfinalcopy
 \allowdisplaybreaks
 \frenchspacing
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -142,7 +147,8 @@
 \newpage
 
 \maketitle
-\vspace{-1em}
+
+\vspace{-2em}
 \begin{abstract}
 We study the {\em combinatorial pure exploration (CPE)} problem in the stochastic multi-armed bandit setting, where a learner explores a set of arms with the objective of identifying the optimal member of a \emph{decision class}, which is a collection of subsets of arms with certain combinatorial structures such as size-$K$ subsets, matchings, spanning trees or paths, etc. The CPE problem represents a rich class of pure exploration tasks which covers not only many existing models but also novel cases where the object of interest has a non-trivial combinatorial structure. In this paper, we provide a series of results for the general CPE problem. We present general learning algorithms which work for all decision classes that admit offline maximization oracles in both fixed confidence and fixed budget settings. We prove problem-dependent upper bounds of our algorithms. Our analysis exploits the combinatorial structures of the decision classes and introduces a new analytic tool. We also establish a general problem-dependent lower bound for the CPE problem. Our results show that the proposed algorithms achieve the optimal sample complexity (within logarithmic factors) for many decision classes. In addition, applying our results back to the problems of top-$K$ arms identification and multiple bandit best arms identification, we recover the best available upper bounds up to constant factors and partially resolve a conjecture on the lower bounds.
 
@@ -525,6 +531,7 @@ We define the width of a decision class $\M$ as the width of the thinnest exchan
 \label{eq:width-class}
 \rank(\M) = \min_{\B \in \Exchange(\M)} \rank(\B).
 \end{equation}
+\vspace{-0.5em}
 %where $\rank(\B)$ is defined in Eq.~\eqref{eq:width}.\wei{This line could be removed.}
 
 \junk{
@@ -700,6 +707,7 @@ In the supplementary material (\Cref{section:lowerbound-evidence}), we provide e
 \vspace{-0.8em}
 \section{Fixed Budget Algorithm}
 \vspace{-0.8em}
+\label{section:csar}
 In this section, we present Combinatorial Successive Accept Reject (\AlgorithmBud) algorithm, which is a parameter-free learning algorithm for the \Problem problem in the fixed budget setting.
 Then, we upper bound the probability of error \AlgorithmBud in terms of gaps and $\rank(\M)$.
 %Recall that, in the fixed budget setting, an algorithm is given a budget $T>0$ such that the algorithm can use at most $T$ pulls.
@@ -1603,7 +1611,7 @@ Since $T>n$, we can write
 T = C\mathbf{\tilde H}\log\left(4n\mathbf{\tilde H}/\delta\right) + n, \text{ for some }C>0.
 \end{equation}
 If $C \le 458$, then it is clear that Eq.~\eqref{eq:cmr-t-1} holds.
-Next, we assume, in the contrary, that $C > 458$.
+Suppose, on the contrary, that $C > 458$.
 Notice that $T=\sum_{e\in[n]} T(e)$. 
 By summing up Eq.~\eqref{eq:bound-te-2} for all $e\in[n]$, we have
 \begin{align}
@@ -1611,7 +1619,7 @@ By summing up Eq.~\eqref{eq:bound-te-2} for all $e\in[n]$, we have
 		&\le n+18 \mathbf{\tilde H}\log(4nT^3/\delta) \nonumber \\
 		&= n+18 \mathbf{\tilde H}\log(4n/\delta)+ 54\mathbf{\tilde H}\log(T)\nonumber \\
 		&\le n+18 \mathbf{\tilde H}\log(4n/\delta)+ 54\mathbf{\tilde H}\log\left(2C\mathbf{\tilde H}\log\left(4n\mathbf{\tilde H}/\delta\right)\right)\label{eq:cmr-t-2} \\
-		&\le n+18 \mathbf{\tilde H}\log(4n/\delta)+ 54\mathbf{\tilde H}\log\left(2C\right)
+		&= n+18 \mathbf{\tilde H}\log(4n/\delta)+ 54\mathbf{\tilde H}\log\left(2C\right)
 		+54\mathbf{\tilde H}\log(\mathbf{\tilde H})
 		+54\mathbf{\tilde H}\log\log\left(4n\mathbf{\tilde H}/\delta\right) \nonumber \\
 		&\le n+18 \mathbf{\tilde H}\log(4n\mathbf{\tilde H}/\delta)+ 54\mathbf{\tilde H}\log\left(2C\right)\log(4n\mathbf{\tilde H}/\delta)
@@ -1622,7 +1630,7 @@ By summing up Eq.~\eqref{eq:bound-te-2} for all $e\in[n]$, we have
 		&= T,\label{eq:cmr-t-0}
 \end{align}
 where Eq.~\eqref{eq:cmr-t-2} follows from Eq.~\eqref{eq:cmr-t-3} and the assumption that $n<\frac{1}2 T$;
-Eq.~\eqref{eq:cmr-t-4} follows from the fact that $\mathbf{\tilde H} \ge 1$;
+Eq.~\eqref{eq:cmr-t-4} follows from the fact that $\mathbf{\tilde H} \ge 1$ and $\delta < 1$;
 Eq.~\eqref{eq:cmr-t-5} follows since $126+54\log(2C) < C$ for all $C>458$;
 and Eq.~\eqref{eq:cmr-t-0} is due to Eq.~\eqref{eq:cmr-t-3}.
 Hence we see that Eq.~\eqref{eq:cmr-t-0} is a contradiction. 
@@ -3323,7 +3331,7 @@ Hence we have verified that $w(M) = \max_{M'\in\M_{A,B}} w(M')$.
 \label{section:experiment}
 
 In this section, we present some preliminary experimental results of our algorithms \Algorithm and \AlgorithmBud. 
-We conduct experiments on a real-world dataset with decision classes corresponding to spanning trees.
+We conduct experiments on a real-world dataset with decision classes corresponding to collections of spanning trees.
 We compare our algorithms with the uniform allocation benchmark \Uniform discussed in \Cref{section:uniform}.
 The experiment results show that the proposed algorithms are considerably more sample efficient than the \Uniform algorithm, which agrees with our theoretical analysis.
 
@@ -3400,10 +3408,23 @@ By definition of $\mathbf H$, we see that $\mathbf H$ decreases when $c_0$ incre
 % and $\mathbf H$ increases if $c_0 < 0$.
 %We will translate the sample complexity of \Algorithm in units of $\mathbf H$ in the spirit of the sample complexity bound of Theorem~\ref{theorem:main}.
 
+Recall that the sampling process of \AlgorithmBud is divided into $n$ phases and, in the end of each phase, the algorithm either accepts or rejects an arm.
+In practice, for some decision classes, there may exists a phase $t<n$ such that %the set of accepted arms $A_t$ and the set of rejected arms $B_t$ may be large enough such that% 
+only a unique set of arms remains to satisfy all constraints of phase $t$, i.e. $|\mathcal M_{A_t,B_t}|=1$ (see Section~\ref{section:csar} for the definitions of $A_t, B_t$ and $\mathcal M_{A_t,B_t}$).
+By the design of \AlgorithmBud, this unique element of $\mathcal M_{A_t,B_t}$ will be the output of algorithm.
+In this case, the remaining budget for phases $t+1,\ldots, n$ are wasted in the sense that they do not affect the output.
+Therefore, in our experiment, we modify \AlgorithmBud to utilize these remaining budget using the following heuristic.
+If $|\mathcal M_{A_t,B_t}|=1$ for some $t < n$, we terminate the algorithm and then re-run the algorithm on the remaining budget.
+During re-running the algorithm, the algorithm computes the empirical means of arms by using all samples including the samples from all previous runs of the algorithm. 
+We keep this process until the the algorithm terminates normally or the remaining budget is less than 10\% of the original budget.
+%By recycling the samples from previous runs, our algorithm utilize the full budget.
+%This heuristic improves 
+%In the rest of this section, the \AlgorithmBud algorithm
+
 
 \textbf{Evaluation method.} 
-We use the following evaluation procedure to compare the sample efficiency between \Algorithm,\AlgorithmBud and \Uniform.
-Since \AlgorithmBud and \Uniform are both learning algorithms in the fixed budget setting, the comparison between them is straightforward:
+We use the following evaluation procedure to compare the sample efficiency among \Algorithm, \AlgorithmBud and \Uniform.
+Since \AlgorithmBud and \Uniform are both learning algorithms in the fixed budget setting, the comparison among them is straightforward:
 for each given budget, we run both algorithms with this budget independently for 1000 times and compare their empirical probability of errors (the fraction of runs where a tested algorithm fails to report the ground-truth optimal set $M_*$).
 On the other hand, we use the following procedure to compare \Algorithm with other fixed budget algorithms.
 For each instance of ISP network, we run \Algorithm independently for 1000 times.
@@ -3412,7 +3433,6 @@ Then we compare the empirical probability of errors of the tested algorithms aft
 In this way, we see that the compared algorithms use an equal number of samples in each run, which allows us to compare their sample efficiency.
 Finally, we set $\delta=0.3$ for \Algorithm throughout the experiments.
 %In this way, we can compare the sample efficiency of \Algorithm with \Uniform and \AlgorithmBud.
-
 
 
 
