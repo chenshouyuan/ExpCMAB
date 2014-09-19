@@ -1567,27 +1567,70 @@ It is easy to see that
 $T_{t_e}(e) = T(e) - 1$.
 By Lemma~\ref{lemma:key-technical}, we see that 
 $\rad_{t_e}(e) \ge \frac{\Delta_e}{3\rank(\M)}$.
-By plugging the definition of $\rad_{t_e}$, we have
+Using the definition of $\rad_{t_e}$, we have
 \begin{equation}
 \frac{\Delta_e}{3\rank(\M)} \le 
-R\sqrt{\frac{2\log\left(4n t_e^2/\delta\right)}{T(e)-1}} \le
-R\sqrt{\frac{2\log\left(4n T^2/\delta\right)}{T(e)-1}}.
+R\sqrt{\frac{2\log\left(4n t_e^3/\delta\right)}{T(e)-1}} \le
+R\sqrt{\frac{2\log\left(4n T^3/\delta\right)}{T(e)-1}}.
 \label{eq:bound-te}
 \end{equation}
 Solving Eq.~\eqref{eq:bound-te} for $T(e)$, we obtain
 \begin{equation}
 \label{eq:bound-te-2}
-T(e) \le \frac{18 \rank(\M)^2 R^2}{\Delta_e^2} \log(4nT^2/\delta)+1.
+T(e) \le \frac{18 \rank(\M)^2 R^2}{\Delta_e^2} \log(4nT^3/\delta)+1.
 \end{equation}
 
+
+%Notice that $T=\sum_{e\in[n]} T(e)$. 
+%Hence the theorem follows by summing up Eq.~\eqref{eq:bound-te-2} for all $e\in [n]$ and solving for $T$.
+
+
+Now we define $\mathbf{\tilde H}=\max\big\{\rank(\M)^2 R^2\mathbf{H},1\big\}$.
+% and $T_* = 395\mathbf{\tilde H}\log\left(4n\mathbf{\tilde H}/\delta\right)+2n$.
+In the rest of the proof, we show that 
+\begin{equation}
+\label{eq:cmr-t-1}
+T \le 458\mathbf{\tilde H}\log\left(4n\mathbf{\tilde H}/\delta\right)+2n.
+\end{equation}
+Notice that the theorem follows immediately from Eq.~\eqref{eq:cmr-t-1}.
+%Notice that the right-hand side of Eq.~\eqref{eq:cmr-t-1} 
+
+If $n \ge \frac{1}{2}T$, then we see that $T \le 2n$ and therefore Eq.~\eqref{eq:cmr-t-1} holds immediately.
+Next we assume that $n < \frac{1}{2}T$.
+Since $T>n$, we can write 
+\begin{equation} 
+\label{eq:cmr-t-3}
+T = C\mathbf{\tilde H}\log\left(4n\mathbf{\tilde H}/\delta\right) + n, \text{ for some }C>0.
+\end{equation}
+If $C \le 458$, then it is clear that Eq.~\eqref{eq:cmr-t-1} holds.
+Next, we assume, in the contrary, that $C > 458$.
 Notice that $T=\sum_{e\in[n]} T(e)$. 
-Hence the theorem follows by summing up Eq.~\eqref{eq:bound-te-2} for all $e\in [n]$ and solving for $T$.
-\wei{It is not immediately clear how to solve the inequality with $T$ on both sides. Can you write more steps here? For all the proofs
-so far, one can follow the proofs step by step without doing any computation on a separate paper, but this final step one has to do some
-computation and it is not clear how to do it. So to be consistent, I think it is better to provide more detailed steps here.
-This is also related to reviewer's comment of providing the explicit bound with constants shown, not the big O bound, so it is worth to
-give the derivation.
-}
+By summing up Eq.~\eqref{eq:bound-te-2} for all $e\in[n]$, we have
+\begin{align}
+	T &\le n+\sum_{e\in [n]}\frac{18 \rank(\M)^2 R^2}{\Delta_e^2} \log(4nT^3/\delta) \nonumber\\
+		&\le n+18 \mathbf{\tilde H}\log(4nT^3/\delta) \nonumber \\
+		&= n+18 \mathbf{\tilde H}\log(4n/\delta)+ 54\mathbf{\tilde H}\log(T)\nonumber \\
+		&\le n+18 \mathbf{\tilde H}\log(4n/\delta)+ 54\mathbf{\tilde H}\log\left(2C\mathbf{\tilde H}\log\left(4n\mathbf{\tilde H}/\delta\right)\right)\label{eq:cmr-t-2} \\
+		&\le n+18 \mathbf{\tilde H}\log(4n/\delta)+ 54\mathbf{\tilde H}\log\left(2C\right)
+		+54\mathbf{\tilde H}\log(\mathbf{\tilde H})
+		+54\mathbf{\tilde H}\log\log\left(4n\mathbf{\tilde H}/\delta\right) \nonumber \\
+		&\le n+18 \mathbf{\tilde H}\log(4n\mathbf{\tilde H}/\delta)+ 54\mathbf{\tilde H}\log\left(2C\right)\log(4n\mathbf{\tilde H}/\delta)
+		+54\mathbf{\tilde H}\log(4n\mathbf{\tilde H}/\delta)
+		+54\mathbf{\tilde H}\log(4n\mathbf{\tilde H}/\delta)\label{eq:cmr-t-4}\\
+		&=n+(126+54\log(2C))\log(4n\mathbf{\tilde H}/\delta)\nonumber \\
+		&< n+C\log(4n\mathbf{\tilde H}/\delta) \label{eq:cmr-t-5}\\
+		&= T,\label{eq:cmr-t-0}
+\end{align}
+where Eq.~\eqref{eq:cmr-t-2} follows from Eq.~\eqref{eq:cmr-t-3} and the assumption that $n<\frac{1}2 T$;
+Eq.~\eqref{eq:cmr-t-4} follows from the fact that $\mathbf{\tilde H} \ge 1$;
+Eq.~\eqref{eq:cmr-t-5} follows since $126+54\log(2C) < C$ for all $C>458$;
+and Eq.~\eqref{eq:cmr-t-0} is due to Eq.~\eqref{eq:cmr-t-3}.
+Hence we see that Eq.~\eqref{eq:cmr-t-0} is a contradiction. 
+Therefore we see that $C\le 458$ which means that Eq.~\eqref{eq:cmr-t-1} holds.
+
+
+
+
 \end{proof}
 
 
@@ -3002,7 +3045,7 @@ To prove \Cref{fact:match}, we recall a classical result on graph matching which
 \begin{lemma}
 \label{lemma:match}
 Let $G(V,E)$ be a bipartite graph.
-Let $M$ and $M'$ be two different matchings.
+Let $M$ and $M'$ be two different matchings of $G$.
 Then the induced graph $G'$ from the symmetric difference $(M\del M')\cup (M'\del M)$ consists of connected components that are one of the following
 \begin{itemize}
 %\item An isolated vertex.
