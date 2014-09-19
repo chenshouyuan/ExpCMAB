@@ -1700,7 +1700,7 @@ where $K=\max_{M\in \M} |M|$ is the size of the largest member of decision class
 \label{theorem:pac}
 \end{restatable}
 We see that if $\epsilon=0$, the sample complexity Eq.~\eqref{eq:pac} of \AlgorithmPAC equals to that of \Algorithm. 
-And the sample complexity of \AlgorithmPAC decreases when $\epsilon$ increases.
+Moreover, the sample complexity of \AlgorithmPAC decreases when $\epsilon$ increases.
 
 There are several PAC learning algorithms dedicated for the \MultiIdent problem in the literature with different guarantees \citep{kalyanakrishnan2012pac,zhou2014optimal,gabillon2012best}.
 \citet{zhou2014optimal} proposed an $(\epsilon,\delta)$-PAC algorithm for the \MultiIdent problem with a problem-independent sample complexity bound of $O(\frac{K^2n}{\epsilon^2}+\frac{Kn\log(1/\delta)}{\epsilon^2})$.\footnote{We notice that the definition of \citet{zhou2014optimal} allow an $(\epsilon',\delta)$-PAC algorithm to produce an output with \emph{average} sub-optimality of $\epsilon'$. This is equivalent to our definition of $(\epsilon,\delta)$-PAC algorithm with $\epsilon=K\epsilon'$ for the \MultiIdent problem.
@@ -1868,13 +1868,13 @@ Using Lemma~\ref{lemma:pac-key} and Lemma~\ref{lemma:pac-correct}, we are ready 
 %\resultpac*
 \begin{proof}[Proof of Theorem~\ref{theorem:pac}]
 Similar to the proof of Theorem~\ref{theorem:main}, we appeal to Lemma~\ref{lemma:ci}, which shows that the event $\xi \triangleq \bigcap_{t=1}^\infty \xi_t$ occurs with probability at least $1-\delta$.
-And we shall assume that $\xi$ occurs in the rest of the proof.
+We shall assume that $\xi$ occurs in the rest of the proof.
 
 By the assumption of $\xi$ and Lemma~\ref{lemma:pac-correct}, we know that $w(M_*)-w(\out) \le \epsilon$. Therefore, we only remain to bound the number of samples $T$.
 
 Consider an arbitrary arm $e\in [n]$.
-Let $T(e)$ denote the total number of pull of arm $e\in [n]$.
-Let $t_e$ be the last round which arm $e$ is pulled, i.e., $p_{t_e} = e$. 
+Let $T(e)$ denote the total number of pulls of arm $e\in [n]$.
+Let $t_e$ be the last round in which arm $e$ is pulled, i.e., $p_{t_e} = e$. 
 Hence $T_{t_e}(e) = T(e) - 1$.
 By Lemma~\ref{lemma:pac-key}, we see that 
 $\rad_{t_e}(e) \ge \max\{\frac{\Delta_e}{3\rank(\B)},\frac{\epsilon}{2K}\}$.
