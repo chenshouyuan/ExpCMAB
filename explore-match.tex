@@ -169,17 +169,17 @@ We study the {\em combinatorial pure exploration (CPE)} problem in the stochasti
 % objective is to identify the optimal set of arms from a collection of sets of arms called decision class.
 
 \end{abstract}
-\vspace{-0.5em}
+\vspace{-1em}
 \section{Introduction}
-\vspace{-0.3em}
+\vspace{-1em}
 %After introduced in the seminal work of \citet{robbins1985some}, 
 Multi-armed bandit (MAB) is a predominant model for characterizing the tradeoff between exploration and exploitation in decision-making problems. 
 Although this is an intrinsic tradeoff in many tasks, some application domains prefer a dedicated exploration procedure in which the goal is to identify an optimal object among a collection of candidates and the reward or loss incurred during exploration is irrelevant.
 In light of these applications, the related learning problem, called pure exploration in MABs, has received much attention.
 Recent advances in pure exploration MABs have found potential applications in many domains including crowdsourcing, communication network and online advertising.
 
-In many  of these application domains, a recurring problem is to identify the optimal object with certain \emph{combinatorial structure}. 
-For example, a crowdsourcing application may want to find the best assignment from workers to tasks such that overall productivity of workers are maximized. 
+In many of these application domains, a recurring problem is to identify the optimal object with certain \emph{combinatorial structure}. 
+For example, a crowdsourcing application may want to find the best assignment from workers to tasks such that overall productivity of workers is maximized. 
 A network routing system during the initialization phase may try to build a spanning tree that minimizes the delay of links, or attempts to identify the shortest path between two sites.  
 An online advertising system may be interested in finding the best matching between ads and display slots. 
 The literature of pure exploration MAB problems lacks a framework that encompasses these kinds of problems where the object of interest has a non-trivial combinatorial structure.  
@@ -280,9 +280,9 @@ Let $w(i)$ denote the $i$-th entry of $\vec w$.
 We define $w(E) \triangleq  \sum_{i\in E} w(i)$ to be the sum of entries indexed by $E$.
 %Furthermore, we will use the convention that $\max_{M\in \emptyset} f(M) = -\infty$ for any real-valued function $f$. \wei{Do we need this convention?}
 }
-\vspace{-0.7em}
+\vspace{-1em}
 \section{Problem Formulation}
-\vspace{-0.7em}
+\vspace{-1em}
 %Let $\vec u \in \RR^{n}$ be a vector. 
 % and $M\subseteq [n]$ be a set. 
 %\textbf{\Problem: problem formulation.} 
@@ -303,9 +303,9 @@ A learner's objective is to identify $M_*$ from $\M$ by playing the following ga
 %Let $M_* = \argmax_{M\in \M} w(M)$ denote the optimal set of arms which max
 %A learner wants to find the optimal solution of $\M$ which maximizes the expected reward $M_*=\argmax_{M\in \M} w(M)$ by playing the following game.
 %The learning problem of pure exploration combinatorial bandit can be formalized as a game between a learner and a stochastic environment, where the learner's goal is to find the optimal solution to the combinatorial problem which maximizes the sum of expected reward $M_* = \argmax_{M\in \M} w(M)$.v
-At the beginning of the game, the decision class $\M$ is revealed to the learner while the reward distributions $\{\Rew_e\}_{e\in[n]}$ are unknown to the learner.
+At the beginning of the game, the decision class $\M$ is revealed to the learner while the reward distributions $\{\Rew_e\}_{e\in[n]}$ are unknown to her.
 Then, the learner plays the game over a sequence of rounds;
-in each round $t$, the learner pulls an arm $p_t\in [n]$ and observes a reward sampled from the associated reward distribution $\Rew_{p_t}$.
+in each round $t$, she pulls an arm $p_t\in [n]$ and observes a reward sampled from the associated reward distribution $\Rew_{p_t}$.
 The game continues until certain stopping condition is satisfied.
 %which will be specified later.
 After the game finishes, the learner need to output a set $\out \in \M$.
@@ -325,14 +325,14 @@ After the game finishes, the learner need to output a set $\out \in \M$.
 %\textbf{Fixed confidence and fixed budget.} 
 We consider two different stopping conditions of the game, which are known as \emph{fixed confidence} setting and \emph{fixed budget} setting in the literature.
 In the fixed confidence setting, the learner can stop the game at any round. 
-The learner need to guarantee that $\Pr[\out = M_*] \ge 1-\delta$ for a given confidence parameter $\delta$.
+She need to guarantee that $\Pr[\out = M_*] \ge 1-\delta$ for a given confidence parameter $\delta$.
 %and her goal is to achieve a fixed confidence about the optimality of the returned set while uses a small number of pulls.
 %Specifically, given a confidence parameter $\delta$, the learner 
 The learner's performance is evaluated by her \emph{sample complexity}, i.e., the number of pulls used by the learner.
 %Notice that the learner can stop the game at any point in this setting.
 In the fixed budget setting, the game stops after a fixed number $T$ of rounds, where $T$ is given before the game starts.
 The learner tries to minimize the \emph{probability of error}, which is formally $\Pr[\out \not= M_*]$, within $T$ rounds.
-In this case, the learner's performance is measured by the probability of error.
+In this setting, her performance is measured by the probability of error.
 
 %The generality of \Problem framework stems from the allowance of arbitrary decision classes $\M$.
 %Two of the aboves examples, \MultiIdent and \MultiBandit, are studied 
@@ -343,9 +343,9 @@ In this case, the learner's performance is measured by the probability of error.
 %\textbf{Useful notations.}
 %For any vector $\vec v\in \RR^n$ and any set $M \subseteq [n]$, we define $v(M) = \sum_{e\in M} v(e)$.
 
-\vspace{-0.7em}
+\vspace{-1em}
 \section{Algorithm, Exchange Class and Sample Complexity}
-\vspace{-0.7em}
+\vspace{-1em}
 %Our main contribution is an algorithm for solving the \Problem problem.
 %Our algorithm 
 
@@ -431,9 +431,9 @@ We note that \Algorithm generalizes and unifies the ideas of several different f
 }
 \end{algorithm}
 
-\vspace{-0.5em}
+\vspace{-1em}
 \subsection{Sample complexity}
-\vspace{-0.5em}
+\vspace{-1em}
 %In this part, we analyze the performance of Algorithm~\ref{algo:pac} for both fixed confidence and fixed budget settings. 
 Now we establish a problem-dependent sample complexity bound of the \Algorithm algorithm. 
 %Our sample complexity bound depends on the combinatorial structure of the decision class $\M$. 
@@ -457,7 +457,7 @@ We also define the hardness $\mathbf H$ as the sum of inverse squared gaps
 \mathbf H =\sum_{e\in [n]} \Delta_e^{-2}.
 \end{equation}
 
-From Eq.~\eqref{eq:define-delta}, we see that, for each arm $e\not\in M_*$, the gap $\Delta_e$ represents the sub-optimality of the best set that includes arm $e$; and, for each arm $e\in M_*$, the gap $\Delta_e$ is the sub-optimality of the best set that does not include arm $e$.
+We see that, for each arm $e\not\in M_*$, the gap $\Delta_e$ represents the sub-optimality of the best set that includes arm $e$; and, for each arm $e\in M_*$, the gap $\Delta_e$ is the sub-optimality of the best set that does not include arm $e$.
 This naturally generalizes and unifies previous definitions of gaps \citep{audibert2010best,NIPS2011_4478,kalyanakrishnan2010efficient,bubeck2013multiple}.
 %We notice that, for many combinatorial problems, the definition Eq.~\eqref{eq:define-delta} naturally reflects the hardness of an arm.
 %().
@@ -569,7 +569,7 @@ Set $\rad_t(e) = R\sqrt{2\log\left(\frac{4n t^3}\delta\right)/ T_t(e) }$ for all
 Then, with probability at least $1-\delta$, the \Algorithm algorithm (Algorithm~\ref{algo:pac}) returns the optimal set $\out=M_*$ and
 \begin{equation}
 \label{eq:sample-complexity}
-T \le O\left(R^2\rank(\M)^2\mathbf H\log\left(R^2 \mathbf H /\delta\right)\right),
+T \le O\left(R^2\rank(\M)^2\mathbf H\log\left(nR^2 \mathbf H /\delta\right)\right),
 \end{equation}
 where $T$ denotes the number of samples used by Algorithm~\ref{algo:pac}, $\mathbf H$ is defined in Eq.~\eqref{eq:hardness} and $\rank(\M)$ is defined in Eq.~\eqref{eq:width-class}.
 \label{theorem:main}
@@ -588,17 +588,17 @@ By combining Lemma~\ref{lemma:example-exchange-class} and Theorem~\ref{theorem:m
 %In our proof, we use exchange classes build gadgets that interpolate between sets of decision classes. This enables the analysis for general decision classes.
 
 
-\vspace{-0.8em}
+\vspace{-1em}
 \subsection{Examples of decision classes}
-\vspace{-0.5em}
+\vspace{-1em}
 \label{section:example}
 
 Now we investigate several concrete types of decision classes, which correspond to different \Problem tasks.
 We analyze the width of these decision classes and apply \Cref{theorem:main} to obtain the sample complexity bounds.
-A more detailed analysis and the constructions of exchange classes can be found in the supplementary material (\Cref{section:exchange-proof}).
+A  detailed analysis and the constructions of exchange classes can be found in the supplementary material (\Cref{section:exchange-proof}).
 %Our bounds of width are proven b
 %and apply Theorem~\ref{theorem:main} for these classes. 
-We begin with the problem of top-$K$ arm identification (\MultiIdent) and multi-bandit best arms identification (\MultiBandit).
+We begin with the problems of top-$K$ arm identification (\MultiIdent) and multi-bandit best arms identification (\MultiBandit).
 %Note that the two problems are covered in current literature \citep{bubeck2013multiple,gabillon2012best,NIPS2011_4478,kalyanakrishnan2012pac}.% and our results recover previous results. 
 \begin{example}[\MultiIdent and \MultiBandit]
 \label{example:topk}
@@ -606,16 +606,16 @@ For any $K\in[n]$, the problem of finding the top $K$ arms with the largest expe
 Let $\mathcal A=\{A_1,\ldots,A_m\}$ be a partition of $[n]$. 
 The problem of identifying the best arms from each group of arms $A_1,\ldots,A_m$ can be modeled by decision class
 $\M_{\MultiBandit(\mathcal A)} = \{M \subseteq [n] \mid \forall i\in [m], |M\cap A_i| = 1\}$.
-Note that maximization oracles for these two decision classes are trivially the functions of returning the best arms or the best arm of each group.
+Note that maximization oracles for these two decision classes are trivially the functions of returning the top $k$ arms or the best arms of each group.
 %\wei{Need to mention that the oracle here is the trivial one.}
 
 Then we have $\rank(\M_{\MultiIdent(K)}) \le 2$ and $\rank(\M_{\MultiBandit(\mathcal A)}) \le 2$
-(see Fact~\ref{fact:topk} and \ref{fact:multibandit} in the supplementary material) and therefore the sample complexity of \Algorithm for solving \MultiIdent and \MultiBandit is $O\big(\mathbf H \log(\mathbf H/\delta)\big)$,  which matches previous results in the fixed confidence setting \citep{kalyanakrishnan2012pac,gabillon2012best,kaufmann2013information} up to constant factors.
+(see Fact~\ref{fact:topk} and \ref{fact:multibandit} in the supplementary material) and therefore the sample complexity of \Algorithm for solving \MultiIdent and \MultiBandit is $O\big(\mathbf H \log(n\mathbf H/\delta)\big)$,  which matches previous results in the fixed confidence setting \citep{kalyanakrishnan2012pac,gabillon2012best,kaufmann2013information} up to constant factors.
 %In addition, for the two problems, our definition of gaps $\Delta_e$ and $\mathbf H$ resembles the previous definitions \citep{kalyanakrishnan2012pac,gabillon2012best}.
 \end{example}
 
 
-Next we consider the problem of identifying the maximum matching or the problem of finding the shortest path (by negating the rewards) in a setting where arms correspond to edges.
+Next we consider the problem of identifying the maximum matching and the problem of finding the shortest path (by negating the rewards), in a setting where arms correspond to edges.
 For these problems, Theorem~\ref{theorem:main} establishes the first known sample complexity bound.
 \begin{example}[Matchings and Paths]
 Let $G(V,E)$ be a graph with $n$ edges and assume there is a one-to-one mapping between edges $E$ and arms $[n]$.
@@ -626,22 +626,25 @@ Then we have $\rank(\M_{\Match(G)}) \le |V|$ (In fact, we construct an exchange 
 Next suppose that $G$ is a directed acyclic graph and let $s,t\in V$ be two vertices.
 Let $\M_{\Path(G,s,t)}$ correspond to the set of all paths from $s$ to $t$.
 Then we have $\rank(\M_{\Path(G,s,t)}) \le |V|$ (In fact, we construct an exchange class corresponding to the collection of disjoint pairs of paths; see \Cref{fact:path}).
-Therefore the sample complexity bounds of \Algorithm for decision classes $\M_{\Match(G)}$ and $\M_{\Path(G,s,t)}$ are $O\big(|V|^2 \mathbf H \log (\mathbf H/\delta)\big)$.
+Therefore the sample complexity bounds of \Algorithm for decision classes $\M_{\Match(G)}$ and $\M_{\Path(G,s,t)}$ are $O\big(|V|^2 \mathbf H \log (n\mathbf H/\delta)\big)$.
 \end{example}
-
+\vspace{-0.5em}
 Last, we investigate the general problem of identifying the maximum-weight basis of a matroid.
 %, which covers a wide range of pure exploration problems. 
 Again, Theorem~\ref{theorem:main} is the first sample complexity upper bound for this type of pure exploration tasks.
+\vspace{-1em}
 \begin{example}[Matroids]
 \label{example:matroid}
-Let $T=(E,\mathcal I)$ be a finite matroid, where $E$ is a set of size $n$ (called ground set) and $\mathcal I$ is a family of subsets of $E$ (called independent sets) which satisfies the axioms of matroids.
+Let $T=(E,\mathcal I)$ be a finite matroid, where $E$ is a set of size $n$ (called ground set) and $\mathcal I$ is a family of subsets of $E$ (called independent sets) which satisfies the axioms of matroids (see \Cref{footnote:matroid} in \Cref{section:exchange-proof}).
 %\footnote{The three axioms of matroid are (1) $\emptyset\in \mathcal I$ and $\mathcal I\not=\{\emptyset\}$; (2) Every subsets of an independent set are independent (heredity property); (3) For all $A,B\in \mathcal I$ such that $|B|=|A|+1$ there exists an element $e\in B\del A$ such that $A\cup \{e\} \in \mathcal I$ (augmentation property). We refer interested readers to \citep{oxley2006matroid} for a general introduction to the matroid theory.}
 Assume that there is a one-to-one mapping between $E$ and [n].
 %A maximal independent set is referred as a basis of $T$.
 Recall that a basis of matroid $T$ is a maximal independent set.
 Let $\M_{\Matroid(T)}$ correspond to the set of all bases of $T$.
-Then we have $\rank(\M_{\Matroid(T)}) \le 2$ (derived from strong basis exchange property of matroids; see \Cref{fact:matroid}) and the sample complexity of \Algorithm for $\M_{\Matroid(T)}$ is $O\big(\mathbf H \log(\mathbf H/\delta)\big)$.
+Then we have $\rank(\M_{\Matroid(T)}) \le 2$ (derived from strong basis exchange property of matroids; see \Cref{fact:matroid}) and the sample complexity of \Algorithm for $\M_{\Matroid(T)}$ is $O\big(\mathbf H \log(n\mathbf H/\delta)\big)$.
 \end{example}
+\vspace{-0.5em}
+
 The last example $\M_{\Matroid(T)}$ is a general type of decision class which encompasses many pure exploration tasks including \MultiIdent and \MultiBandit as special cases, where \MultiIdent corresponds to uniform matroids of rank $K$ and \MultiBandit corresponds to partition matroids.
 It is easy to see that $\M_{\Matroid(T)}$ also covers the decision class that contains all spanning trees of a graph.
 On the other hand, it has been established that matchings and paths cannot be formulated as matroids since they are matroid intersections \citep{oxley2006matroid}.
@@ -664,9 +667,9 @@ We illustrate our constructions in \Cref{fig:exchange}.
 %Hence, intuitively, an exchange class for $\M$ characterizes the ``operations'' of transforming an element $M\in \M$ to another element $M'\in \M$.
 
 
-\vspace{-0.7em}
+\vspace{-1em}
 \section{Lower Bound}
-\vspace{-0.7em}
+\vspace{-1em}
 In this section, we present a problem-dependent lower bound on the sample complexity of the \Problem problem. 
 To state our results, we first define the notion of \emph{$\delta$-correct algorithm} as follows.
 For any $\delta \in (0,1)$, we call an algorithm $\mathbb A$ a $\delta$-correct algorithm if, for any expected reward $\vec w \in \RR^{n}$, the probability of error of $\mathbb A$ is at most $\delta$, i.e., $\Pr[M_*\not =\out] \le \delta$, where $\out$ is the output of $\mathbb A$.
@@ -704,9 +707,9 @@ In the supplementary material (\Cref{section:lowerbound-evidence}), we provide e
  %dependency on $\rank(\M)$ of the sample complexity might be intrinsic. 
 %In the supplementary material, we provide evidence showing that the sample complexity of any $\delta$-correct algorithm should be related to size of exchange sets. 
 
-\vspace{-0.8em}
+\vspace{-1em}
 \section{Fixed Budget Algorithm}
-\vspace{-0.8em}
+\vspace{-1em}
 \label{section:csar}
 In this section, we present Combinatorial Successive Accept Reject (\AlgorithmBud) algorithm, which is a parameter-free learning algorithm for the \Problem problem in the fixed budget setting.
 Then, we upper bound the probability of error \AlgorithmBud in terms of gaps and $\rank(\M)$.
@@ -798,6 +801,7 @@ We note that \AlgorithmBud can be considered as a generalization of the ideas of
 \vspace{-0.5em}
 In the following theorem, we bound the probability of error of the \AlgorithmBud algorithm.
 % is at most $\tilde O(\exp(-T\rank(\M)^{-2} \mathbf H^{-1}))$.
+\vspace{-0.2em}
 \begin{restatable}{theorem}{realfixbudget}
 Given any $T>n$, any decision class $\M \subseteq 2^{[n]}$ and any expected rewards $\vec w \in \RR^{n}$.
 Assume that the reward distribution $\Rew_e$ for each arm $e\in [n]$ has mean $w(e)$ with an $R$-sub-Gaussian tail.
@@ -813,6 +817,7 @@ Then, the \AlgorithmBud algorithm uses at most $T$ samples and outputs a solutio
 where $\barlog(n)\triangleq \sum_{i=1}^n i^{-1}$, $M_* = \argmax_{M\in \M} w(M)$ and $\rank(\M)$ is defined in Eq.~\eqref{eq:width-class}.
 \label{theorem:budget}
 \end{restatable}
+\vspace{-0.5em}
 One can verify that $\mathbf H_2$ is equivalent to $\mathbf H$ up to a logarithmic factor: $\mathbf H_2 \le \mathbf H \le \log(2n) \mathbf H_2$ (see \citep{audibert2010best}).
 Therefore, by setting the probability of error (the RHS of Eq.~\eqref{eq:fbudget:prob-error}) to a constant, one can see that \AlgorithmBud requires a budget of $T = \tilde O(\rank(\M)^2 \mathbf H)$ samples.
 This is equivalent to the sample complexity bound of \Algorithm up to logarithmic factors.
@@ -864,6 +869,15 @@ Our upper and lower bounds characterize the complexity of the \Problem problem: 
 %Our results substantially improve upon the existing work on pure exploration MABs of identifying sets of arms. 
 %Our improvements are diverse, which range form considering a much larger 
 
+%\vspace{-1em}
+\textbf{Acknowledgments.}
+The work described in this paper was partially supported by the National
+Grand Fundamental Research 973 Program of China (No.
+2014CB340401 and No. 2014CB340405), the Research Grants
+Council of the Hong Kong Special Administrative Region, China
+(Project No. CUHK 413212 and CUHK 415113), and Microsoft Research
+Asia Regional Seed Fund in Big Data Research (Grant No.
+FY13-RES-SPONSOR-036).
 
 
 
@@ -1582,7 +1596,7 @@ R\sqrt{\frac{2\log\left(4n t_e^3/\delta\right)}{T(e)-1}} \le
 R\sqrt{\frac{2\log\left(4n T^3/\delta\right)}{T(e)-1}}.
 \label{eq:bound-te}
 \end{equation}
-Solving Eq.~\eqref{eq:bound-te} for $T(e)$, we obtain
+By solving Eq.~\eqref{eq:bound-te} for $T(e)$, we obtain
 \begin{equation}
 \label{eq:bound-te-2}
 T(e) \le \frac{18 \rank(\M)^2 R^2}{\Delta_e^2} \log(4nT^3/\delta)+1.
@@ -1598,7 +1612,7 @@ Now we define $\mathbf{\tilde H}=\max\big\{\rank(\M)^2 R^2\mathbf{H},1\big\}$.
 In the rest of the proof, we show that 
 \begin{equation}
 \label{eq:cmr-t-1}
-T \le 458\mathbf{\tilde H}\log\left(4n\mathbf{\tilde H}/\delta\right)+2n.
+T \le 499\mathbf{\tilde H}\log\left(4n\mathbf{\tilde H}/\delta\right)+2n.
 \end{equation}
 Notice that the theorem follows immediately from Eq.~\eqref{eq:cmr-t-1}.
 %Notice that the right-hand side of Eq.~\eqref{eq:cmr-t-1} 
@@ -1610,8 +1624,8 @@ Since $T>n$, we can write
 \label{eq:cmr-t-3}
 T = C\mathbf{\tilde H}\log\left(4n\mathbf{\tilde H}/\delta\right) + n, \text{ for some }C>0.
 \end{equation}
-If $C \le 458$, then it is clear that Eq.~\eqref{eq:cmr-t-1} holds.
-Suppose, on the contrary, that $C > 458$.
+If $C \le 499$, then it is clear that Eq.~\eqref{eq:cmr-t-1} holds.
+Suppose, on the contrary, that $C > 499$.
 Notice that $T=\sum_{e\in[n]} T(e)$. 
 By summing up Eq.~\eqref{eq:bound-te-2} for all $e\in[n]$, we have
 \begin{align}
@@ -1625,16 +1639,16 @@ By summing up Eq.~\eqref{eq:bound-te-2} for all $e\in[n]$, we have
 		&\le n+18 \mathbf{\tilde H}\log(4n\mathbf{\tilde H}/\delta)+ 54\mathbf{\tilde H}\log\left(2C\right)\log(4n\mathbf{\tilde H}/\delta)
 		+54\mathbf{\tilde H}\log(4n\mathbf{\tilde H}/\delta)
 		+54\mathbf{\tilde H}\log(4n\mathbf{\tilde H}/\delta)\label{eq:cmr-t-4}\\
-		&=n+(126+54\log(2C))\log(4n\mathbf{\tilde H}/\delta)\nonumber \\
-		&< n+C\log(4n\mathbf{\tilde H}/\delta) \label{eq:cmr-t-5}\\
+		&=n+(126+54\log(2C))\mathbf{\tilde H}\log(4n\mathbf{\tilde H}/\delta)\nonumber \\
+		&< n+C\mathbf{\tilde H}\log(4n\mathbf{\tilde H}/\delta) \label{eq:cmr-t-5}\\
 		&= T,\label{eq:cmr-t-0}
 \end{align}
 where Eq.~\eqref{eq:cmr-t-2} follows from Eq.~\eqref{eq:cmr-t-3} and the assumption that $n<\frac{1}2 T$;
 Eq.~\eqref{eq:cmr-t-4} follows from the fact that $\mathbf{\tilde H} \ge 1$ and $\delta < 1$;
-Eq.~\eqref{eq:cmr-t-5} follows since $126+54\log(2C) < C$ for all $C>458$;
+Eq.~\eqref{eq:cmr-t-5} follows since $126+54\log(2C) < C$ for all $C > 499$;
 and Eq.~\eqref{eq:cmr-t-0} is due to Eq.~\eqref{eq:cmr-t-3}.
-Hence we see that Eq.~\eqref{eq:cmr-t-0} is a contradiction. 
-Therefore we see that $C\le 458$ which means that Eq.~\eqref{eq:cmr-t-1} holds.
+Now we see that Eq.~\eqref{eq:cmr-t-0} is a contradiction. 
+Therefore we obtain that $C\le 499$ and we have proved Eq.~\eqref{eq:cmr-t-1}.
 
 
 
@@ -1677,7 +1691,7 @@ when parameter $\alpha = O(T\mathbf H^{-1}\rank(\M)^{-2})$.
 
 Theorem~\ref{theorem:main-budget} shows that the modified \Algorithm algorithm in the fixed budget setting requires the knowledge of  quantity $\mathbf H$ in order to achieve the optimal performance. 
 However $\mathbf H$ is usually unknown.
-Therefore, although its probability of error guarantee matches the parameter-free \AlgorithmBud algorithm up to logarithmic factors, this modified algorithm is considered more restricted than \AlgorithmBud. 
+Therefore, although its probability of error guarantee matches the parameter-free \AlgorithmBud algorithm up to logarithmic factors, this modified algorithm is considered weaker than \AlgorithmBud. 
 Nevertheless, Theorem~\ref{theorem:main-budget} shows that \Algorithm can solve \Problem in both fixed confidence and fixed budget settings  and more importantly this theorem provides additional insights on the behavior \Algorithm.
 
 
@@ -1689,7 +1703,7 @@ Formally, an algorithm $\mathbb A$ is called an $(\epsilon,\delta)$-PAC algorith
 We show that a simple modification on the \Algorithm algorithm gives an $(\epsilon,\delta)$-PAC algorithm, with guarantees similar  to Theorem~\ref{theorem:main}.
 In fact, the only modification needed is to change the stopping condition from $\tilde w_t(\tilde M_t) = \tilde w_t(M_t)$ to $\tilde w_t(\tilde M_t)-\tilde w_t(M_t) \le \epsilon$ on line~\ref{algo:step:D} of Algorithm~\ref{algo:pac}.
 We let  \AlgorithmPAC denote the modified algorithm.
-In the following theorem, we show that \AlgorithmPAC is indeed an $(\epsilon,\delta)$-PAC algorithm and has sample complexity similar to \Algorithm.
+In the following theorem, we show that \AlgorithmPAC is indeed an $(\epsilon,\delta)$-PAC algorithm and has a sample complexity similar to \Algorithm.
 \begin{restatable}{theorem}{resultpac}
 Use the same notations as in Theorem~\ref{theorem:main}.
 Fix $\delta\in(0,1)$ and $\epsilon \ge 0$.
@@ -2278,7 +2292,7 @@ Now we claim that
 \end{equation}
 It is easy to check that theorem follows immediately from  claims \textbf{(a)} and \textbf{(b)}.
 In the rest of the proof, we focus on claim \textbf{(a)}; the claim \textbf{(b)} can be
-	 proven using an almost identical similar argument.
+	 proven using an almost identical argument.
 
 Now we define $\theta = 4\delta$ and $t_{b_-}^* = \frac{|b_-|^2}{16\Delta_e^2} \log(1/\theta)$. 
 We prove claim \textbf{(a)} by contradiction, that is to assume the opposite that $\E[T_{b_-}] < t_{b_-}^*$.
@@ -2327,7 +2341,7 @@ where (a) follows from the fact that all reward distributions have unit variance
 since $\theta < e^{-16}$.
 
 
-Since $\mathbb A$ is $\delta$-correct algorithm and $\delta < 1/4$, we have $\Pr_0[\mathcal B]\ge 3/4$. Therefore, we have that the random event $\mathcal S=\mathcal A \cap \mathcal B \cap \mathcal C$ occurs with probability at least $1/4$ under $H_0$.
+Since $\mathbb A$ is a $\delta$-correct algorithm and $\delta < 1/4$, we have $\Pr_0[\mathcal B]\ge 3/4$. Therefore, we have that the random event $\mathcal S=\mathcal A \cap \mathcal B \cap \mathcal C$ occurs with probability at least $1/4$ under $H_0$.
 
 
 \textbf{Step (3): The loss of likelihood.} Similar to the proof of Theorem~\ref{theorem:lower-bound}, we let $L_l$ denote the likelihood function under hypothesis $H_l$ for $l\in\{0,1\}$. 
@@ -2938,7 +2952,9 @@ Conversely, for all $M\subseteq[n]$, we define $\sigma^{-1}(M) \triangleq \{\sig
 \label{fact:matroid}
 Let $T=(E,\mathcal I)$ be an arbitrary matroid, where $E$ is the ground set of $n$ elements 
 and $\mathcal I$ is the family of subsets of $E$ called in the independent sets which satisfy the axioms of matroids
-\footnote{The three axioms of matroid are (1) $\emptyset\in \mathcal I$ and $\mathcal I\not=\{\emptyset\}$; (2) Every subsets of an independent set are independent (heredity property); (3) For all $A,B\in \mathcal I$ such that $|B|=|A|+1$ there exists an element $e\in B\del A$ such that $A\cup \{e\} \in \mathcal I$ (augmentation property). We refer interested readers to \citep{oxley2006matroid} for a general introduction to the matroid theory.}.
+\footnote{
+\label{footnote:matroid}
+The three axioms of matroid are (1) $\emptyset\in \mathcal I$ and $\mathcal I\not=\{\emptyset\}$; (2) Every subsets of an independent set are independent (heredity property); (3) For all $A,B\in \mathcal I$ such that $|B|=|A|+1$ there exists an element $e\in B\del A$ such that $A\cup \{e\} \in \mathcal I$ (augmentation property). We refer interested readers to \citep{oxley2006matroid} for a general introduction to the matroid theory.}.
 Let $\sigma\colon E\rightarrow [n]$ be a bijection from $E$ to $[n]$.
 Let $\M_{\Matroid(T)}$ correspond to the collection of all bases of matroid $T$ and formally we define
 \begin{equation}
@@ -2984,7 +3000,7 @@ such that
 \end{equation}
 Now we define exchange set $b=(b_+,b_-)$ where $b_+ = \{\sigma(y)\}$ and $b_-=\{\sigma(x)\}$. 
 By Eq.~\eqref{eq:fm1} and the fact that $\sigma$ is a bijection, we see that $M\oplus b \in \M_{\Matroid(T)}$ and $M'\ominus b \in \M_{\Matroid(T)}$. We also have $b\in \B_{\Matroid(n)}$.
-Due to $M,M'$ and $e$ are chosen arbitrarily, we have verified that $\B_{\Matroid(n)}$ is an exchange class for $\M_{\Matroid(T)}$.
+Due to the fact that $M,M'$ and $e$ are chosen arbitrarily, we have verified that $\B_{\Matroid(n)}$ is an exchange class for $\M_{\Matroid(T)}$.
 
 To conclude, we observe that $\rank(\B_{\Matroid(n)}) = 2$.
 \end{proof}
@@ -3410,13 +3426,13 @@ By definition of $\mathbf H$, we see that $\mathbf H$ decreases when $c_0$ incre
 
 Recall that the sampling process of \AlgorithmBud is divided into $n$ phases and, in the end of each phase, the algorithm either accepts or rejects an arm.
 In practice, for some decision classes, there may exists a phase $t<n$ such that %the set of accepted arms $A_t$ and the set of rejected arms $B_t$ may be large enough such that% 
-only a unique set of arms remains to satisfy all constraints of phase $t$, i.e. $|\mathcal M_{A_t,B_t}|=1$ (see Section~\ref{section:csar} for the definitions of $A_t, B_t$ and $\mathcal M_{A_t,B_t}$).
-By the design of \AlgorithmBud, this unique element of $\mathcal M_{A_t,B_t}$ will be the output of algorithm.
+there is only a unique set of arms which satisfies all constraints of phase $t$, i.e. $|\mathcal M_{A_t,B_t}|=1$ (see Section~\ref{section:csar} for the definitions of $A_t, B_t$ and $\mathcal M_{A_t,B_t}$).
+By the design of \AlgorithmBud, one can see that this unique element of $\mathcal M_{A_t,B_t}$ will be the output of algorithm.
 In this case, the remaining budget for phases $t+1,\ldots, n$ are wasted in the sense that they do not affect the output.
-Therefore, in our experiment, we modify \AlgorithmBud to utilize these remaining budget using the following heuristic.
-If $|\mathcal M_{A_t,B_t}|=1$ for some $t < n$, we terminate the algorithm and then re-run the algorithm on the remaining budget.
+Therefore, in our experiment, we modify \AlgorithmBud to utilize these remaining budget in this case by using the following heuristic.
+If $|\mathcal M_{A_t,B_t}|=1$ for some $t < n$, we stop the algorithm and then re-run the algorithm using the remaining budget.
 During re-running the algorithm, the algorithm computes the empirical means of arms by using all samples including the samples from all previous runs of the algorithm. 
-We keep this process until the the algorithm terminates normally or the remaining budget is less than 10\% of the original budget.
+This process continues until the the algorithm terminates normally or the remaining budget is less than 30\% of the original budget.
 %By recycling the samples from previous runs, our algorithm utilize the full budget.
 %This heuristic improves 
 %In the rest of this section, the \AlgorithmBud algorithm
